@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Leaderboard</title>
+        <link rel ="stylesheet" type="text/css" href="CSS/formate.css"/>
+        <style type="text/css">
+            body {
+			    background-color: rgb(28, 82, 145);
+			    transition: background-color 20s;
+		    }
+        </style>
+        <script type="text/javascript">
+            var colors = ["Azure", "Blue", "Aquamarine", "DarkBlue", "LightBlue", "DarkSeaGreen"];
+            var i = 1;
+    
+            window.setInterval(function(){
+                document.body.style.backgroundColor = colors[i];
+                i++;
+                if (i === colors.length){
+                    i=0;
+                }
+            }, 2000);
+        </script>
+    </head>
+    <body>
+        <header>
+            <div><a id="links" href="game.html" title="Memory"> <img class="yin" src="../Bilder/yinyang.jpg"></a></div>
+            <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img src="../Bilder/logo.png" width="300"></a></div>
+            <div><h1 id="mitte" class=center>Leaderboard</h1></div>
+        </header>
+        
+        <h3 class="center"> Bestliste seit 10.12.2022<br></h3>
+        <p class="main" style="line-height: 130%;">
+            <dev style="font-size: larger;"><u>Kontakt:<br><br></u></dev>
+            Jannis Frederick Kluess <br>
+            janniskluess@yahoo.de <br>
+            +49 176 70555363 <br>
+            ----------------------- <br>
+            Guldeinstraße 35 <br>
+            80339 München <br>
+            Deutschland <br>
+        </p>
+
+        <footer>
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
+            <hr class="trenn-linie"></hr> 
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="../Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising.
+        </footer>
+    </body>
+</html>

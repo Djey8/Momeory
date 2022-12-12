@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Main</title>
+        <link rel ="stylesheet" type="text/css" href="CSS/formate.css"/>
+        <style type="text/css">
+            body {
+			    background-color: rgb(28, 82, 145);
+			    transition: background-color 20s;
+		    }
+        </style>
+        <script type="text/javascript">
+            var colors = ["Azure", "Blue", "Aquamarine", "DarkBlue", "LightBlue", "DarkSeaGreen"];
+            var i = 1;
+    
+            window.setInterval(function(){
+                document.body.style.backgroundColor = colors[i];
+                i++;
+                if (i === colors.length){
+                    i=0;
+                }
+            }, 2000);
+        </script>
+    </head>
+    <body>
+        <header>
+            <div><a id="links" href="index_6.html" title="Next Page"> <img class="yin" src="../Bilder/yinyang.jpg"></a></div>
+            <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img src="../Bilder/logo.png" width="300"></a></div>
+            <div><h1 id="mitte" class=center>JFK´s Web Portal</h1></div>
+        </header>
+        
+        <dev>
+            <p class="main">
+                Memory ist ein Gedächtnisspiel für 2-10 Spieler<br>
+                Es gibt mittlerweile regelmäßige Memory-Turniere<br>
+                Seit 1990 findet jährlich die "Deutsche Memory-Meisterschaft statt."
+            </p>
+        </dev>
+
+        <footer>
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
+            <hr class="trenn-linie"></hr> 
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="../Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising.
+        </footer>
+    </body>
+</html>
