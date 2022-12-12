@@ -143,6 +143,7 @@ const matrixGenerator = (cardValues, size = 4) => {
 };
 //Start game
 startButton.addEventListener("click", () => {
+  timeValue.innerHTML = `<span>Time:</span>00:00`;
   movesCount = 0;
   seconds = 0;
   minutes = 0;
@@ -168,6 +169,7 @@ stopButton.addEventListener(
     gameContainer.classList.add("hide");
     startButton.classList.remove("hide");
     clearInterval(interval);
+    timeValue.innerHTML = `<span>Time:</span>00:00`;
   })
 );
 //Initialize values and func calls
