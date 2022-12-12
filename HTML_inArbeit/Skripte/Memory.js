@@ -5,6 +5,7 @@ const stopButton = document.getElementById("stop");
 const gameContainer = document.querySelector(".game-container");
 const result = document.getElementById("result");
 const controls = document.querySelector(".controls-container");
+const kostenlos = document.getElementById("kostenlos");
 
 let cards;
 let interval;
@@ -146,6 +147,7 @@ startButton.addEventListener("click", () => {
   seconds = 0;
   minutes = 0;
   //controls amd buttons visibility
+  kostenlos.classList.add("hide");
   controls.classList.add("hide");
   stopButton.classList.remove("hide");
   gameContainer.classList.remove("hide");
@@ -160,6 +162,7 @@ startButton.addEventListener("click", () => {
 stopButton.addEventListener(
   "click",
   (stopGame = () => {
+    kostenlos.classList.remove("hide");
     controls.classList.remove("hide");
     stopButton.classList.add("hide");
     gameContainer.classList.add("hide");
