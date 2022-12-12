@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Memory</title>
+        <link rel ="stylesheet" type="text/css" href="CSS/formate.css"/>
+        <script src="Skripte/Script1.js" type="text/javascript"></script> 
+    </head>
+    <body>
+        <header>
+            <div>
+                <a id="links" href="index.html" title="welcome"> <img class="yin" src="Bilder/yinyang.jpg"></a>
+                <a id="links" href="profile.html" title="profile" style="margin-left: 10px;"> <img class="profile" src="Bilder/profile.jpg"></a>
+                <a id="links" href="leaderboard.html" title="leaderboard" style="margin-left: 10px;"> <img class="profile" src="Bilder/trophy.jpg"></a>
+                <a id="links" href="instructions.html" title="info" style="margin-left: 10px;"> <img class="info" src="Bilder/info.png"></a>
+
+            </div>
+            <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img width="250" src="Bilder/logo.png"></a></div>
+            <div><h1 id="mitte" class=center>JFK´s Memory</h1></div>
+        </header>
+        <footer>
+            <div style="margin-bottom: 8px; line-height: 15px;">
+                Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+                Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
+            </div>
+            <hr class="trenn-linie" style="margin-bottom: 5px;"></hr> 
+            <dev>
+                Copyright 2022
+                <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+                IT-Abteilung der Berufsschule Freising.
+            </dev>
+        </footer>
+        <h3 id="kostenlos" class="center"> Jetzt kostenlos spielen<br></h3>
+        <div class="wrapper">
+            <div class="stats-container">
+              <div id="moves-count"></div>
+              <div id="time"></div>
+            </div>
+            <div class="game-container"></div>
+            <button id="stop" class="hide">Stop Game</button>
+          </div>
+          <div class="controls-container">
+            <p id="result"></p>
+            <button id="start">Start Game</button>
+          </div>
+          <!-- Script -->
+          <script src="Skripte/Memory.js"></script>
+    </body>
+</html>
