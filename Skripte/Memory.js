@@ -172,6 +172,7 @@ stopButton.addEventListener(
     timeValue.innerHTML = `<span>Time:</span>00:00`;
   })
 );
+
 //Initialize values and func calls
 const initializer = () => {
   result.innerText = "";
