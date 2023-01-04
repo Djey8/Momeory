@@ -11,7 +11,7 @@ let cards;
 let interval;
 let firstCard = false;
 let secondCard = false;
-
+//trigger refresh
 //Items array
 const items = [
     { name: "pic1", image: "../Bilder/pic1-klein.jpeg"},
