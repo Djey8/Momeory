@@ -30,7 +30,7 @@
             </dev>
         </footer>
         
-        <div class="container">
+        <div class="container" id="register-container">
             <h2>Register</h2>
             <hr>
             <div id="emailContainer">
@@ -45,7 +45,7 @@
                     <input type="password" placeholder="Password" name="psw" id="psw" required>
                 </span>
             </div>
-
+            <div id="errorMessageContainer"><p id="errorMessage"></p></div>
             
             <hr>
 
@@ -82,37 +82,41 @@
             const database = getDatabase(app);
 
 
+
             Registerbtn.addEventListener('click', (e) => {
 
                 var email = document.getElementById('email').value;
                 var password = document.getElementById('psw').value;
-                
                 var lgDate = new Date();
+                //alert(lgDate)
+                
 
                 createUserWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         // Signed in 
                         const user = userCredential.user;
                         // ... user.uid
+                       
                         set(ref(database, 'users/' + user.uid), {
                             email: email,
-                            test: "test",
-                            created: lgDate
+                            first_login: lgDate.toUTCString()
                         })
                         .then(() => {
                             // Data saved successfully!
-                            alert('user created successfully')
+                            window.location.href = "profile.html"
                         })
                         .catch((error) => {
                             // The write failed...
-                            alert(error)
+                            document.getElementById("errorMessage").innerText = error
+                            //alert(error)
                         });
                     })
                     .catch((error) => {
                         const errorCode = error.code;
                         const errorMessage = error.message;
                         // ..
-                        alert(errorMessage)
+                        document.getElementById("errorMessage").innerText = error
+                        //alert(errorMessage)
                     });
             });
           </script>
