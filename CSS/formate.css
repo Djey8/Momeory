@@ -346,7 +346,7 @@ button {
   padding: 1em 1.5em;
   cursor: pointer;
 }
-#stop {
+#stopbtn {
   font-size: 1.1em;
   display: block;
   margin: 1.1em auto 0 auto;

@@ -41,13 +41,188 @@
               <div id="time"></div>
             </div>
             <div class="game-container"></div>
-            <button id="stop" class="hide">Stop Game</button>
+            <button id="stopbtn" class="hide" name="stopbtn">Stop Game</button>
           </div>
           <div class="controls-container">
             <p id="result"></p>
-            <button id="start">Start Game</button>
+            <button id="start" name="start">Start Game</button>
           </div>
           <!-- Script -->
           <script src="Skripte/Memory.js"></script>
+
+          <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+            import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+            import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+              apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
+              authDomain: "memory-app-b17ee.firebaseapp.com",
+              projectId: "memory-app-b17ee",
+              storageBucket: "memory-app-b17ee.appspot.com",
+              messagingSenderId: "3637204477",
+              appId: "1:3637204477:web:1493290d44957d81997594",
+              measurementId: "G-XWPBGZWB4S",
+              databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const database = getDatabase(app);
+            const dbRef = ref(getDatabase(app));
+
+            
+
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in, see docs for a list of available properties
+                    // https://firebase.google.com/docs/reference/js/firebase.User
+                    const uid = user.uid;
+                    // ...
+
+                    var games = [];
+                    var new_game = {
+                            start: "not started yet",
+                            moves: "",
+                            time: "",
+                            end: "",
+                            won: false
+                    };
+
+                    get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            games = snapshot.val();
+                            //alert("games loaded");
+                        } else {
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                    
+                    document.addEventListener("myCustomEvent", e => {
+                        const date = new Date();
+                        const time = document.getElementById("time-won");
+                        const moves = document.getElementById("moves-won");
+                        
+                        new_game.moves = moves.innerHTML;
+                        new_game.time = time.innerHTML;
+                        new_game.end = date.toUTCString();
+                        new_game.won = true;
+
+                        games.push(new_game);
+
+                        console.log(new_game);
+                        update(ref(database, `users/${user.uid}`), {
+                            offline_games: games
+                        })
+                        .then(() => {
+                            // Data saved successfully!
+                            //alert("secessfully saved data")
+                            get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    games = snapshot.val();
+                                    //alert("games loaded");
+                                    new_game = {
+                                        start: "not started yet",
+                                        moves: "",
+                                        time: "",
+                                        end: "",
+                                        won: false
+                                    };
+                                } else {
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
+                        })
+                        .catch((error) => {
+                            // The write failed...
+                            document.getElementById("errorMessage").innerText = error
+                            //alert(error)
+                        });
+                    })
+
+                    start.addEventListener('click', (e) => {
+                        const date = new Date();
+                        
+                        new_game.start = date.toUTCString();
+                        
+                        console.log(new_game);
+                    });
+                    
+
+                    stopbtn.addEventListener('click', (e) => {
+                        const date = new Date();
+                        const time = document.getElementById("time-content");
+                        const moves = document.getElementById("moves-content");
+                        
+                        new_game.moves = moves.innerHTML;
+                        new_game.time = time.innerHTML;
+                        new_game.end = date.toUTCString();
+                        new_game.won = false;
+                        
+                        games.push(new_game);
+
+                        console.log(new_game);
+                        update(ref(database, `users/${user.uid}`), {
+                            offline_games: games
+                        })
+                        .then(() => {
+                            // Data saved successfully!
+                            //alert("secessfully saved data")
+                            get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    games = snapshot.val();
+                                    //alert("games loaded");
+                                    new_game = {
+                                        start: "not started yet",
+                                        moves: "",
+                                        time: "",
+                                        end: "",
+                                        won: false
+                                    };
+                                } else {
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
+                        })
+                        .catch((error) => {
+                            // The write failed...
+                            document.getElementById("errorMessage").innerText = error
+                            //alert(error)
+                        });
+                    }); 
+
+                } else {
+                    // User is signed out
+                    // ...
+                }
+            });
+          </script>
+
     </body>
 </html>
