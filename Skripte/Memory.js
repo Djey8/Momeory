@@ -1,7 +1,8 @@
+
 const moves = document.getElementById("moves-count");
 const timeValue = document.getElementById("time");
 const startButton = document.getElementById("start");
-const stopButton = document.getElementById("stop");
+const stopButton = document.getElementById("stopbtn");
 const gameContainer = document.querySelector(".game-container");
 const result = document.getElementById("result");
 const controls = document.querySelector(".controls-container");
@@ -34,6 +35,7 @@ let seconds = 0,
 //Initial moves and win count
 let movesCount = 0,
   winCount = 0;
+
 //For timer
 const timeGenerator = () => {
   seconds += 1;
@@ -45,13 +47,18 @@ const timeGenerator = () => {
   //format time before displaying
   let secondsValue = seconds < 10 ? `0${seconds}` : seconds;
   let minutesValue = minutes < 10 ? `0${minutes}` : minutes;
-  timeValue.innerHTML = `<span>Time:</span>${minutesValue}:${secondsValue}`;
+  timeValue.innerHTML = `<span>Time:</span><span id="time-content">${minutesValue}:${secondsValue}</span>`;
 };
+
+
 //For calculating moves
 const movesCounter = () => {
   movesCount += 1;
-  moves.innerHTML = `<span>Moves:</span>${movesCount}`;
+  moves.innerHTML = `<span>Moves:</span><span id="moves-content">${movesCount}</span>`;
 };
+
+
+
 //Pick random objects from the items array
 const generateRandom = (size = 4) => {
   //temporary array
@@ -123,10 +130,12 @@ const matrixGenerator = (cardValues, size = 4) => {
             if (winCount == Math.floor(cardValues.length / 2)) {
               let secondsValue = seconds < 10 ? `0${seconds}` : seconds;
               let minutesValue = minutes < 10 ? `0${minutes}` : minutes;
-              result.innerHTML = `<h2>You Won</h2>
-            <h4>Moves: ${movesCount}</h4>
-            <h4>Time: ${minutesValue}:${secondsValue}</h4>`;
+              result.innerHTML = `<h2 id="won">You Won</h2>
+            <h4>Moves: <span id="moves-won">${movesCount}</span></h4>
+            <h4>Time: <span id="time-won">${minutesValue}:${secondsValue}</span></h4>`;
               stopGame();
+              const myEvent = new Event("myCustomEvent");
+              document.dispatchEvent(myEvent);
             }
           } else {
             //if the cards dont match
@@ -146,7 +155,9 @@ const matrixGenerator = (cardValues, size = 4) => {
 };
 //Start game
 startButton.addEventListener("click", () => {
-  timeValue.innerHTML = `<span>Time:</span>00:00`;
+  //delete old session
+  clearInterval(interval);
+  timeValue.innerHTML = `<span>Time:</span><span id="time-content">00:00 </span>`;
   movesCount = 0;
   seconds = 0;
   minutes = 0;
@@ -159,7 +170,7 @@ startButton.addEventListener("click", () => {
   //Start timer
   interval = setInterval(timeGenerator, 1000);
   //initial moves
-  moves.innerHTML = `<span>Moves:</span> ${movesCount}`;
+  moves.innerHTML = `<span>Moves:</span> <span id="moves-content">${movesCount}</span>`;
   initializer();
 });
 //Stop game
@@ -171,8 +182,6 @@ stopButton.addEventListener(
     stopButton.classList.add("hide");
     gameContainer.classList.add("hide");
     startButton.classList.remove("hide");
-    clearInterval(interval);
-    timeValue.innerHTML = `<span>Time:</span>00:00`;
   })
 );
 

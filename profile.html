@@ -30,7 +30,7 @@
             </dev>
         </footer>
         
-        <div class="container" id="login-container">
+        <div class="container hide" id="login-container">
             <h2>Login</h2>
             <hr>
             <div id="emailContainer">
@@ -54,13 +54,18 @@
             <div id="Register-Container"> <a id="goToRegister" href="register.html">Create a new Account</a></div>
             
         </div>
+        <div class="profile-container" id="profile">
+            <h2 id="pemailLabel">Your Email</h2>
+            <p id="pemail">No user found</p>
+            <button type="button" id="logoutbtn" name="logoutbtn" class="loginbtn">Log Out</button>
+        </div>
 
         <script type="module">
             // Import the functions you need from the SDKs you need
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
             import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
-            import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-            import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+            import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+            import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
             // TODO: Add SDKs for Firebase products that you want to use
             // https://firebase.google.com/docs/web/setup#available-libraries
           
@@ -81,9 +86,40 @@
             const app = initializeApp(firebaseConfig);
             const analytics = getAnalytics(app);
             const auth = getAuth(app);
+            const user = auth.currentUser;
             const database = getDatabase(app);
+            const dbRef = ref(getDatabase(app));
             const container = document.getElementById("login-container");
+            const logoutC = document.getElementById("profile");
             const error = document.getElementById("errorMessage");
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in, see docs for a list of available properties
+                    // https://firebase.google.com/docs/reference/js/firebase.User
+                    const uid = user.uid;
+                    // ...
+                    get(child(dbRef, `users/${user.uid}/email`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            document.getElementById("pemail").innerText = snapshot.val()
+                        } else {
+                            //alert("no data")
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                } else {
+                    // User is signed out
+                    // ...
+                    container.classList.remove("hide");
+                    logoutC.classList.add("hide");
+                }
+            });
+                         
 
             submitData.addEventListener('click', (e) => {
 
@@ -102,6 +138,20 @@
                         .then(() => {
                             // Data saved successfully!
                             container.classList.add("hide");
+                            logoutC.classList.remove("hide");
+                            get(child(dbRef, `users/${user.uid}/email`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    document.getElementById("pemail").innerText = snapshot.val()
+                                } else {
+                                    //alert("no data")
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
                         })
                         .catch((error) => {
                             // The write failed...
@@ -116,6 +166,16 @@
                         document.getElementById("errorMessage").innerText = error
                         //alert(errorMessage)
                     });
+            });
+            
+            logoutbtn.addEventListener('click', (e) => {
+                signOut(auth).then(() => {
+                    // Sign-out successful.
+                    //alert("signOut")
+                }).catch((error) => {
+                    // An error happened.
+                    alert(error)
+                });
             });
           </script>
     </body>
