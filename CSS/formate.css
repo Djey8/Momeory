@@ -1,3 +1,29 @@
+#loaderboard-container {
+  width: 90%;
+  margin-left: 5%;
+  background-color: white;
+}
+
+
+#leaderboardbtn {
+  width: 33%;
+  float: left;
+  font-size: 19px;
+}
+
+#offlinebtn {
+  position: absolute;
+  width: 33%;
+  font-size: 19px;
+}
+
+#onlinebtn {
+  width: 33%;
+  float: right;
+  font-size: 19px;
+}
+
+
 .container{
   box-sizing: content-box;
   width: 400px;

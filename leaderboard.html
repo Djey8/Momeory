@@ -30,10 +30,47 @@
             </dev>
         </footer>
         <h3 class="center"> Bestliste seit 10.12.2022<br></h3>
-        <p class="main" style="line-height: 130%;">
-            <dev style="font-size: larger;"><u>Bestliste:<br><br></u></dev>
-            Jannis Frederick Kluess <br>
-        </p>
+        <div id="loaderboard-container">
+            <div id="switchButtons">
+                <span><button id="leaderboardbtn">leaderboard</button></span>
+                <span><button id="offlinebtn">offline</button></span>
+                <span><button id="onlinebtn">online</button></span>
+                
+            </div>
+            
+            <div id="leaderboard-head-container">
+                <span><h4 id="rankLabel">Rank</h4></span>
+                <span><h4 id="emailLabel">Email Address</h4></span>
+                <span><h4 id="winLabel">Win</h4></span>
+                <span><h4 id="lostLabel">Lost</h4></span>
+                <span><h4 id="wlLabel">Ratio</h4></span>
+                <span><h4 id="karmaLabel">Karma</h4></span>
+                    
+            </div>
+            <div id="offline-head-container">
+                <span>
+                    <h4 id="idLabel">ID</h4>
+                    <h4 id="movesLabel">moves</h4>
+                    <h4 id="startLabel">start</h4>
+                    <h4 id="endLabel">end</h4>
+                    <h4 id="timeLabel">time</h4>
+                    <h4 id="wonLabel">Won</h4>
+                </span>
+            </div>
+
+            <div id="online-head-container">
+                <span>
+                    <h4 id="idLabel">ID</h4>
+                    <h4 id="emailLabel">email</h4>
+                    <h4 id="movesLabel">moves</h4>
+                    <h4 id="startLabel">start</h4>
+                    <h4 id="endLabel">end</h4>
+                    <h4 id="timeLabel">time</h4>
+                    <h4 id="wonLabel">Won</h4>
+                </span>
+            </div>
+
+        </div>
         
     </body>
 </html>
