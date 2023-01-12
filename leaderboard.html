@@ -30,10 +30,173 @@
             </dev>
         </footer>
         <h3 class="center"> Bestliste seit 10.12.2022<br></h3>
-        <p class="main" style="line-height: 130%;">
-            <dev style="font-size: larger;"><u>Bestliste:<br><br></u></dev>
-            Jannis Frederick Kluess <br>
-        </p>
+        
+
+        <div id="loaderboard-container">
+
+            <table id="buttons-table">
+                <tr>
+                    <button id="leaderboardbtn">leaderboard</button>
+                    <button id="offlinebtn">offline-stats</button>
+                    <button id="onlinebtn">online-stats</button>
+                </tr>
+            </table>
+
+            <table id="leaderboard-table">
+                <tr>
+                    <th>Rank</th>
+                    <th>Email Adress</th>
+                    <th>Win</th>
+                    <th>Lost</th>
+                    <th>Ratio</th>
+                    <th>Karma</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>janniskluess@yahoo.de</td>
+                    <td>200</td>
+                    <td>2</td>
+                    <td>0,5</td>
+                    <td>600</td>
+                </tr>
+
+            </table>
+
+            <table id="online-table" class="hide">
+                <tr>
+                    <th>ID</th>
+                    <th>Email Adress</th>
+                    <th>Moves</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Time</th>
+                    <th>Won</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>janniskluess@yahoo.de</td>
+                    <td>0</td>
+                    <td>Wed, 11 Jan 2023 14:04:11 GMT</td>
+                    <td>Wed, 11 Jan 2023 14:04:14 GMT</td>
+                    <td>00:03</td>
+                    <td>True</td>
+                </tr>
+
+            </table>
+
+            <table id="offline-table" class="hide">
+                <tr>
+                    <th>ID</th>
+                    <th>Moves</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Time</th>
+                    <th>Won</th>
+                </tr>
+            </table>
+            
+            <h4 id="noUser">No User Logged In</h4>
+
+
+        </div>
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+            import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+            import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+              apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
+              authDomain: "memory-app-b17ee.firebaseapp.com",
+              projectId: "memory-app-b17ee",
+              storageBucket: "memory-app-b17ee.appspot.com",
+              messagingSenderId: "3637204477",
+              appId: "1:3637204477:web:1493290d44957d81997594",
+              measurementId: "G-XWPBGZWB4S",
+              databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const database = getDatabase(app);
+            const dbRef = ref(getDatabase(app));
+            const leaderboardTable = document.getElementById("leaderboard-table");
+            const onlineTable = document.getElementById("online-table");
+            const offlineTable = document.getElementById("offline-table");
+            const noUser = document.getElementById("noUser");
+
+
+            var offlineGames = [];
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in, see docs for a list of available properties
+                    // https://firebase.google.com/docs/reference/js/firebase.User
+                    const uid = user.uid;
+                    // ...
+
+                    get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            offlineGames = snapshot.val();
+                            noUser.classList.add("hide");
+                            //alert("games loaded");
+                        } else {
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+
+                } else {
+                    // User is signed out
+                    // ...
+                    noUser.classList.remove("hide");
+
+                }
+            });
+            
+            leaderboardbtn.addEventListener('click', (e) => {
+                leaderboardTable.classList.remove("hide");
+                onlineTable.classList.add("hide");
+                offlineTable.classList.add("hide");
+            })
+
+            offlinebtn.addEventListener('click', (e) => {
+                leaderboardTable.classList.add("hide");
+                onlineTable.classList.add("hide");
+                offlineTable.classList.remove("hide");
+                offlineTable.innerHTML = `<tr></tr><th>ID</th><th>Moves</th><th>Start</th><th>End</th><th>Time</th><th>Won</th></tr>`;
+                myFunction(offlineGames);
+            })
+
+            onlinebtn.addEventListener('click', (e) => {
+                leaderboardTable.classList.add("hide");
+                onlineTable.classList.remove("hide");
+                offlineTable.classList.add("hide");
+            })
+
+            function myFunction(game) {
+                for (let i = 0; i < offlineGames.length; i++) {
+                    const insertGame = `<tr><td>${i+1}</td><td>${offlineGames[i].moves}</td><td>${offlineGames[i].start}</td><td>${offlineGames[i].end}</td><td>${offlineGames[i].time}</td><td>${offlineGames[i].won}</td></tr>`
+                    offlineTable.innerHTML += insertGame;
+                }
+            }
+
+          </script>
+
         
     </body>
 </html>
+
