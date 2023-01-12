@@ -38,18 +38,19 @@ td {
 
 
 #leaderboardbtn, #offlinebtn, #onlinebtn {
-  width: 31.1%;
+  width: 30%;
   font-size: 19px;
-  border-width: 2px;
+  font-weight: bold;
   border-color: black;
   background-color: #74c6ef;
+  display: inline-block;
 }
 
 #offlinebtn {
-  margin-left: 3%;
+  margin-left: 4.5%;
 }
 #onlinebtn {
-  margin-left: 3%;
+  margin-left: 4.5%;
 }
 
 
