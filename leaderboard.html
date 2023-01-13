@@ -75,7 +75,6 @@
                     <th>Sieg</th>
                 </tr>
             </table>
-            
             <h4 id="noUser">Kein Benutzer angemeldet</h4>
 
 
@@ -188,7 +187,11 @@
             function myFunction(game) {
                 offlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
                 for (let i = 0; i < offlineGames.length; i++) {
-                    const insertGame = `<tr><td>${i+1}</td><td>${offlineGames[i].moves}</td><td>${offlineGames[i].start}</td><td>${offlineGames[i].end}</td><td>${offlineGames[i].time}</td><td>${offlineGames[i].won}</td></tr>`
+                    var win = "";
+                    if (offlineGames[i].won) {
+                        win = "x"
+                    }
+                    const insertGame = `<tr><td>${i+1}</td><td>${offlineGames[i].moves}</td><td>${offlineGames[i].start}</td><td>${offlineGames[i].end}</td><td>${offlineGames[i].time}</td><td>${win}</td></tr>`
                     offlineTable.innerHTML += insertGame;
                 }
             }
