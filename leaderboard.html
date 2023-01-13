@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
     <head>
         <meta charset="UTF-8">
-        <title>Leaderboard</title>
+        <title>Bestliste</title>
         <link rel ="stylesheet" type="text/css" href="CSS/formate.css"/>
         <script src="Skripte/Script1.js" type="text/javascript"></script>
     </head>
@@ -10,7 +10,7 @@
         <header>
             <div><a id="links" href="game.html" title="Back to Memory"> <img class="yin" src="Bilder/yinyang.jpg"></a></div>
             <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img src="Bilder/logo.png" width="250"></a></div>
-            <div><h1 id="mitte" class=center>Leaderboard</h1></div>
+            <div><h1 id="mitte" class=center>Bestliste</h1></div>
         </header>
         <h3 class="center"> Bestliste seit 10.12.2022<br></h3>
         
@@ -18,18 +18,18 @@
         <div id="loaderboard-container">
 
             <div id="buttons-tables">
-                <button id="leaderboardbtn">leaderboard</button>
-                <button id="offlinebtn">offline-stats</button>
-                <button id="onlinebtn">online-stats</button>
+                <button id="leaderboardbtn">Bestliste</button>
+                <button id="offlinebtn">Einzelspieler</button>
+                <button id="onlinebtn">Mehrspieler</button>
             </div>
 
             <table id="leaderboard-table">
                 <tr>
                     <th>Rank</th>
-                    <th>Email Adress</th>
-                    <th>Win</th>
-                    <th>Lost</th>
-                    <th>Ratio</th>
+                    <th>Email Adresse</th>
+                    <th>Gewonnen</th>
+                    <th>Verloren</th>
+                    <th>G/V</th>
                     <th>Karma</th>
                 </tr>
                 <tr>
@@ -37,7 +37,7 @@
                     <td>janniskluess@yahoo.de</td>
                     <td>200</td>
                     <td>2</td>
-                    <td>0,5</td>
+                    <td>0,99</td>
                     <td>600</td>
                 </tr>
 
@@ -46,12 +46,12 @@
             <table id="online-table" class="hide">
                 <tr>
                     <th>ID</th>
-                    <th>Email Adress</th>
-                    <th>Moves</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Time</th>
-                    <th>Won</th>
+                    <th>Email Adresse</th>
+                    <th>Züge</th>
+                    <th>Beginn</th>
+                    <th>Ende</th>
+                    <th>Zeit</th>
+                    <th>Sieg</th>
                 </tr>
                 <tr>
                     <td>1</td>
@@ -68,15 +68,15 @@
             <table id="offline-table" class="hide">
                 <tr>
                     <th>ID</th>
-                    <th>Moves</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Time</th>
-                    <th>Won</th>
+                    <th>Züge</th>
+                    <th>Beginn</th>
+                    <th>Ende</th>
+                    <th>Zeit</th>
+                    <th>Sieg</th>
                 </tr>
             </table>
             
-            <h4 id="noUser">No User Logged In</h4>
+            <h4 id="noUser">Kein Benutzer angemeldet</h4>
 
 
         </div>
@@ -176,7 +176,6 @@
                 leaderboardTable.classList.add("hide");
                 onlineTable.classList.add("hide");
                 offlineTable.classList.remove("hide");
-                offlineTable.innerHTML = `<tr></tr><th>ID</th><th>Moves</th><th>Start</th><th>End</th><th>Time</th><th>Won</th></tr>`;
                 myFunction(offlineGames);
             })
 
