@@ -130,7 +130,7 @@ const matrixGenerator = (cardValues, size = 4) => {
             if (winCount == Math.floor(cardValues.length / 2)) {
               let secondsValue = seconds < 10 ? `0${seconds}` : seconds;
               let minutesValue = minutes < 10 ? `0${minutes}` : minutes;
-              result.innerHTML = `<h2 id="won">Glückwunsch du hast gewonnen</h2>
+              result.innerHTML = `<h2 id="won">Glückwunsch</h2>
             <h4>Züge: <span id="moves-won">${movesCount}</span></h4>
             <h4>Zeit: <span id="time-won">${minutesValue}:${secondsValue}</span></h4>`;
               stopGame();
