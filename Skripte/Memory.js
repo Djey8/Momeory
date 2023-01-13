@@ -47,14 +47,14 @@ const timeGenerator = () => {
   //format time before displaying
   let secondsValue = seconds < 10 ? `0${seconds}` : seconds;
   let minutesValue = minutes < 10 ? `0${minutes}` : minutes;
-  timeValue.innerHTML = `<span>Time:</span><span id="time-content">${minutesValue}:${secondsValue}</span>`;
+  timeValue.innerHTML = `<span>Zeit:</span><span id="time-content">${minutesValue}:${secondsValue}</span>`;
 };
 
 
 //For calculating moves
 const movesCounter = () => {
   movesCount += 1;
-  moves.innerHTML = `<span>Moves:</span><span id="moves-content">${movesCount}</span>`;
+  moves.innerHTML = `<span>Züge:</span><span id="moves-content">${movesCount}</span>`;
 };
 
 
@@ -130,9 +130,9 @@ const matrixGenerator = (cardValues, size = 4) => {
             if (winCount == Math.floor(cardValues.length / 2)) {
               let secondsValue = seconds < 10 ? `0${seconds}` : seconds;
               let minutesValue = minutes < 10 ? `0${minutes}` : minutes;
-              result.innerHTML = `<h2 id="won">You Won</h2>
-            <h4>Moves: <span id="moves-won">${movesCount}</span></h4>
-            <h4>Time: <span id="time-won">${minutesValue}:${secondsValue}</span></h4>`;
+              result.innerHTML = `<h2 id="won">Glückwunsch du hast gewonnen</h2>
+            <h4>Züge: <span id="moves-won">${movesCount}</span></h4>
+            <h4>Zeit: <span id="time-won">${minutesValue}:${secondsValue}</span></h4>`;
               stopGame();
               const myEvent = new Event("myCustomEvent");
               document.dispatchEvent(myEvent);
@@ -157,7 +157,7 @@ const matrixGenerator = (cardValues, size = 4) => {
 startButton.addEventListener("click", () => {
   //delete old session
   clearInterval(interval);
-  timeValue.innerHTML = `<span>Time:</span><span id="time-content">00:00 </span>`;
+  timeValue.innerHTML = `<span>Zeit:</span><span id="time-content">00:00 </span>`;
   movesCount = 0;
   seconds = 0;
   minutes = 0;
@@ -170,7 +170,7 @@ startButton.addEventListener("click", () => {
   //Start timer
   interval = setInterval(timeGenerator, 1000);
   //initial moves
-  moves.innerHTML = `<span>Moves:</span> <span id="moves-content">${movesCount}</span>`;
+  moves.innerHTML = `<span>Züge:</span> <span id="moves-content">${movesCount}</span>`;
   initializer();
 });
 //Stop game

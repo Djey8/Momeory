@@ -1,191 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Memory</title>
-        <link rel ="stylesheet" type="text/css" href="CSS/formate.css"/>
-        <script src="Skripte/Script1.js" type="text/javascript"></script> 
-    </head>
-    <body>
-        <header>
-            <div>
-                <a id="links" href="profile.html" title="Profile" style="margin-left: 10px;"> <img class="profile" src="Bilder/profile.jpg"></a>
-                <a id="links" href="leaderboard.html" title="Leaderboard" style="margin-left: 10px;"> <img class="profile" src="Bilder/trophy.jpg"></a>
-                <a id="links" href="instructions.html" title="In    fo" style="margin-left: 10px;"> <img class="info" src="Bilder/info.png"></a>
+<html lang="de">
 
-            </div>
-            <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img width="250" src="Bilder/logo.png"></a></div>
-            <div><h1 id="mitte" class=center>JFK´s Memory</h1></div>
-        </header>
-        <footer class="bottom" >
-            <div style="margin-bottom: 8px; line-height: 15px;">
-                Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
-                Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
-            </div>
-            <hr class="trenn-linie" style="margin-bottom: 5px;"></hr> 
-            <dev>
-                Copyright 2022
-                <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
-                IT-Abteilung der Berufsschule Freising. <br>
-            </dev>
-            <dev>
-                <a href="index.html" title="Welcome">Welcome </a>
-                  |     
-                <a href="impressum.html" title="Impressum">Impressum</a>
-            </dev>
-        </footer>
-        <h3 id="kostenlos" class="center"> Jetzt kostenlos spielen<br></h3>
-        <div class="wrapper">
-            <div class="stats-container">
-              <div id="moves-count"></div>
-              <div id="time"></div>
-            </div>
-            <div class="game-container"></div>
-            <button id="stopbtn" class="hide" name="stopbtn">Stop Game</button>
-          </div>
-          <div class="controls-container">
-            <p id="result"></p>
-            <button id="start" name="start">Start Game</button>
-          </div>
-          <!-- Script -->
-          <script src="Skripte/Memory.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Memory</title>
+    <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
+    <script src="Skripte/Script1.js" type="text/javascript"></script>
+</head>
 
-          <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-            import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
-            import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-            import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+<body>
+    <header>
+        <div>
+            <a id="links" href="profile.html" title="Profil" style="margin-left: 10px;"> <img class="profile"
+                    src="Bilder/profile.jpg"></a>
+            <a id="links" href="leaderboard.html" title="Bestliste" style="margin-left: 10px;"> <img class="profile"
+                    src="Bilder/trophy.jpg"></a>
+            <a id="links" href="instructions.html" title="Anleitung" style="margin-left: 10px;"> <img class="info"
+                    src="Bilder/info.png"></a>
 
-            // TODO: Add SDKs for Firebase products that you want to use
-            // https://firebase.google.com/docs/web/setup#available-libraries
-          
-            // Your web app's Firebase configuration
-            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-            const firebaseConfig = {
-              apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
-              authDomain: "memory-app-b17ee.firebaseapp.com",
-              projectId: "memory-app-b17ee",
-              storageBucket: "memory-app-b17ee.appspot.com",
-              messagingSenderId: "3637204477",
-              appId: "1:3637204477:web:1493290d44957d81997594",
-              measurementId: "G-XWPBGZWB4S",
-              databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
-            };
-          
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
-            const auth = getAuth(app);
-            const user = auth.currentUser;
-            const database = getDatabase(app);
-            const dbRef = ref(getDatabase(app));
+        </div>
+        <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img width="250"
+                    src="Bilder/logo.png"></a></div>
+        <div>
+            <h1 id="mitte" class=center>JFK´s Memory</h1>
+        </div>
+    </header>
+    <footer class="bottom">
+        <div style="margin-bottom: 8px; line-height: 15px;">
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+        </div>
+        <hr class="trenn-linie" style="margin-bottom: 5px;">
+        </hr>
+        <dev>
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising. <br>
+        </dev>
+        <dev>
+            <a href="index.html" title="Welcome">Welcome </a>
+            |
+            <a href="impressum.html" title="Impressum">Impressum</a>
+        </dev>
+    </footer>
+    <h3 id="kostenlos" class="center"> Jetzt kostenlos spielen<br></h3>
+    <div class="wrapper">
+        <div class="stats-container">
+            <div id="moves-count"></div>
+            <div id="time"></div>
+        </div>
+        <div class="game-container"></div>
+        <button id="stopbtn" class="hide" name="stopbtn">Aufgeben</button>
+    </div>
+    <div class="controls-container">
+        <p id="result"></p>
+        <button id="start" name="start">Spiel starten</button>
+    </div>
+    <!-- Script -->
+    <script src="Skripte/Memory.js"></script>
 
-            
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-            
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    // User is signed in, see docs for a list of available properties
-                    // https://firebase.google.com/docs/reference/js/firebase.User
-                    const uid = user.uid;
-                    // ...
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
-                    var games = [];
-                    var new_game = {
-                            start: "not started yet",
-                            moves: "",
-                            time: "",
-                            end: "",
-                            won: false
-                    };
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
+            authDomain: "memory-app-b17ee.firebaseapp.com",
+            projectId: "memory-app-b17ee",
+            storageBucket: "memory-app-b17ee.appspot.com",
+            messagingSenderId: "3637204477",
+            appId: "1:3637204477:web:1493290d44957d81997594",
+            measurementId: "G-XWPBGZWB4S",
+            databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
+        };
 
-                    get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
-                        if (snapshot.exists()) {
-                            console.log(snapshot.val());
-                            //alert(snapshot.val())
-                            games = snapshot.val();
-                            //alert("games loaded");
-                        } else {
-                            console.log("No data available");
-                        }
-                    }).catch((error) => {
-                        //alert(error)
-                        console.error(error);
-                    });
-                    
-                    document.addEventListener("myCustomEvent", e => {
-                        const date = new Date();
-                        const time = document.getElementById("time-won");
-                        const moves = document.getElementById("moves-won");
-                        
-                        new_game.moves = moves.innerHTML;
-                        new_game.time = time.innerHTML;
-                        new_game.end = date.toUTCString();
-                        new_game.won = true;
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase(app));
 
-                        games.push(new_game);
 
-                        console.log(new_game);
-                        update(ref(database, `users/${user.uid}`), {
-                            offline_games: games
-                        })
-                        .then(() => {
-                            // Data saved successfully!
-                            //alert("secessfully saved data")
-                            get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    console.log(snapshot.val());
-                                    //alert(snapshot.val())
-                                    games = snapshot.val();
-                                    //alert("games loaded");
-                                    new_game = {
-                                        start: "not started yet",
-                                        moves: "",
-                                        time: "",
-                                        end: "",
-                                        won: false
-                                    };
-                                } else {
-                                    console.log("No data available");
-                                }
-                            }).catch((error) => {
-                                //alert(error)
-                                console.error(error);
-                            });
-                        })
-                        .catch((error) => {
-                            // The write failed...
-                            document.getElementById("errorMessage").innerText = error
-                            //alert(error)
-                        });
+
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                // ...
+
+                var games = [];
+                var new_game = {
+                    start: "",
+                    moves: "",
+                    time: "",
+                    end: "",
+                    won: false
+                };
+
+                get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        games = snapshot.val();
+                        //alert("games loaded");
+                    } else {
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+
+                document.addEventListener("myCustomEvent", e => {
+                    const date = new Date();
+                    const time = document.getElementById("time-won");
+                    const moves = document.getElementById("moves-won");
+
+                    new_game.moves = moves.innerHTML;
+                    new_game.time = time.innerHTML;
+                    new_game.end = date.toUTCString();
+                    new_game.won = true;
+
+                    games.push(new_game);
+
+                    console.log(new_game);
+                    update(ref(database, `users/${user.uid}`), {
+                        offline_games: games
                     })
-
-                    start.addEventListener('click', (e) => {
-                        const date = new Date();
-                        
-                        new_game.start = date.toUTCString();
-                        
-                        console.log(new_game);
-                    });
-                    
-
-                    stopbtn.addEventListener('click', (e) => {
-                        const date = new Date();
-                        const time = document.getElementById("time-content");
-                        const moves = document.getElementById("moves-content");
-                        
-                        new_game.moves = moves.innerHTML;
-                        new_game.time = time.innerHTML;
-                        new_game.end = date.toUTCString();
-                        new_game.won = false;
-                        
-                        games.push(new_game);
-
-                        console.log(new_game);
-                        update(ref(database, `users/${user.uid}`), {
-                            offline_games: games
-                        })
                         .then(() => {
                             // Data saved successfully!
                             //alert("secessfully saved data")
@@ -215,14 +168,71 @@
                             document.getElementById("errorMessage").innerText = error
                             //alert(error)
                         });
-                    }); 
+                })
 
-                } else {
-                    // User is signed out
-                    // ...
-                }
-            });
-          </script>
+                start.addEventListener('click', (e) => {
+                    const date = new Date();
 
-    </body>
+                    new_game.start = date.toUTCString();
+
+                    console.log(new_game);
+                });
+
+
+                stopbtn.addEventListener('click', (e) => {
+                    const date = new Date();
+                    const time = document.getElementById("time-content");
+                    const moves = document.getElementById("moves-content");
+
+                    new_game.moves = moves.innerHTML;
+                    new_game.time = time.innerHTML;
+                    new_game.end = date.toUTCString();
+                    new_game.won = false;
+
+                    games.push(new_game);
+
+                    console.log(new_game);
+                    update(ref(database, `users/${user.uid}`), {
+                        offline_games: games
+                    })
+                        .then(() => {
+                            // Data saved successfully!
+                            //alert("secessfully saved data")
+                            get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    games = snapshot.val();
+                                    //alert("games loaded");
+                                    new_game = {
+                                        start: "not started yet",
+                                        moves: "",
+                                        time: "",
+                                        end: "",
+                                        won: false
+                                    };
+                                } else {
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
+                        })
+                        .catch((error) => {
+                            // The write failed...
+                            document.getElementById("errorMessage").innerText = error
+                            //alert(error)
+                        });
+                });
+
+            } else {
+                // User is signed out
+                // ...
+            }
+        });
+    </script>
+
+</body>
+
 </html>
