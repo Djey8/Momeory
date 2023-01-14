@@ -16,12 +16,46 @@
         
 
         <div id="loaderboard-container">
-
+            
             <div id="buttons-tables">
                 <button id="leaderboardbtn">Bestliste</button>
                 <button id="offlinebtn">Einzelspieler</button>
                 <button id="onlinebtn">Mehrspieler</button>
             </div>
+
+            <h2 id="modusLabel">Bestliste</h2>
+
+            <table id="average-table" class="hide">
+                <tr>
+                    <th>&Oslash; Züge</th>
+                    <th>&Oslash; Zeit</th>
+                    <th>G/V</th>
+                </tr>
+                <tr>
+                    <td>25,5</td>
+                    <td>00:37</td>
+                    <td>0.99</td>
+                </tr>
+
+            </table>
+
+            <table id="highlight-table" class="hide">
+                
+                <tr>
+                    <th colspan="8">Bestes Spiel</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>janniskluess@yahoo.de</td>
+                    <td>0</td>
+                    <td>Wed, 11 Jan 2023 14:04:11 GMT</td>
+                    <td>Wed, 11 Jan 2023 14:04:14 GMT</td>
+                    <td>00:03</td>
+                    <td>True</td>
+                    <td>?</td>
+                </tr>
+
+            </table>
 
             <table id="leaderboard-table">
                 <tr>
@@ -52,6 +86,7 @@
                     <th>Ende</th>
                     <th>Zeit</th>
                     <th>Sieg</th>
+                    <th>Karma</th>
                 </tr>
                 <tr>
                     <td>1</td>
@@ -61,6 +96,7 @@
                     <td>Wed, 11 Jan 2023 14:04:14 GMT</td>
                     <td>00:03</td>
                     <td>True</td>
+                    <td>?</td>
                 </tr>
 
             </table>
@@ -73,6 +109,7 @@
                     <th>Ende</th>
                     <th>Zeit</th>
                     <th>Sieg</th>
+                    <th>Karma</th>
                 </tr>
             </table>
             <h4 id="noUser">Kein Benutzer angemeldet</h4>
@@ -130,7 +167,10 @@
             const leaderboardTable = document.getElementById("leaderboard-table");
             const onlineTable = document.getElementById("online-table");
             const offlineTable = document.getElementById("offline-table");
+            const averageTable = document.getElementById("average-table");
+            const highlightTable = document.getElementById("highlight-table");
             const noUser = document.getElementById("noUser");
+            const modusLabel = document.getElementById("modusLabel");
 
 
             var offlineGames = [];
@@ -169,22 +209,55 @@
                 leaderboardTable.classList.remove("hide");
                 onlineTable.classList.add("hide");
                 offlineTable.classList.add("hide");
+                averageTable.classList.add("hide");
+                highlightTable.classList.add("hide");
+                modusLabel.innerText = "Bestliste";
             })
 
             offlinebtn.addEventListener('click', (e) => {
                 leaderboardTable.classList.add("hide");
                 onlineTable.classList.add("hide");
                 offlineTable.classList.remove("hide");
-                myFunction(offlineGames);
+                averageTable.classList.remove("hide");
+                highlightTable.classList.remove("hide");
+                loadOfflineAverage();
+                loadOfflineHighlights();
+                loadOfflineGames(offlineGames);
+                modusLabel.innerText = "Einzelspieler";
             })
 
             onlinebtn.addEventListener('click', (e) => {
                 leaderboardTable.classList.add("hide");
                 onlineTable.classList.remove("hide");
                 offlineTable.classList.add("hide");
+                averageTable.classList.add("hide");
+                highlightTable.classList.add("hide");
+                modusLabel.innerText = "Mehrspieler";
             })
 
-            function myFunction(game) {
+            function loadOfflineHighlights() {
+                highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+                var bestPoints = 9999;
+                var winIndex = 0;
+                for (let i = 0; i < offlineGames.length; i++) {
+                    if (offlineGames[i].won) {
+                        var temp_points = parseInt(offlineGames[i].moves);
+                        const long_new_time = offlineGames[i].time;
+                        const timeArray = long_new_time.split(":");
+                        const minutes = parseInt(timeArray[0]);
+                        const seconds = parseInt(timeArray[1]);
+                        temp_points += minutes*60+seconds;
+                        if(temp_points<bestPoints){
+                            bestPoints = temp_points;
+                            winIndex = i;
+                        }
+                    }
+                }
+                const insertBestGame = `<tr><td>${winIndex+1}</td><td>${offlineGames[winIndex].moves}</td><td>${offlineGames[winIndex].start}</td><td>${offlineGames[winIndex].end}</td><td>${offlineGames[winIndex].time}</td><td>x</td></tr>`
+                highlightTable.innerHTML += insertBestGame;
+            }
+
+            function loadOfflineGames(game) {
                 offlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
                 for (let i = 0; i < offlineGames.length; i++) {
                     var win = "";
@@ -196,6 +269,55 @@
                 }
             }
 
+            function loadOfflineAverage() {
+                averageTable.innerHTML = "<tr><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
+                //calc avarage moves
+                var average = 0.0;
+                var count = 0;
+                for (let i = 0; i < offlineGames.length; i++) {
+                    if(offlineGames[i].won){
+                        average += parseFloat(offlineGames[i].moves);
+                        count++;
+                    }
+                }
+                average = average/count;
+                average = average.toFixed(2);
+
+                //calc G/V
+                var ratio = 0.0;
+                var win = 0;
+                var count = 0;
+                for (let i = 0; i < offlineGames.length; i++) {
+                    if(offlineGames[i].won){
+                        win ++;
+                    }
+                    count ++;
+                }
+
+                ratio = win / count;
+                ratio = ratio.toFixed(4);
+                ratio = ratio * 100;
+
+                //calc average time
+                var time = 0.0;
+                var count = 0;
+                for (let i = 0; i < offlineGames.length; i++) {
+                    const long_new_time = offlineGames[i].time;
+                    var timeArray = long_new_time.split(":");
+                    var minutes = parseInt(timeArray[0]);
+                    var seconds = parseInt(timeArray[1]);
+                    time += minutes*60+seconds;
+                    count++;
+                }
+                time = time/count;
+                const final_minutes = parseInt(time/60);
+                const final_seconds = parseFloat(time-(final_minutes*60)).toFixed(2);
+                const final_time = `${final_minutes}:${final_seconds}`
+
+                const insertGame = `<tr><td>${average}</td><td>${final_time}</td><td>${ratio} %</td></tr>`
+                averageTable.innerHTML += insertGame;
+            }
+            
           </script>
 
         

@@ -1,12 +1,19 @@
+#modusLabel {
+  margin-top: 25px;
+}
+
 table {
   border:1px solid black;
   padding: 5px;
   border-radius: 7px;
 }
+#bestGameLabel th {
+  background-color: transparent;
+}
 
 th {
   border:1px solid black;
-  background-color: aliceblue;
+  background-color: rgba(122, 122, 122, 0.5);
 }
 
 td {
@@ -14,7 +21,7 @@ td {
   text-align: center;
 }
 
-#leaderboard-table, #online-table, #offline-table{
+#leaderboard-table, #online-table, #offline-table, #average-table, #highlight-table{
   margin-top: 20px;
   width: 100%;
 }
