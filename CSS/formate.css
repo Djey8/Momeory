@@ -22,7 +22,7 @@ td {
   text-align: center;
 }
 
-#leaderboard-table, #online-table, #offline-table, #average-table, #highlight-table, #hosted-games, #createGame-container{
+#leaderboard-table, #online-table, #offline-table, #average-table, #highlight-table, #hosted-games, #invitation-container, #createGame-container, #lookPlayer-container {
   margin-top: 20px;
   width: 100%;
 }
@@ -43,23 +43,29 @@ td {
   margin-top: 20px;
 }
 
-#createGame-container{
+#createGame-container, #lookPlayer-container {
   width: 100%;
   border-radius: 10px;
   padding: 5px;
   background-color: white;
 }
 
-#gameNameLabel {
+#gameNameLabel, #lookPlayerLabel {
   margin-top: 25px;
   display: block;
+  font-size: 25px;
+  font-weight:bold;
 }
 
-#gameNameInput {
+#gameNameInput, #lookPlayerInput {
+  border-color: black;
+  border-width: 3px;
   margin-top: 10px;
-  width: 30%;
-  padding: 5px;
+  width: 50%;
+  padding: 10px;
   border-radius: 10px;
+  font-size: 20px;
+  text-align: center;
 }
 
 
@@ -437,8 +443,10 @@ footer {
   transform: rotateY(0deg);
 }
 .controls-container {
-  padding-left: 2%;
-  padding-right: 2%;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
   position: absolute;
   display: flex;
   align-items: center;
@@ -458,8 +466,8 @@ footer {
 }
 
 #backbtn-container {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   float: left;
 }
 #online-back {
@@ -469,16 +477,17 @@ footer {
 
 #lookGamebtn, #createGamebtn, #invitePlayerbtn, #invitationbtn {
   display: block;
-  width: 30%;
-  margin-left: 35%;
+  width: 80%;
+  margin-left: 10%;
   margin-top: 10px;
-  padding: 5px;
+  padding: 15px;
   border-radius: 10px;
   background-color: white;
   font-size: 18px;
+  font-weight: bold;
 }
 
-#newGamebtn {
+#newGamebtn, #lookPlayerbtn {
   display: block;
   width: 20%;
   margin-left: 40%;
@@ -489,6 +498,7 @@ footer {
   background-color: #196408;
   margin-top: 2.5%;
   margin-bottom: 20px;
+  font-weight: bold;
 }
 
 #lookgame-conatiner {
@@ -506,7 +516,7 @@ footer {
   text-align: center;
 }
 
-#hosted-games {
+#hosted-games, #invitation-container {
   width: 100%;
 }
 
