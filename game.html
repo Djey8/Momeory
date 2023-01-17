@@ -17,44 +17,86 @@
                     src="Bilder/trophy.jpg"></a>
             <a id="links" href="instructions.html" title="Anleitung" style="margin-left: 10px;"> <img class="info"
                     src="Bilder/info.png"></a>
-
         </div>
         <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img width="250"
                     src="Bilder/logo.png"></a></div>
         <div>
-            <h1 id="mitte" class=center>JFK´s Memory</h1>
+            <h1 class=center>JFK´s Memory</h1>
         </div>
     </header>
-    <footer class="bottom">
-        <div style="margin-bottom: 8px; line-height: 15px;">
-            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
-            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
-        </div>
-        <hr class="trenn-linie" style="margin-bottom: 5px;">
-        </hr>
-        <dev>
-            Copyright 2022
-            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
-            IT-Abteilung der Berufsschule Freising. <br>
-        </dev>
-        <dev>
-            <a href="index.html" title="Welcome">Welcome </a>
-            |
-            <a href="impressum.html" title="Impressum">Impressum</a>
-        </dev>
-    </footer>
     <h3 id="kostenlos" class="center"> Jetzt kostenlos spielen<br></h3>
-    <div class="wrapper">
+    <div id="wrapper" class="hide">
         <div class="stats-container">
             <div id="moves-count"></div>
             <div id="time"></div>
         </div>
         <div class="game-container"></div>
-        <button id="stopbtn" class="hide" name="stopbtn">Aufgeben</button>
+        <button id="stopbtn" class="" name="stopbtn">Aufgeben</button>
     </div>
-    <div class="controls-container">
+    <div id="controlsContainer" class="controls-container">
         <p id="result"></p>
         <button id="start" name="start">Spiel starten</button>
+        <button id="multiplayerbtn" name="start">Mehrspieler</button>
+    </div>
+    
+    <div id="onlineContainer" class="online-container hide">
+        <div id="backbtn-container"><button id="backbtn"><img id="online-back" src="Bilder/backbtn.png"></button></div>
+        <h2 style="margin-left: 30%; margin-right: 30%; margin-bottom: 20px;">Mehrspieler</h2>
+        <hr style="height: 5px; background-color: black; border-radius: 2px; border-color: black;">
+        <div id="button-box" class="hide" style="margin-top: 30px;">
+            <button id="lookGamebtn">Spiel suchen</button>
+            <button id="createGamebtn" style="margin-bottom: 25px;">Spiel erstellen</button>
+            <hr style="height: 5px; background-color: black; border-radius: 2px; border-color: black;">
+            <button id="invitePlayerbtn" style="margin-top: 25px;">Spieler einladen</button>
+            <button id="invitationbtn" style="margin-bottom: 25px;">Einladungen</button> 
+        </div>
+        <table id="hosted-games" class="hide">
+            <tr><th colspan="5" style="padding: 10px;">Spiel suchen</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Spielname</th>
+                <th>Spieler</th>
+                <th>Sucht seit</th>
+                <th>Aktion</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>this too shall pass</td>
+                <td>janniskluess@yahoo.de</td>
+                <td>Tue, 17.01.2023 11:29:34 GMT</td>
+                <td><button style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td>
+            </tr>
+        </table>
+
+        <div id="createGame-container" class="hide">
+            <label id="gameNameLabel" for="nameLabel">Spielname</label>
+            <input id="gameNameInput" type="text" name="nameLabel" placholder="Enter Email" required>
+            <button id="newGamebtn">Spiel erstellen</button>
+        </div>
+
+        <div id="lookPlayer-container" class="hide">
+            <label id="lookPlayerLabel" for="lookPlayerLabel">Spieler suchen</label>
+            <input id="lookPlayerInput" type="text" name="lookPlayerLabel" placholder="Enter Email" required>
+            <button id="lookPlayerbtn">Einladung seden</button>
+        </div>
+        <table id="invitation-container" class="hide">
+            <tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Message</th>
+                <th>Spieler</th>
+                <th>Empfangen</th>
+                <th>Aktion</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Wollen wir Memory spielen?</td>
+                <td>janniskluess@yahoo.de</td>
+                <td>Tue, 17.01.2023 11:29:34 GMT</td>
+                <td><button style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td>
+            </tr>
+        </table>
+
     </div>
     <!-- Script -->
     <script src="Skripte/Memory.js"></script>
@@ -90,9 +132,21 @@
         const database = getDatabase(app);
         const dbRef = ref(getDatabase(app));
 
+        const kostenlos = document.getElementById("kostenlos");
+        const controlsContainer = document.getElementById("controlsContainer");
+        const wrapper = document.getElementById("wrapper");
 
+        const onlineContainer = document.getElementById("onlineContainer");
+        const buttonBox = document.getElementById("button-box");
+        const hostedGames = document.getElementById("hosted-games");
+        const createGame = document.getElementById("createGame-container");
+        const invitePlayer = document.getElementById("lookPlayer-container");
+        const invitations = document.getElementById("invitation-container");
 
+        const multiplayerbtn = document.getElementById("multiplayerbtn");
 
+        const footer = document.getElementById("gameFooter");
+        
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in, see docs for a list of available properties
@@ -108,6 +162,8 @@
                     end: "",
                     won: false
                 };
+
+                multiplayerbtn.classList.remove("hide");
 
                 get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
                     if (snapshot.exists()) {
@@ -229,9 +285,92 @@
             } else {
                 // User is signed out
                 // ...
+                multiplayerbtn.classList.add("hide");
             }
         });
+
+
+        multiplayerbtn.addEventListener('click', (e) => {
+            controlsContainer.classList.add("hide");
+            wrapper.classList.add("hide");
+            onlineContainer.classList.remove("hide");
+            buttonBox.classList.remove("hide");
+            kostenlos.classList.add("hide");
+            footer.classList.replace("bottom", "endBottom");
+        });
+
+        start.addEventListener('click', (e) => {
+            controlsContainer.classList.add("hide");
+            wrapper.classList.remove("hide");
+            footer.classList.add("hide");
+        });
+
+        stopbtn.addEventListener('click', (e) => {
+            controlsContainer.classList.remove("hide");
+            wrapper.classList.add("hide");
+            footer.classList.remove("hide");
+        });
+
+        backbtn.addEventListener('click', (e) => {
+            if(buttonBox.classList.contains("hide") == false) {
+                onlineContainer.classList.add("hide");
+                controlsContainer.classList.remove("hide");
+                kostenlos.classList.remove("hide");
+                footer.classList.replace("endBottom", "bottom");
+            } else {
+                createGame.classList.add("hide");
+                hostedGames.classList.add("hide");
+                invitePlayer.classList.add("hide");
+                invitations.classList.add("hide");
+                buttonBox.classList.remove("hide");
+            } 
+        });
+
+        lookGamebtn.addEventListener('click', (e) => {
+            buttonBox.classList.add("hide");
+            hostedGames.classList.remove("hide");
+        });
+
+        createGamebtn.addEventListener('click', (e) => {
+            buttonBox.classList.add("hide");
+            createGame.classList.remove("hide");
+        });
+
+        invitePlayerbtn.addEventListener('click', (e) => {
+            buttonBox.classList.add("hide");
+            invitePlayer.classList.remove("hide");
+        });
+
+        invitationbtn.addEventListener('click', (e) => {
+            buttonBox.classList.add("hide");
+            invitations.classList.remove("hide");
+        });
+
+        newGamebtn.addEventListener('click', (e) => {
+            alert("test newGamebtn")
+        });
+
+
     </script>
+
+<footer id="gameFooter" class="bottom">
+    <div style="margin-bottom: 8px; line-height: 15px;">
+        Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+        Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+    </div>
+    <hr class="trenn-linie" style="margin-bottom: 5px;">
+    </hr>
+    <dev>
+        Copyright 2022
+        <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+        IT-Abteilung der Berufsschule Freising. <br>
+    </dev>
+    <dev>
+        <a href="index.html" title="Welcome">Welcome </a>
+        |
+        <a href="impressum.html" title="Impressum">Impressum</a>
+    </dev>
+</footer>
 
 </body>
 
