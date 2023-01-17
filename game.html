@@ -17,7 +17,6 @@
                     src="Bilder/trophy.jpg"></a>
             <a id="links" href="instructions.html" title="Anleitung" style="margin-left: 10px;"> <img class="info"
                     src="Bilder/info.png"></a>
-
         </div>
         <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img width="250"
                     src="Bilder/logo.png"></a></div>
@@ -44,17 +43,54 @@
         </dev>
     </footer>
     <h3 id="kostenlos" class="center"> Jetzt kostenlos spielen<br></h3>
-    <div class="wrapper">
+    <div id="wrapper" class="hide">
         <div class="stats-container">
             <div id="moves-count"></div>
             <div id="time"></div>
         </div>
         <div class="game-container"></div>
-        <button id="stopbtn" class="hide" name="stopbtn">Aufgeben</button>
+        <button id="stopbtn" class="" name="stopbtn">Aufgeben</button>
     </div>
-    <div class="controls-container">
+    <div id="controlsContainer" class="controls-container">
         <p id="result"></p>
         <button id="start" name="start">Spiel starten</button>
+        <button id="multiplayerbtn" name="start">Mehrspieler</button>
+    </div>
+    
+    <div id="onlineContainer" class="online-container hide">
+        <div id="backbtn-container"><button id="backbtn"><img id="online-back" src="Bilder/backbtn.png"></button></div>
+        <h2>Mehrspieler</h2>
+        <div id="button-box" class="hide">
+            <button id="lookGamebtn">Spiel suchen</button>
+            <button id="createGamebtn">Spiel erstellen</button>
+            <button id="invitePlayerbtn">Spieler einladen</button>
+            <button id="invitationbtn">Einladungen</button> 
+        </div>
+        <table id="hosted-games" class="hide">
+            <tr><th colspan="5" style="padding: 10px;">Spiel suchen</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Spieler</th>
+                <th>Seit</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>this too shall pass</td>
+                <td>janniskluess@yahoo.de</td>
+                <td>Tue, 17.01.2023 11:29:34 GMT</td>
+                <td><button>beitreten</button></td>
+            </tr>
+        </table>
+
+        <div id="createGame-container" class="hide">
+            <h3>Neues Spiel erstellen</h3>
+            <label id="gameNameLabel" for="nameLabel">Name</label>
+            <input id="gameNameInput" type="text" name="nameLabel" placholder="Enter Email" required>
+            <button id="newGamebtn">erstellen</button>
+        </div>
+
     </div>
     <!-- Script -->
     <script src="Skripte/Memory.js"></script>
@@ -89,7 +125,6 @@
         const user = auth.currentUser;
         const database = getDatabase(app);
         const dbRef = ref(getDatabase(app));
-
 
 
 
@@ -231,6 +266,62 @@
                 // ...
             }
         });
+
+        const onlineContainer = document.getElementById("onlineContainer");
+        const buttonBox = document.getElementById("button-box");
+        const hostedGames = document.getElementById("hosted-games");
+        const controlsContainer = document.getElementById("controlsContainer");
+        const wrapper = document.getElementById("wrapper");
+        const createGame = document.getElementById("createGame-container");
+
+        multiplayerbtn.addEventListener('click', (e) => {
+            controlsContainer.classList.add("hide");
+            wrapper.classList.add("hide");
+            onlineContainer.classList.remove("hide");
+            buttonBox.classList.remove("hide");
+        });
+
+        start.addEventListener('click', (e) => {
+            controlsContainer.classList.add("hide");
+            wrapper.classList.remove("hide");
+        });
+
+        stopbtn.addEventListener('click', (e) => {
+            controlsContainer.classList.remove("hide");
+            wrapper.classList.add("hide");
+        });
+
+        backbtn.addEventListener('click', (e) => {
+            if(buttonBox.classList.contains("hide") == false) {
+                onlineContainer.classList.add("hide");
+                controlsContainer.classList.remove("hide");
+            } else {
+                createGame.classList.add("hide");
+                hostedGames.classList.add("hide");
+                buttonBox.classList.remove("hide");
+            } 
+        });
+
+        lookGamebtn.addEventListener('click', (e) => {
+            buttonBox.classList.add("hide");
+            hostedGames.classList.remove("hide");
+        });
+
+        createGamebtn.addEventListener('click', (e) => {
+            buttonBox.classList.add("hide");
+            createGame.classList.remove("hide");
+        });
+
+        invitePlayerbtn.addEventListener('click', (e) => {
+            alert("test invitePlayerbtn")
+        });
+
+        invitationbtn.addEventListener('click', (e) => {
+            alert("test invitationbtn")
+        });
+
+
+
     </script>
 
 </body>
