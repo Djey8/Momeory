@@ -24,24 +24,6 @@
             <h1 id="mitte" class=center>JFK´s Memory</h1>
         </div>
     </header>
-    <footer class="bottom">
-        <div style="margin-bottom: 8px; line-height: 15px;">
-            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
-            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
-        </div>
-        <hr class="trenn-linie" style="margin-bottom: 5px;">
-        </hr>
-        <dev>
-            Copyright 2022
-            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
-            IT-Abteilung der Berufsschule Freising. <br>
-        </dev>
-        <dev>
-            <a href="index.html" title="Welcome">Welcome </a>
-            |
-            <a href="impressum.html" title="Impressum">Impressum</a>
-        </dev>
-    </footer>
     <h3 id="kostenlos" class="center"> Jetzt kostenlos spielen<br></h3>
     <div id="wrapper" class="hide">
         <div class="stats-container">
@@ -85,8 +67,7 @@
         </table>
 
         <div id="createGame-container" class="hide">
-            <h3>Neues Spiel erstellen</h3>
-            <label id="gameNameLabel" for="nameLabel">Name</label>
+            <label id="gameNameLabel" for="nameLabel">Spielname</label>
             <input id="gameNameInput" type="text" name="nameLabel" placholder="Enter Email" required>
             <button id="newGamebtn">erstellen</button>
         </div>
@@ -126,7 +107,15 @@
         const database = getDatabase(app);
         const dbRef = ref(getDatabase(app));
 
-
+        const onlineContainer = document.getElementById("onlineContainer");
+        const buttonBox = document.getElementById("button-box");
+        const hostedGames = document.getElementById("hosted-games");
+        const controlsContainer = document.getElementById("controlsContainer");
+        const wrapper = document.getElementById("wrapper");
+        const createGame = document.getElementById("createGame-container");
+        const kostenlos = document.getElementById("kostenlos");
+        const footer = document.getElementById("gameFooter");
+        const multiplayerbtn = document.getElementById("multiplayerbtn");
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -143,6 +132,8 @@
                     end: "",
                     won: false
                 };
+
+                multiplayerbtn.classList.remove("hide");
 
                 get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
                     if (snapshot.exists()) {
@@ -264,37 +255,38 @@
             } else {
                 // User is signed out
                 // ...
+                multiplayerbtn.classList.add("hide");
             }
         });
 
-        const onlineContainer = document.getElementById("onlineContainer");
-        const buttonBox = document.getElementById("button-box");
-        const hostedGames = document.getElementById("hosted-games");
-        const controlsContainer = document.getElementById("controlsContainer");
-        const wrapper = document.getElementById("wrapper");
-        const createGame = document.getElementById("createGame-container");
 
         multiplayerbtn.addEventListener('click', (e) => {
             controlsContainer.classList.add("hide");
             wrapper.classList.add("hide");
             onlineContainer.classList.remove("hide");
             buttonBox.classList.remove("hide");
+            kostenlos.classList.add("hide");
+            footer.classList.replace("bottom", "endBottom");
         });
 
         start.addEventListener('click', (e) => {
             controlsContainer.classList.add("hide");
             wrapper.classList.remove("hide");
+            footer.classList.add("hide");
         });
 
         stopbtn.addEventListener('click', (e) => {
             controlsContainer.classList.remove("hide");
             wrapper.classList.add("hide");
+            footer.classList.remove("hide");
         });
 
         backbtn.addEventListener('click', (e) => {
             if(buttonBox.classList.contains("hide") == false) {
                 onlineContainer.classList.add("hide");
                 controlsContainer.classList.remove("hide");
+                kostenlos.classList.remove("hide");
+                footer.classList.replace("endBottom", "bottom");
             } else {
                 createGame.classList.add("hide");
                 hostedGames.classList.add("hide");
@@ -323,6 +315,25 @@
 
 
     </script>
+
+<footer id="gameFooter" class="bottom">
+    <div style="margin-bottom: 8px; line-height: 15px;">
+        Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+        Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+    </div>
+    <hr class="trenn-linie" style="margin-bottom: 5px;">
+    </hr>
+    <dev>
+        Copyright 2022
+        <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+        IT-Abteilung der Berufsschule Freising. <br>
+    </dev>
+    <dev>
+        <a href="index.html" title="Welcome">Welcome </a>
+        |
+        <a href="impressum.html" title="Impressum">Impressum</a>
+    </dev>
+</footer>
 
 </body>
 
