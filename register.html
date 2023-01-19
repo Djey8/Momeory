@@ -12,46 +12,45 @@
             <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img src="Bilder/logo.png" width="250"></a></div>
             <div><h1 id="mitte" class=center>Profil</h1></div>
         </header>
-        <footer class="bottom">
-            <div style="margin-bottom: 8px; line-height: 15px;">
-                Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
-                Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
+        <div id="register-back">
+            <div id="register-container">
+                <h2 style="padding-top: 5%; font-weight: bold;">Registrieren</h2>
+                <hr>
+                <div id="emailContainer">
+                    <span>
+                        <label for="email" id="emailLabel"><b>Email</b></label>    
+                        <input type="text" placholder="Enter Email" name="email" id="emailregister" required>
+                    </span>
+                </div>
+                <div id="pswContainer">
+                    <span>
+                        <label for="password" id="pswLabel"><b>Passwort</b></label>
+                        <input type="password" placeholder="Password" name="psw" id="psw" required>
+                    </span>
+                </div>
+                <div id="errorMessageContainer"><p id="errorMessage"></p></div>
+                <hr>
+                <button type="button" id="Registerbtn" name="Registerbtn" class="Registerbtn">Registrieren</button>
             </div>
-            <hr class="trenn-linie" style="margin-bottom: 5px;"></hr> 
-            <dev>
-                Copyright 2022
-                <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
-                IT-Abteilung der Berufsschule Freising. <br>
-            </dev>
-            <dev>
-                <a href="index.html" title="Welcome">Welcome </a>
-                  |     
-                <a href="impressum.html" title="Impressum">Impressum</a>
-            </dev>
-        </footer>
-        
-        <div class="container" id="register-container">
-            <h2>Registrieren</h2>
-            <hr>
-            <div id="emailContainer">
-                <span>
-                    <label for="email" id="emailLabel"><b>Email</b></label>    
-                    <input type="text" placholder="Enter Email" name="email" id="emailregister" required>
-                </span>
-            </div>
-            <div id="pswContainer">
-                <span>
-                    <label for="password" id="pswLabel"><b>Passwort</b></label>
-                    <input type="password" placeholder="Password" name="psw" id="psw" required>
-                </span>
-            </div>
-            <div id="errorMessageContainer"><p id="errorMessage"></p></div>
-            
-            <hr>
-
-            <button type="button" id="Registerbtn" name="submitData" class="loginbtn">Registrieren</button>
-            
+            <footer class="endBottom">
+                <div style="margin-bottom: 8px; line-height: 15px;">
+                    Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+                    Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
+                </div>
+                <hr class="trenn-linie" style="margin-bottom: 5px;"></hr> 
+                <dev>
+                    Copyright 2022
+                    <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+                    IT-Abteilung der Berufsschule Freising. <br>
+                </dev>
+                <dev>
+                    <a href="index.html" title="Welcome">Welcome </a>
+                      |     
+                    <a href="impressum.html" title="Impressum">Impressum</a>
+                </dev>
+            </footer>
         </div>
+        
 
         <script type="module">
             // Import the functions you need from the SDKs you need
@@ -95,13 +94,12 @@
                 });
             const database = getDatabase(app);
 
-
-
             Registerbtn.addEventListener('click', (e) => {
 
-                var email = document.getElementById('email').value;
+                var email = document.getElementById('emailregister').value;
                 var password = document.getElementById('psw').value;
                 var lgDate = new Date();
+                
                 //alert(lgDate)
                 
 
