@@ -78,6 +78,7 @@ td {
   border-color: black;
   background-color: #74c6ef;
   display: inline-block;
+  color: black;
 }
 
 #offlinebtn {
@@ -525,6 +526,7 @@ footer {
   border-radius: 10px;
   border-width: 0px;
   font-size: 1.3em;
+  color: black;
 }
 
 #stopbtn {
