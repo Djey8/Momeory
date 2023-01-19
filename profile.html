@@ -12,6 +12,7 @@
             <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img src="Bilder/logo.png" width="250"></a></div>
             <div><h1 id="mitte" class=center>Profil</h1></div>
         </header>
+        
         <footer class="bottom">
             <div style="margin-bottom: 8px; line-height: 15px;">
                 Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
@@ -30,37 +31,39 @@
             </dev>
         </footer>
         
-        <div class="hide" id="login-container">
-            <h2>Login</h2>
-            <hr>
-            <div id="emailContainer">
-                <span>
-                    <label for="email" id="emailLabel"><b>Email</b></label>    
-                    <input type="text" placholder="Enter Email" name="email" id="email" required>
-                </span>
-            </div>
-            <div id="pswContainer">
-                <span>
-                    <label for="password" id="pswLabel"><b>Password</b></label>
-                    <input type="password" placeholder="Password" name="psw" id="psw" required>
-                </span>
-            </div>
-
-            <div id="errorMessageContainer"><p id="errorMessage"></p></div>
-            
-            <hr>
-
-            <button type="button" id="submitData" name="submitData" class="loginbtn">Anmelden</button>
-            <div id="Register-Container"> <a id="goToRegister" href="register.html">Neuen Account erstellen</a></div>
-            
-        </div>
         <div id="profile-back">
+            <div class="hide" id="login-container">
+                <h2 style="padding-top: 5%;">Login</h2>
+                <hr>
+                <div id="emailContainer">
+                    <span>
+                        <label for="email" id="emailLabel"><b>Email</b></label>    
+                        <input type="text" placholder="Enter Email" name="email" id="email" required>
+                    </span>
+                </div>
+                <div id="pswContainer">
+                    <span>
+                        <label for="password" id="pswLabel"><b>Password</b></label>
+                        <input type="password" placeholder="Password" name="psw" id="psw" required>
+                    </span>
+                </div>
+    
+                <div id="errorMessageContainer"><p id="errorMessage"></p></div>
+                
+                <hr>
+    
+                <button type="button" id="submitData" name="submitData" class="loginbtn">Anmelden</button>
+                <button tpye="button" id="goToRegister" name="goToRegister" class="gotToRegisterbtn">Neuen Account erstellen</button>
+                
+            </div>
             <div class="profile-container" id="profile">
-                <h2 id="pemailLabel">Email Adresse</h2>
+                <h2 id="pemailLabel" style="font-size: larger;">Email Adresse</h2>
                 <p id="pemail">Kein Benutzer angemeldet</p>
                 <button type="button" id="logoutbtn" name="logoutbtn" class="loginbtn">Abmelden</button>
             </div>
         </div>
+
+        
 
         
 
@@ -126,6 +129,9 @@
                 }
             });
                          
+            goToRegister.addEventListener('click', (e) => {
+                window.location.href = "register.html"
+            });
 
             submitData.addEventListener('click', (e) => {
 

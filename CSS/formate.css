@@ -105,18 +105,6 @@ td {
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 }
 
-#login-container{
-  box-sizing: content-box;
-  width: 400px;
-  padding: 30px;
-  background-color: #ffffff;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  left: 50%;
-  top: 50%;
-  border-radius: 0.6em;
-  box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
-}
 
 #profile-back{
   position:fixed;
@@ -125,25 +113,37 @@ td {
 
   margin-top: 10px;
   left:0;
-
+  
   width: 100%;
   height: 100%;
 }
 
 .profile-container{
   position: absolute;
-  transform: translate(-50%, -50%);
-  top: 25%;
+  transform: translate(-50%, 0%);
+  top: 25px;
   left: 50%;
-  width: 300px;
-  height: 300px;
+  width: 25%;
+  height: 0;
+  padding-bottom: 25%;
   background-color: #ffffff;
   border-radius: 100%;
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 }
 
+#login-container{
+  position: absolute;
+  transform: translate(-50%, 0%);
+  top: 30px;
+  left: 50%;
+  width: 60%;
+  background-color: #ffffff;
+  border-radius: 0.6em;
+  box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
+}
+
 #pemailLabel {
-  margin-top: 70px;
+  margin-top: 32%;
 }
 
 #register-container {
@@ -165,18 +165,29 @@ p {
   font-size: 15px;
 }
 
+#emailLabel, #pswLabel{
+  margin-left: 5%;
+  width: 100px;
+}
 
-
-#email {
+#email, #psw {
   margin-bottom: 20px;
-  margin-top: 40px;
-  margin-left: 50px;
   border-color: black;
   border-width: 2px;
   border-radius: 5px;
   padding: 4px;
   margin-right: 0px;
-  width: 260px;
+  width: 70%;
+}
+
+#email{
+  margin-top: 40px;
+  margin-left: 50px;
+}
+
+#psw{
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 #emailregister{
@@ -191,28 +202,12 @@ p {
   width: 260px;
 }
 
-#emailLabel{
-  text-align: center;
-}
 
 #emailContainer {
   margin-left: 15px;
 }
 
 
-#psw {
-  margin-left: 10px;
-  border-color: black;
-  border-width: 2px;
-  border-radius: 5px;
-  padding: 4px;
-  margin-bottom: 30px;
-  width: 260px;
-}
-
-#pswLabel {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 #pswContainer {
   margin-left: 15px;
@@ -232,8 +227,8 @@ p {
 
 #logoutbtn{
   margin-top: 25px;
-  margin-left: 20%;
-  width: 60%;
+  margin-left: 25%;
+  width: 50%;
   background-color: #8f0d0d;
   border-radius: 15px;
   color: white;
@@ -254,18 +249,18 @@ p {
   font-size: 20px;
 }
 
-#Register-Container {
-  margin-top: 25px;
-  margin-left: 19%;
-}
 
-a#goToRegister {
-  padding: 7px;
-  width: max-content;
-  background-color: rgb(255, 136, 0);
-  border-radius: 5px;
-  color: black;
+#goToRegister {
+  margin-top: 25px;
+  margin-left: 20%;
+  margin-bottom: 25px;
+  width: 60%;
+  background-color: #c46b06;
+  border-radius: 15px;
+  color: white;
   font-weight: bold;
+  font-size: 20px;
+  padding: 10px;
 }
 
 #links { float: left; }
