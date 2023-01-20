@@ -10,6 +10,7 @@ table {
 }
 #bestGameLabel th {
   background-color: transparent;
+  font-family: "garamond-bold";
 }
 
 th {
@@ -55,11 +56,12 @@ td {
   display: block;
   font-size: 25px;
   font-weight:bold;
+  font-family: "garamond-bold";
 }
 
 #gameNameInput, #lookPlayerInput {
   border-color: black;
-  border-width: 3px;
+  border-width: 1%;
   margin-top: 10px;
   width: 50%;
   padding: 10px;
@@ -109,12 +111,13 @@ td {
 
 
 .profile-container{
-  margin-top: 20px;
-  width: 95%;
-  margin-left: 2.5%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
   background-color: white;
-  padding: 30px;
-  border-radius: 15px;
+  margin-top: 5%;
+  border-radius: 50%;
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 }
 
@@ -139,8 +142,14 @@ td {
 #pemailLabel {
   padding-top: 50px;
   margin-top: 25px;
+  font-family: "garamond-bold";
 }
 
+.headprofile {
+  padding-top: 25px; 
+  font-weight:bolder; 
+  font-family: "garamond-bold";
+}
 
 h2 {
   text-align: center;
@@ -160,12 +169,13 @@ p {
 #emailLabel, #pswLabel{
   margin-left: 5%;
   width: 100px;
+  font-family: "garamond-bold";
 }
 
 #email, #psw, #emailregister {
   margin-bottom: 20px;
   border-color: black;
-  border-width: 2px;
+  border-width: 1%;
   border-radius: 15px;
   padding: 1.4%;
   margin-right: 0px;
@@ -174,7 +184,7 @@ p {
 
 #email, #emailregister{
   margin-top: 40px;
-  margin-left: 45px;
+  margin-left: 50px;
 }
 
 #psw{
@@ -204,6 +214,8 @@ p {
   font-weight: bold;
   font-size: 20px;
   padding: 1.5%;
+  border-width: 1%;
+  border-color: black;
 }
 
 #logoutbtn{
@@ -219,6 +231,18 @@ p {
   margin-bottom: 50px;
 }
 
+.linieprofile {
+  margin-top: 25px;
+  width: 95%;
+  margin-left: 2.5%;
+  background-color: black;
+  height: 2%;
+  border-color: black;
+  border-width: 3px;
+  border-radius: 10%;
+
+}
+
 #Registerbtn {
   padding: 1.5%;
   margin-top: 20px;
@@ -230,6 +254,8 @@ p {
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 25px;
+  border-width: 1%;
+  border-color: black;
 }
 
 
@@ -237,6 +263,8 @@ p {
   margin-top: 25px;
   margin-left: 20%;
   margin-bottom: 25px;
+  border-width: 1%;
+  border-color: #000000;
   width: 60%;
   background-color: #c46b06;
   border-radius: 15px;
@@ -244,6 +272,7 @@ p {
   font-weight: bold;
   font-size: 20px;
   padding: 1.5%;
+  color: black;
 }
 
 #links { float: left; }
@@ -329,7 +358,7 @@ h1 {
 }
 
 .endBottom {
-  margin-top: 30px;
+  margin-top: 5%;
 }
 
 
