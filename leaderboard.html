@@ -260,11 +260,12 @@
             function loadOfflineGames(game) {
                 offlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
                 for (let i = 0; i < offlineGames.length; i++) {
+                    var z = offlineGames.length-i-1;
                     var win = "";
-                    if (offlineGames[i].won) {
+                    if (offlineGames[z].won) {
                         win = "x"
                     }
-                    const insertGame = `<tr><td>${i+1}</td><td>${offlineGames[i].moves}</td><td>${offlineGames[i].start}</td><td>${offlineGames[i].end}</td><td>${offlineGames[i].time}</td><td>${win}</td></tr>`
+                    const insertGame = `<tr><td>${z+1}</td><td>${offlineGames[z].moves}</td><td>${offlineGames[z].start}</td><td>${offlineGames[z].end}</td><td>${offlineGames[z].time}</td><td>${win}</td></tr>`
                     offlineTable.innerHTML += insertGame;
                 }
             }

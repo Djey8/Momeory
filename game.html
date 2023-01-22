@@ -77,6 +77,8 @@
         <div id="lookPlayer-container" class="hide">
             <label id="lookPlayerLabel" for="lookPlayerLabel">Spieler suchen</label>
             <input id="lookPlayerInput" type="text" name="lookPlayerLabel" placholder="Enter Email" required>
+            <label id="lookPlayerLabel" for="lookPlayerLabel">Message</label>
+            <input id="lookPlayerInput" type="text" name="lookPlayerLabel" placholder="Enter Email" required>
             <button id="lookPlayerbtn">Einladung seden</button>
         </div>
         <table id="invitation-container" class="hide">
@@ -147,12 +149,44 @@
 
         const footer = document.getElementById("gameFooter");
         
+        var onlineGames = [];
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 const uid = user.uid;
                 // ...
+                var all_user = [];
+                get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        all_user = snapshot.val();
+                    } else {
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+                onlineGames = [];
+                get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        onlineGames = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
 
                 var games = [];
                 var new_game = {
@@ -329,6 +363,7 @@
         lookGamebtn.addEventListener('click', (e) => {
             buttonBox.classList.add("hide");
             hostedGames.classList.remove("hide");
+            loadHostedGames(onlineGames);
         });
 
         createGamebtn.addEventListener('click', (e) => {
@@ -347,9 +382,75 @@
         });
 
         newGamebtn.addEventListener('click', (e) => {
-            alert("test newGamebtn")
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const date = new Date();
+
+            const message = document.getElementById("gameNameInput").value;
+            var email = `${user.email}`;
+
+            let new_game = {
+                gameName: message,
+                email: email,
+                start: date.toUTCString(),
+                done: false
+            };
+
+            onlineGames.push(new_game);
+
+            console.log(new_game);
+            update(ref(database, `memory`), {
+                list_hosted_games: onlineGames
+            })
+                .then(() => {
+                    // Data saved successfully!
+                    //alert("secessfully saved data")
+                    get(child(dbRef, `users/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            alert("online games loaded");
+                        } else {
+                            console.log("No data available");
+                        }
+                     }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                })
+                .catch((error) => {
+                            // The write failed...
+                            document.getElementById("errorMessage").innerText = error
+                            //alert(error)
+                });
         });
 
+        function loadHostedGames(game) {
+            get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        onlineGames = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                        hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
+                        for (let i = 0; i < onlineGames.length; i++) {
+                            if (!onlineGames[i].done) {
+                                const insertGame = `<tr><td>${i+1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].email}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                                hostedGames.innerHTML += insertGame;
+                            }
+                        }
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+            }
 
     </script>
 
