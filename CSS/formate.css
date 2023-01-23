@@ -53,7 +53,7 @@ td {
   background-color: white;
 }
 
-#gameNameLabel, #lookPlayerLabel {
+#gameNameLabel, #lookPlayerLabel, #messageLabel {
   margin-top: 25px;
   display: block;
   font-size: 25px;
@@ -61,7 +61,7 @@ td {
   font-family: "garamond-bold";
 }
 
-#gameNameInput, #lookPlayerInput {
+#gameNameInput, #lookPlayerInput, #messageInput {
   border-color: black;
   border-width: 1%;
   margin-top: 10px;
@@ -529,7 +529,7 @@ footer {
   font-size: 18px;
   border-radius: 10px;
   padding: 10px;
-  color: white;
+  color: black;
   background-color: #a4007e;
   margin-top: 2.5%;
   margin-bottom: 20px;
