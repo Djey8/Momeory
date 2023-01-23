@@ -75,9 +75,25 @@
         </div>
 
         <div id="lookPlayer-container" class="hide">
-            <label id="lookPlayerLabel" for="lookPlayerLabel">Spieler suchen</label>
+            <label id="messageLabel" for="lookPlayerLabel">Nachricht</label>
+            <input id="messageInput" type="text" name="lookPlayerLabel" placholder="Enter Email" required>
+            <label id="lookPlayerLabel" for="lookPlayerLabel">Spieler</label>
             <input id="lookPlayerInput" type="text" name="lookPlayerLabel" placholder="Enter Email" required>
             <button id="lookPlayerbtn">Einladung seden</button>
+            <button id="filterPlayerbtn">Alle Spieler filtern</button>
+            <table id="all-players" class="">
+                <tr><th colspan="4" style="padding: 10px;">Alle Spieler</th></tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Spieler</th>
+                    <th>Aktion</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>janniskluess@yahoo.de</td>
+                    <td><button style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td>
+                </tr>
+            </table>
         </div>
         <table id="invitation-container" class="hide">
             <tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr>
@@ -142,17 +158,70 @@
         const createGame = document.getElementById("createGame-container");
         const invitePlayer = document.getElementById("lookPlayer-container");
         const invitations = document.getElementById("invitation-container");
+        const allPlayers = document.getElementById("all-players");
 
         const multiplayerbtn = document.getElementById("multiplayerbtn");
+        
 
         const footer = document.getElementById("gameFooter");
         
+        var onlineGames = [];
+        var all_user = [];
+        var all_invitations = [];
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 const uid = user.uid;
                 // ...
+                all_user = [];
+                get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        all_user = snapshot.val();
+                    } else {
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+                all_invitations = [];
+                get(child(dbRef, `users/${uid}/invitations`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        all_invitations = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+
+                onlineGames = [];
+                get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        onlineGames = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
 
                 var games = [];
                 var new_game = {
@@ -329,6 +398,7 @@
         lookGamebtn.addEventListener('click', (e) => {
             buttonBox.classList.add("hide");
             hostedGames.classList.remove("hide");
+            loadHostedGames();
         });
 
         createGamebtn.addEventListener('click', (e) => {
@@ -339,17 +409,250 @@
         invitePlayerbtn.addEventListener('click', (e) => {
             buttonBox.classList.add("hide");
             invitePlayer.classList.remove("hide");
+            loadAllPlayers();
         });
 
         invitationbtn.addEventListener('click', (e) => {
             buttonBox.classList.add("hide");
             invitations.classList.remove("hide");
+            loadAllInvitations();
         });
+
+        filterPlayerbtn.addEventListener('click', (e) => {
+            loadFilteredPlayers();
+        });
+
 
         newGamebtn.addEventListener('click', (e) => {
-            alert("test newGamebtn")
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const date = new Date();
+
+            const message = document.getElementById("gameNameInput").value;
+            var email = `${user.email}`;
+
+            let new_game = {
+                gameName: message,
+                email: email,
+                start: date.toUTCString(),
+                done: false
+            };
+
+            onlineGames.push(new_game);
+
+            console.log(new_game);
+            update(ref(database, `memory`), {
+                list_hosted_games: onlineGames
+            })
+                .then(() => {
+                    // Data saved successfully!
+                    //alert("secessfully saved data")
+                    get(child(dbRef, `users/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            alert("online games loaded");
+                        } else {
+                            console.log("No data available");
+                        }
+                     }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                })
+                .catch((error) => {
+                            // The write failed...
+                            document.getElementById("errorMessage").innerText = error
+                            //alert(error)
+                });
         });
 
+        lookPlayerbtn.addEventListener('click', (e) => {
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const date = new Date();
+
+            const opponent = document.getElementById("lookPlayerInput").value;
+            const message = document.getElementById("messageInput").value;
+            var email = `${user.email}`;
+
+
+
+            let new_invitation = {
+                message: message,
+                player: email,
+                received: date.toUTCString(),
+                done: false
+            };
+
+            var opp_uid = "";
+            for (let i = 0; i < all_user.length; i++) {
+                if(all_user[i].email === opponent){
+                    opp_uid = all_user[i].uid;
+                }
+            }
+
+            if(!(opp_uid === "")){
+                get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    var invitations = snapshot.val();
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                    invitations.push(new_invitation);
+                    update(ref(database, `users/${opp_uid}`), {
+                        invitations
+                    })
+                    .then(() => {
+                        // Data saved successfully!
+                        alert("secessfully send invite")
+
+                    })
+                    .catch((error) => {
+                        alert("error with invite");
+                    });
+                 } else {
+                    //alert("no data");
+                    console.log("No data available. Writing data...");
+                    var invitations = [];
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                    invitations.push(new_invitation);
+                    update(ref(database, `users/${opp_uid}`), {
+                        invitations
+                    })
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            })
+            } else {
+                alert("no oppenend found")
+            }
+            
+           
+        });
+
+        function loadHostedGames() {
+            get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        onlineGames = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                        hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
+                        for (let i = 0; i < onlineGames.length; i++) {
+                            if (!onlineGames[i].done) {
+                                const insertGame = `<tr><td>${i+1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].email}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                                hostedGames.innerHTML += insertGame;
+                            }
+                        }
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+            }
+
+            function loadAllPlayers() {
+                get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        all_user = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                        allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
+                        allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";            
+                        for (let i = 0; i < all_user.length; i++) {
+                            const insertGame = `<tr><td>${i+1}</td><td>${all_user[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                            allPlayers.innerHTML += insertGame;
+                        }
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+            }
+
+            function loadFilteredPlayers() {
+                get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        all_user = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                        var pattern = document.getElementById("lookPlayerInput").value;
+                        if(pattern === ""){
+                            allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
+                            allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";            
+                            for (let i = 0; i < all_user.length; i++) {
+                                const insertPlayer = `<tr><td>${i+1}</td><td>${all_user[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                                allPlayers.innerHTML += insertPlayer;
+                            }      
+                        } else {
+                            var result_users = [];
+                            for (let i = 0; i < all_user.length; i++) {
+                                if(all_user[i].email.includes(pattern.toLowerCase())){
+                                    result_users.push(all_user[i]);
+                                }
+                            }
+                            allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Spieler mit "${pattern}"</th></tr>`
+                            allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";            
+                            for (let i = 0; i < result_users.length; i++) {
+                                const insertPlayer = `<tr><td>${i+1}</td><td>${result_users[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                                allPlayers.innerHTML += insertPlayer;
+                            }             
+                        }
+                        
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+            }
+
+            function loadAllInvitations() {
+                const auth = getAuth(app);
+                const user = auth.currentUser;
+                get(child(dbRef, `users/${user.uid}/invitations`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        all_invitations = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                        invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
+                        for (let i = 0; i < all_invitations.length; i++) {
+                            const insertInvitation = `<tr><td>${i+1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].player}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                            invitations.innerHTML += insertInvitation;
+                        }
+                    } else {
+                        //alert("no data");
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+                
+            }
 
     </script>
 

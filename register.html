@@ -55,7 +55,7 @@
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
             import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
             import { getAuth, createUserWithEmailAndPassword, browserLocalPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-            import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+            import { getDatabase, ref, set, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
             // TODO: Add SDKs for Firebase products that you want to use
             // https://firebase.google.com/docs/web/setup#available-libraries
           
@@ -76,6 +76,8 @@
             const app = initializeApp(firebaseConfig);
             const analytics = getAnalytics(app);
             const auth = getAuth(app);
+            const dbRef = ref(getDatabase(app));
+
             setPersistence(auth, browserLocalPersistence)
                 .then(() => {
                  // Existing and future Auth states are now persisted in the current
@@ -106,14 +108,65 @@
                         // Signed in 
                         const user = userCredential.user;
                         // ... user.uid
-                       
+                        var list_all_users = [];
+
                         set(ref(database, 'users/' + user.uid), {
                             email: email,
                             first_login: lgDate.toUTCString()
                         })
                         .then(() => {
+                            //Read list_all_users
+                            get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    list_all_users = snapshot.val()
+                                    //Update list_all_users
+                                    let new_user = {
+                                        uid: user.uid,
+                                        email: user.email
+                                    }
+                                    
+                                    list_all_users.push(new_user);
+                                    update(ref(database), {
+                                        list_all_users
+                                    })
+                                    .then(() => {
+                                        // Data saved successfully!
+                                        //alert("udpated list_all_users")
+                                        window.location.href = "profile.html"
+                                    })
+                                    .catch((error) => {
+                                        alert(error)
+                                    });
+                                } else {
+                                     //write first user to list_all_users
+                                    //alert("no users yet")
+                                    console.log("no users yet");
+                                    let new_user = {
+                                        uid: user.uid,
+                                        email: user.email
+                                    }
+                                    list_all_users.push(new_user);
+                                    update(ref(database), {
+                                        list_all_users
+                                    })
+                                    .then(() => {
+                                        //alert("sucessfully set list_all_users")
+                                        window.location.href = "profile.html"
+                                    })
+                                    .catch((error) => {
+                                        // The write failed...
+                                        document.getElementById("errorMessage").innerText = error
+                                        //alert(error)
+                                    });
+                                }
+                            }).catch((error) => {
+                                alert(error)
+                                console.error(error);
+                            });
                             // Data saved successfully!
-                            window.location.href = "profile.html"
+                            //window.location.href = "profile.html"
                         })
                         .catch((error) => {
                             // The write failed...
