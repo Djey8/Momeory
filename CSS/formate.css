@@ -23,10 +23,12 @@ td {
   text-align: center;
 }
 
-#leaderboard-table, #online-table, #offline-table, #average-table, #highlight-table, #hosted-games, #invitation-container, #createGame-container, #lookPlayer-container {
+#leaderboard-table, #online-table, #offline-table, #average-table, #highlight-table, #hosted-games, #invitation-container, #createGame-container, #lookPlayer-container, #all-players {
   margin-top: 20px;
   width: 100%;
 }
+
+
 
 #loaderboard-container {
   margin-top: 20px;
@@ -515,6 +517,20 @@ footer {
   padding: 10px;
   color: white;
   background-color: #196408;
+  margin-top: 2.5%;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+#filterPlayerbtn {
+  display: block;
+  width: 20%;
+  margin-left: 40%;
+  font-size: 18px;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  background-color: #a4007e;
   margin-top: 2.5%;
   margin-bottom: 20px;
   font-weight: bold;
