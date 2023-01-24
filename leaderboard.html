@@ -236,10 +236,11 @@
                 offlineTable.classList.remove("hide");
                 averageTable.classList.remove("hide");
                 highlightTable.classList.remove("hide");
+                modusLabel.innerText = "Einzelspieler";
                 loadOfflineAverage();
                 loadOfflineHighlights();
                 loadOfflineGames();
-                modusLabel.innerText = "Einzelspieler";
+                
             })
 
             onlinebtn.addEventListener('click', (e) => {
@@ -352,8 +353,9 @@
                 }
 
                 ratio = win / count;
-                ratio = ratio.toFixed(4);
                 ratio = ratio * 100;
+                ratio = ratio.toFixed(4);
+                
 
                 //calc average time
                 var time = 0.0;
@@ -401,8 +403,9 @@
                 }
 
                 ratio = win / count;
-                ratio = ratio.toFixed(4);
                 ratio = ratio * 100;
+                ratio = ratio.toFixed(4);
+                
 
                 //calc average time
                 var time = 0.0;
