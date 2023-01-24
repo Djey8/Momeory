@@ -421,7 +421,7 @@
         filterPlayerbtn.addEventListener('click', (e) => {
             loadFilteredPlayers();
         });
-
+        
 
         newGamebtn.addEventListener('click', (e) => {
             const auth = getAuth(app);
@@ -507,7 +507,7 @@
                     })
                     .then(() => {
                         // Data saved successfully!
-                        alert("secessfully send invite")
+                        alert(`${opponent} eingeladen`)
 
                     })
                     .catch((error) => {
@@ -529,7 +529,7 @@
                 console.error(error);
             })
             } else {
-                alert("no oppenend found")
+                alert("Spieler nicht gefunden!");
             }
             
            
@@ -575,6 +575,7 @@
                             const insertGame = `<tr><td>${i+1}</td><td>${all_user[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
                             allPlayers.innerHTML += insertGame;
                         }
+                        setUpButtonsAllPlayers();
                     } else {
                         //alert("no data");
                         console.log("No data available");
@@ -601,7 +602,7 @@
                             for (let i = 0; i < all_user.length; i++) {
                                 const insertPlayer = `<tr><td>${i+1}</td><td>${all_user[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
                                 allPlayers.innerHTML += insertPlayer;
-                            }      
+                            }   
                         } else {
                             var result_users = [];
                             for (let i = 0; i < all_user.length; i++) {
@@ -614,9 +615,9 @@
                             for (let i = 0; i < result_users.length; i++) {
                                 const insertPlayer = `<tr><td>${i+1}</td><td>${result_users[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
                                 allPlayers.innerHTML += insertPlayer;
-                            }             
+                            }            
                         }
-                        
+                        setUpButtonsAllPlayers()
                     } else {
                         //alert("no data");
                         console.log("No data available");
@@ -626,6 +627,27 @@
                     console.error(error);
                 });
                 
+            }
+
+            function setUpButtonsAllPlayers() {
+                var cells = document.querySelectorAll("#all-players td");
+                for (var i = 0; i < cells.length; i++) {
+                    cells[i].addEventListener("click", function() {
+                       if(this.innerHTML.includes("button")){
+                            var num = -1;
+                            var z = this.innerHTML;
+                            z = z.substring(20,21);
+                            document.getElementById("lookPlayerInput").value = all_user[z-1].email;
+                       } else {
+                            if(this.innerHTML.includes("@")){
+                                document.getElementById("lookPlayerInput").value = this.innerHTML;
+                            } else {
+                                document.getElementById("lookPlayerInput").value = all_user[parseInt(this.innerHTML)-1].email;
+                            }
+                       }
+                       
+                    });
+                }
             }
 
             function loadAllInvitations() {

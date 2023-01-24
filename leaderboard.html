@@ -174,6 +174,7 @@
 
 
             var offlineGames = [];
+            var onlineGames = [];
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
@@ -187,6 +188,21 @@
                             console.log(snapshot.val());
                             //alert(snapshot.val())
                             offlineGames = snapshot.val();
+                            noUser.classList.add("hide");
+                            //alert("games loaded");
+                        } else {
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+
+                    get(child(dbRef, `users/${user.uid}/online_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
                             noUser.classList.add("hide");
                             //alert("games loaded");
                         } else {
@@ -222,7 +238,7 @@
                 highlightTable.classList.remove("hide");
                 loadOfflineAverage();
                 loadOfflineHighlights();
-                loadOfflineGames(offlineGames);
+                loadOfflineGames();
                 modusLabel.innerText = "Einzelspieler";
             })
 
@@ -230,8 +246,11 @@
                 leaderboardTable.classList.add("hide");
                 onlineTable.classList.remove("hide");
                 offlineTable.classList.add("hide");
-                averageTable.classList.add("hide");
-                highlightTable.classList.add("hide");
+                averageTable.classList.remove("hide");
+                highlightTable.classList.remove("hide");
+                loadOnlineHighlights();
+                loadOnlineGames();
+                loadOnlineAverage();
                 modusLabel.innerText = "Mehrspieler";
             })
 
@@ -257,7 +276,31 @@
                 highlightTable.innerHTML += insertBestGame;
             }
 
-            function loadOfflineGames(game) {
+            function loadOnlineHighlights() {
+                highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+                if(onlineGames.length>0){
+                    var bestPoints = 9999;
+                    var winIndex = 0;
+                    for (let i = 0; i < onlineGames.length; i++) {
+                        if (onlineGames[i].won) {
+                            var temp_points = parseInt(onlineGames[i].moves);
+                            const long_new_time = onlineGames[i].time;
+                            const timeArray = long_new_time.split(":");
+                            const minutes = parseInt(timeArray[0]);
+                            const seconds = parseInt(timeArray[1]);
+                            temp_points += minutes*60+seconds;
+                            if(temp_points<bestPoints){
+                                bestPoints = temp_points;
+                                winIndex = i;
+                            }
+                        }
+                    }
+                    const insertBestGame = `<tr><td>${winIndex+1}</td><td>${onlineGames[winIndex].moves}</td><td>${onlineGames[winIndex].start}</td><td>${onlineGames[winIndex].end}</td><td>${onlineGames[winIndex].time}</td><td>x</td></tr>`
+                    highlightTable.innerHTML += insertBestGame;
+                }
+            }
+
+            function loadOfflineGames() {
                 offlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
                 for (let i = 0; i < offlineGames.length; i++) {
                     var z = offlineGames.length-i-1;
@@ -267,6 +310,19 @@
                     }
                     const insertGame = `<tr><td>${z+1}</td><td>${offlineGames[z].moves}</td><td>${offlineGames[z].start}</td><td>${offlineGames[z].end}</td><td>${offlineGames[z].time}</td><td>${win}</td></tr>`
                     offlineTable.innerHTML += insertGame;
+                }
+            }
+
+            function loadOnlineGames() {
+                onlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+                for (let i = 0; i < onlineGames.length; i++) {
+                    var z = onlineGames.length-i-1;
+                    var win = "";
+                    if (onlineGames[z].won) {
+                        win = "x"
+                    }
+                    const insertGame = `<tr><td>${z+1}</td><td>${onlineGames[z].moves}</td><td>${onlineGames[z].start}</td><td>${onlineGames[z].end}</td><td>${onlineGames[z].time}</td><td>${win}</td></tr>`
+                    onlineTable.innerHTML += insertGame;
                 }
             }
 
@@ -304,6 +360,55 @@
                 var count = 0;
                 for (let i = 0; i < offlineGames.length; i++) {
                     const long_new_time = offlineGames[i].time;
+                    var timeArray = long_new_time.split(":");
+                    var minutes = parseInt(timeArray[0]);
+                    var seconds = parseInt(timeArray[1]);
+                    time += minutes*60+seconds;
+                    count++;
+                }
+                time = time/count;
+                const final_minutes = parseInt(time/60);
+                const final_seconds = parseFloat(time-(final_minutes*60)).toFixed(2);
+                const final_time = `${final_minutes}:${final_seconds}`
+
+                const insertGame = `<tr><td>${average}</td><td>${final_time}</td><td>${ratio} %</td></tr>`
+                averageTable.innerHTML += insertGame;
+            }
+
+            function loadOnlineAverage() {
+                averageTable.innerHTML = "<tr><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
+                //calc avarage moves
+                var average = 0.0;
+                var count = 0;
+                for (let i = 0; i < onlineGames.length; i++) {
+                    if(onlineGames[i].won){
+                        average += parseFloat(onlineGames[i].moves);
+                        count++;
+                    }
+                }
+                average = average/count;
+                average = average.toFixed(2);
+
+                //calc G/V
+                var ratio = 0.0;
+                var win = 0;
+                var count = 0;
+                for (let i = 0; i < onlineGames.length; i++) {
+                    if(onlineGames[i].won){
+                        win ++;
+                    }
+                    count ++;
+                }
+
+                ratio = win / count;
+                ratio = ratio.toFixed(4);
+                ratio = ratio * 100;
+
+                //calc average time
+                var time = 0.0;
+                var count = 0;
+                for (let i = 0; i < onlineGames.length; i++) {
+                    const long_new_time = onlineGames[i].time;
                     var timeArray = long_new_time.split(":");
                     var minutes = parseInt(timeArray[0]);
                     var seconds = parseInt(timeArray[1]);
