@@ -447,12 +447,12 @@
                 .then(() => {
                     // Data saved successfully!
                     //alert("secessfully saved data")
+                    alert(`Created new Game: ${message}`);
                     get(child(dbRef, `users/list_hosted_games`)).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log(snapshot.val());
                             //alert(snapshot.val())
                             onlineGames = snapshot.val();
-                            alert("online games loaded");
                         } else {
                             console.log("No data available");
                         }
@@ -463,7 +463,7 @@
                 })
                 .catch((error) => {
                             // The write failed...
-                            document.getElementById("errorMessage").innerText = error
+                            alert(error);
                             //alert(error)
                 });
         });
@@ -550,6 +550,7 @@
                                 hostedGames.innerHTML += insertGame;
                             }
                         }
+                        setUpButtonsJoinHostedGames();
                     } else {
                         //alert("no data");
                         console.log("No data available");
@@ -650,6 +651,81 @@
                 }
             }
 
+            function setUpButtonsJoinHostedGames() {
+                var cells = document.querySelectorAll("#hosted-games td");
+                for (var i = 0; i < cells.length; i++) {
+                    cells[i].addEventListener("click", function() {
+                        if(this.innerHTML.includes("button")){
+                            var num = -1;
+                            var z = this.innerHTML;
+                            z = parseInt(z.substring(21,22));
+                            //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
+                            var x = prompt(`Wollen Sie ${onlineGames[z-1].email} beitreten?`);
+                            if(x === "y"){
+                                alert(`You are now playing with: ${onlineGames[z-1].email}`)
+                            }
+                        } else {
+                            if(this.innerHTML.includes("@")){
+                            //alert(`Do you want to join Game: ${this.innerHTML}`);
+                            var x = prompt(`Wollen Sie ${this.innerHTML} beitreten?`);
+                            if(x === "y"){
+                                alert(`You are now playing with: ${this.innerHTML}`)
+                            }
+                        } else {
+                            for (let i = 0; i < onlineGames.length; i++) {
+                                if(i+1 === parseInt(this.innerHTML) || onlineGames[i].gameName === this.innerHTML || onlineGames[i].start === this.innerHTML){
+                                    //alert(`Do you want to join Game: ${onlineGames[i].email}`);
+                                    var x = prompt(`Wollen Sie ${onlineGames[i].emai} beitreten?`);
+                                    if(x === "y"){
+                                        alert(`You are now playing with: ${onlineGames[i].emaiL}`)
+                                    }
+                                }
+                            }   
+                        }
+                        }
+                        
+                       
+                       
+                    });
+                }
+            }
+
+            function setUpButtonsJoinInvitations() {
+                var cells = document.querySelectorAll("#invitation-container td");
+                for (var i = 0; i < cells.length; i++) {
+                    cells[i].addEventListener("click", function() {
+                        if(this.innerHTML.includes("button")){
+                            var num = -1;
+                            var z = this.innerHTML;
+                            z = parseInt(z.substring(20,21));
+                            //alert(`Do you want to join Game: ${all_invitations[z-1].player}`);
+                            var x = confirm(`Wollen Sie ${all_invitations[z-1].player} beitreten?`);
+                            if(x){
+                                alert(`You are now playing with: ${all_invitations[z-1].player}`)
+                            }
+                        } else {
+                            if(this.innerHTML.includes("@")){
+                            //alert(`Do you want to join Game: ${this.innerHTML}`);
+                            var x = confirm(`Wollen Sie ${this.innerHTML} beitreten?`)
+                            if(x){
+                                alert(`You are now playing with: ${this.innerHTML}`)
+                            }
+                        } else {
+                            for (let i = 0; i < all_invitations.length; i++) {
+                                if(i+1 === parseInt(this.innerHTML) || all_invitations[i].message === this.innerHTML || all_invitations[i].received === this.innerHTML){
+                                    //alert(`Do you want to join Game: ${all_invitations[i].player}`);
+                                    var x = confirm(`Wollen Sie ${all_invitations[i].player} beitreten?`)
+                                    if(x){
+                                        alert(`You are now playing with: ${all_invitations[i].player}`)
+                                    }
+                                }
+                            }   
+                        }
+                        }
+                    });
+                }
+            }
+
             function loadAllInvitations() {
                 const auth = getAuth(app);
                 const user = auth.currentUser;
@@ -665,6 +741,7 @@
                             const insertInvitation = `<tr><td>${i+1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].player}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
                             invitations.innerHTML += insertInvitation;
                         }
+                        setUpButtonsJoinInvitations();
                     } else {
                         //alert("no data");
                         console.log("No data available");
