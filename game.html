@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Memory</title>
     <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
+    <link rel="icon" type="image/x-icon" href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
     <script src="Skripte/Script1.js" type="text/javascript"></script>
 </head>
 
@@ -660,24 +661,24 @@
                             var z = this.innerHTML;
                             z = parseInt(z.substring(21,22));
                             //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
-                            var x = prompt(`Wollen Sie ${onlineGames[z-1].email} beitreten?`);
-                            if(x === "y"){
-                                alert(`You are now playing with: ${onlineGames[z-1].email}`)
+                            var x = confirm(`Wollen Sie ${onlineGames[z-1].email} wirklich beitreten?`);
+                            if(x){
+                                alert(`Sie spielen jetzt mit: ${onlineGames[z-1].email} (hier jetzt die Lobby)`)
                             }
                         } else {
                             if(this.innerHTML.includes("@")){
                             //alert(`Do you want to join Game: ${this.innerHTML}`);
-                            var x = prompt(`Wollen Sie ${this.innerHTML} beitreten?`);
-                            if(x === "y"){
-                                alert(`You are now playing with: ${this.innerHTML}`)
+                            var x = confirm(`Wollen Sie ${this.innerHTML} wirklich beitreten?`);
+                            if(x){
+                                alert(`Sie spielen jetzt mit: ${this.innerHTML} (hier jetzt die Lobby)`)
                             }
                         } else {
                             for (let i = 0; i < onlineGames.length; i++) {
                                 if(i+1 === parseInt(this.innerHTML) || onlineGames[i].gameName === this.innerHTML || onlineGames[i].start === this.innerHTML){
                                     //alert(`Do you want to join Game: ${onlineGames[i].email}`);
-                                    var x = prompt(`Wollen Sie ${onlineGames[i].emai} beitreten?`);
-                                    if(x === "y"){
-                                        alert(`You are now playing with: ${onlineGames[i].emaiL}`)
+                                    var x = confirm(`Wollen Sie ${onlineGames[i].emai} wirklich beitreten?`);
+                                    if(x){
+                                        alert(`Sie spielen jetzt mit: ${onlineGames[i].emaiL} (hier jetzt die Lobby)`)
                                     }
                                 }
                             }   
@@ -699,24 +700,24 @@
                             var z = this.innerHTML;
                             z = parseInt(z.substring(20,21));
                             //alert(`Do you want to join Game: ${all_invitations[z-1].player}`);
-                            var x = confirm(`Wollen Sie ${all_invitations[z-1].player} beitreten?`);
+                            var x = confirm(`Wollen Sie ${all_invitations[z-1].player} wirklich beitreten?`);
                             if(x){
-                                alert(`You are now playing with: ${all_invitations[z-1].player}`)
+                                alert(`Sie spielen jetzt mit: ${all_invitations[z-1].player} (hier jetzt die Lobby)`)
                             }
                         } else {
                             if(this.innerHTML.includes("@")){
                             //alert(`Do you want to join Game: ${this.innerHTML}`);
                             var x = confirm(`Wollen Sie ${this.innerHTML} beitreten?`)
                             if(x){
-                                alert(`You are now playing with: ${this.innerHTML}`)
+                                alert(`Sie spielen jetzt mit: ${this.innerHTML} (hier jetzt die Lobby)`)
                             }
                         } else {
                             for (let i = 0; i < all_invitations.length; i++) {
                                 if(i+1 === parseInt(this.innerHTML) || all_invitations[i].message === this.innerHTML || all_invitations[i].received === this.innerHTML){
                                     //alert(`Do you want to join Game: ${all_invitations[i].player}`);
-                                    var x = confirm(`Wollen Sie ${all_invitations[i].player} beitreten?`)
+                                    var x = confirm(`Wollen Sie ${all_invitations[i].player} wirklich beitreten?`)
                                     if(x){
-                                        alert(`You are now playing with: ${all_invitations[i].player}`)
+                                        alert(`Sie spielen jetzt mit: ${all_invitations[i].player} (hier jetzt die Lobby)`)
                                     }
                                 }
                             }   
