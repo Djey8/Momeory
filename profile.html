@@ -101,6 +101,7 @@
             const logoutC = document.getElementById("profile");
             const error = document.getElementById("errorMessage");
             
+
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     // User is signed in, see docs for a list of available properties
@@ -112,6 +113,19 @@
                             console.log(snapshot.val());
                             //alert(snapshot.val())
                             document.getElementById("pemail").innerText = snapshot.val()
+                        } else {
+                            //alert("no data")
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                    get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            document.getElementById("mitte").innerText = snapshot.val()
                         } else {
                             //alert("no data")
                             console.log("No data available");
@@ -182,7 +196,7 @@
             logoutbtn.addEventListener('click', (e) => {
                 signOut(auth).then(() => {
                     // Sign-out successful.
-                    //alert("signOut")
+                    document.getElementById("mitte").innerText = "Profil";
                 }).catch((error) => {
                     // An error happened.
                     alert(error)

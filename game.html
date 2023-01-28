@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>Memory</title>
     <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
-    <link rel="icon" type="image/x-icon" href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
+    <link rel="icon" type="image/x-icon"
+        href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
     <script src="Skripte/Script1.js" type="text/javascript"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
@@ -40,7 +41,7 @@
         <button id="start" name="start">Spiel starten</button>
         <button id="multiplayerbtn" name="start">Mehrspieler</button>
     </div>
-    
+
     <div id="onlineContainer" class="online-container hide">
         <div id="backbtn-container"><button id="backbtn"><img id="online-back" src="Bilder/backbtn.png"></button></div>
         <h2 style="margin-left: 30%; margin-right: 30%; margin-bottom: 20px;">Mehrspieler</h2>
@@ -50,23 +51,18 @@
             <button id="createGamebtn" style="margin-bottom: 25px;">Spiel erstellen</button>
             <hr style="height: 5px; background-color: black; border-radius: 2px; border-color: black;">
             <button id="invitePlayerbtn" style="margin-top: 25px;">Spieler einladen</button>
-            <button id="invitationbtn" style="margin-bottom: 25px;">Einladungen</button> 
+            <button id="invitationbtn" style="margin-bottom: 25px;">Einladungen</button>
         </div>
         <table id="hosted-games" class="hide">
-            <tr><th colspan="5" style="padding: 10px;">Spiel suchen</th></tr>
+            <tr>
+                <th colspan="5" style="padding: 10px;">Spiel suchen</th>
+            </tr>
             <tr>
                 <th>ID</th>
                 <th>Spielname</th>
                 <th>Spieler</th>
                 <th>Sucht seit</th>
                 <th>Aktion</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>this too shall pass</td>
-                <td>janniskluess@yahoo.de</td>
-                <td>Tue, 17.01.2023 11:29:34 GMT</td>
-                <td><button style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td>
             </tr>
         </table>
 
@@ -84,34 +80,26 @@
             <button id="lookPlayerbtn">Einladung seden</button>
             <button id="filterPlayerbtn">Alle Spieler filtern</button>
             <table id="all-players" class="">
-                <tr><th colspan="4" style="padding: 10px;">Alle Spieler</th></tr>
+                <tr>
+                    <th colspan="4" style="padding: 10px;">Alle Spieler</th>
+                </tr>
                 <tr>
                     <th>ID</th>
                     <th>Spieler</th>
                     <th>Aktion</th>
                 </tr>
-                <tr>
-                    <td>1</td>
-                    <td>janniskluess@yahoo.de</td>
-                    <td><button style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td>
-                </tr>
             </table>
         </div>
         <table id="invitation-container" class="hide">
-            <tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr>
+            <tr>
+                <th colspan="5" style="padding: 10px;">Einladungen</th>
+            </tr>
             <tr>
                 <th>ID</th>
                 <th>Message</th>
                 <th>Spieler</th>
                 <th>Empfangen</th>
                 <th>Aktion</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>Wollen wir Memory spielen?</td>
-                <td>janniskluess@yahoo.de</td>
-                <td>Tue, 17.01.2023 11:29:34 GMT</td>
-                <td><button style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td>
             </tr>
         </table>
 
@@ -162,10 +150,10 @@
         const allPlayers = document.getElementById("all-players");
 
         const multiplayerbtn = document.getElementById("multiplayerbtn");
-        
+
 
         const footer = document.getElementById("gameFooter");
-        
+
         var onlineGames = [];
         var all_user = [];
         var all_invitations = [];
@@ -189,7 +177,7 @@
                     //alert(error)
                     console.error(error);
                 });
-                
+
                 all_invitations = [];
                 get(child(dbRef, `users/${uid}/invitations`)).then((snapshot) => {
                     if (snapshot.exists()) {
@@ -382,7 +370,7 @@
         });
 
         backbtn.addEventListener('click', (e) => {
-            if(buttonBox.classList.contains("hide") == false) {
+            if (buttonBox.classList.contains("hide") == false) {
                 onlineContainer.classList.add("hide");
                 controlsContainer.classList.remove("hide");
                 kostenlos.classList.remove("hide");
@@ -393,7 +381,7 @@
                 invitePlayer.classList.add("hide");
                 invitations.classList.add("hide");
                 buttonBox.classList.remove("hide");
-            } 
+            }
         });
 
         lookGamebtn.addEventListener('click', (e) => {
@@ -422,7 +410,7 @@
         filterPlayerbtn.addEventListener('click', (e) => {
             loadFilteredPlayers();
         });
-        
+
 
         newGamebtn.addEventListener('click', (e) => {
             const auth = getAuth(app);
@@ -430,43 +418,68 @@
             const date = new Date();
 
             const message = document.getElementById("gameNameInput").value;
-            var email = `${user.email}`;
+            var email = `${user.email}`
+            var username = "";
 
-            let new_game = {
-                gameName: message,
-                email: email,
-                start: date.toUTCString(),
-                done: false
-            };
+            swal({
+                            title: "Achtung!",
+                            text: `Wollen Sie wirklich das Spiel ${message} erstellen?`,
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                            .then((willDelete) => {
+                                if (willDelete) {
+                                    get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    username = snapshot.val();
+                    let new_game = {
+                        gameName: message,
+                        email: email,
+                        username: username,
+                        start: date.toUTCString(),
+                        done: false
+                    };
 
-            onlineGames.push(new_game);
+                    onlineGames.push(new_game);
 
-            console.log(new_game);
-            update(ref(database, `memory`), {
-                list_hosted_games: onlineGames
-            })
-                .then(() => {
-                    // Data saved successfully!
-                    //alert("secessfully saved data")
-                    alert(`Created new Game: ${message}`);
-                    get(child(dbRef, `users/list_hosted_games`)).then((snapshot) => {
-                        if (snapshot.exists()) {
-                            console.log(snapshot.val());
-                            //alert(snapshot.val())
-                            onlineGames = snapshot.val();
-                        } else {
-                            console.log("No data available");
-                        }
-                     }).catch((error) => {
-                        //alert(error)
-                        console.error(error);
-                    });
-                })
-                .catch((error) => {
+                    console.log(new_game);
+                    update(ref(database, `memory`), {
+                        list_hosted_games: onlineGames
+                    })
+                        .then(() => {
+                            // Data saved successfully!
+                            //alert("secessfully saved data")
+                            swal(`Sie warten jetzt einen Mitspieler im Spiel ${message}`, {
+                                        icon: "success",
+                                    });
+    
+                        })
+                        .catch((error) => {
                             // The write failed...
                             alert(error);
                             //alert(error)
-                });
+                        });
+                } else {
+                    //alert("no data")
+                    console.log("no user logged in");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
+
+                                    
+                                } else {
+                                    //swal("abgebrochen",{icon: "error"});
+                                }
+                            });
+
+            
+
+
         });
 
         lookPlayerbtn.addEventListener('click', (e) => {
@@ -476,321 +489,383 @@
 
             const opponent = document.getElementById("lookPlayerInput").value;
             const message = document.getElementById("messageInput").value;
-            var email = `${user.email}`;
+            var email = `${user.email}`
 
+            var username = "";
 
-
-            let new_invitation = {
-                message: message,
-                player: email,
-                received: date.toUTCString(),
-                done: false
-            };
-
-            var opp_uid = "";
-            for (let i = 0; i < all_user.length; i++) {
-                if(all_user[i].email === opponent){
-                    opp_uid = all_user[i].uid;
-                }
-            }
-
-            if(!(opp_uid === "")){
-                get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    var invitations = snapshot.val();
-                    //noUser.classList.add("hide");
-                    //alert("games loaded");
-                    invitations.push(new_invitation);
-                    update(ref(database, `users/${opp_uid}`), {
-                        invitations
-                    })
-                    .then(() => {
-                        // Data saved successfully!
-                        alert(`${opponent} eingeladen`)
-
-                    })
-                    .catch((error) => {
-                        alert("error with invite");
-                    });
-                 } else {
-                    //alert("no data");
-                    console.log("No data available. Writing data...");
-                    var invitations = [];
-                    //noUser.classList.add("hide");
-                    //alert("games loaded");
-                    invitations.push(new_invitation);
-                    update(ref(database, `users/${opp_uid}`), {
-                        invitations
-                    })
-                }
-            }).catch((error) => {
-                //alert(error)
-                console.error(error);
+            swal({
+                title: "Achtung!",
+                text: `Wollen Sie ${opponent} wirklich einladen?`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
             })
-            } else {
-                alert("Spieler nicht gefunden!");
-            }
-            
-           
+                .then((willDelete) => {
+                    if (willDelete) {
+                        get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                            if (snapshot.exists()) {
+                                console.log(snapshot.val());
+                                //alert(snapshot.val())
+                                username = snapshot.val();
+
+                                let new_invitation = {
+                                    message: message,
+                                    email: email,
+                                    username: username,
+                                    received: date.toUTCString(),
+                                    done: false
+                                };
+
+                                var opp_uid = "";
+                                for (let i = 0; i < all_user.length; i++) {
+                                    if (all_user[i].username === opponent) {
+                                        opp_uid = all_user[i].uid;
+                                    }
+                                }
+
+                                if (!(opp_uid === "")) {
+                                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                                        if (snapshot.exists()) {
+                                            console.log(snapshot.val());
+                                            //alert(snapshot.val())
+                                            var invitations = snapshot.val();
+                                            //noUser.classList.add("hide");
+                                            //alert("games loaded");
+                                            invitations.push(new_invitation);
+                                            update(ref(database, `users/${opp_uid}`), {
+                                                invitations
+                                            })
+                                                .then(() => {
+                                                    // Data saved successfully!
+                                                    swal(`Sie warten jetzt auf: ${opponent} (hier jetzt die Lobby)`, {
+                                                        icon: "success",
+                                                    });
+
+                                                })
+                                                .catch((error) => {
+                                                    alert("error with invite");
+                                                });
+                                        } else {
+                                            //alert("no data");
+                                            console.log("No data available. Writing data...");
+                                            var invitations = [];
+                                            //noUser.classList.add("hide");
+                                            //alert("games loaded");
+                                            invitations.push(new_invitation);
+                                            update(ref(database, `users/${opp_uid}`), {
+                                                invitations
+                                            })
+                                            swal(`Sie warten jetzt auf: ${opponent} (hier jetzt die Lobby)`, {
+                                                icon: "success",
+                                            });
+                                        }
+                                    }).catch((error) => {
+                                        //alert(error)
+                                        console.error(error);
+                                    })
+                                } else {
+
+                                    alert("Spieler nicht gefunden!");
+                                }
+                            } else {
+                                //alert("no data")
+                                console.log("no user logged in");
+                            }
+                        }).catch((error) => {
+                            //alert(error)
+                            console.error(error);
+                        });
+                    } else {
+                        //swal("abgebrochen",{icon: "error"});
+                    }
+                });
+
+
+
+
+
         });
 
         function loadHostedGames() {
             get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        onlineGames = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
-                        hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
-                        for (let i = 0; i < onlineGames.length; i++) {
-                            if (!onlineGames[i].done) {
-                                const insertGame = `<tr><td>${i+1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].email}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
-                                hostedGames.innerHTML += insertGame;
-                            }
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    onlineGames = snapshot.val();
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                    hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
+                    for (let i = 0; i < onlineGames.length; i++) {
+                        if (!onlineGames[i].done) {
+                            const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                            hostedGames.innerHTML += insertGame;
                         }
-                        setUpButtonsJoinHostedGames();
-                    } else {
-                        //alert("no data");
-                        console.log("No data available");
                     }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
-                
-            }
+                    setUpButtonsJoinHostedGames();
+                } else {
+                    //alert("no data");
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
 
-            function loadAllPlayers() {
-                get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        all_user = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
+        }
+
+        function loadAllPlayers() {
+            get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    all_user = snapshot.val();
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                    allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
+                    allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
+                    for (let i = 0; i < all_user.length; i++) {
+                        const insertGame = `<tr><td>${i + 1}</td><td>${all_user[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                        allPlayers.innerHTML += insertGame;
+                    }
+                    setUpButtonsAllPlayers();
+                } else {
+                    //alert("no data");
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
+
+        }
+
+        function loadFilteredPlayers() {
+            get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    all_user = snapshot.val();
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                    var pattern = document.getElementById("lookPlayerInput").value;
+                    if (pattern === "") {
                         allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
-                        allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";            
+                        allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
                         for (let i = 0; i < all_user.length; i++) {
-                            const insertGame = `<tr><td>${i+1}</td><td>${all_user[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
-                            allPlayers.innerHTML += insertGame;
+                            const insertPlayer = `<tr><td>${i + 1}</td><td>${all_user[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                            allPlayers.innerHTML += insertPlayer;
                         }
-                        setUpButtonsAllPlayers();
                     } else {
-                        //alert("no data");
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
-                
-            }
-
-            function loadFilteredPlayers() {
-                get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        all_user = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
-                        var pattern = document.getElementById("lookPlayerInput").value;
-                        if(pattern === ""){
-                            allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
-                            allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";            
-                            for (let i = 0; i < all_user.length; i++) {
-                                const insertPlayer = `<tr><td>${i+1}</td><td>${all_user[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
-                                allPlayers.innerHTML += insertPlayer;
-                            }   
-                        } else {
-                            var result_users = [];
-                            for (let i = 0; i < all_user.length; i++) {
-                                if(all_user[i].email.includes(pattern.toLowerCase())){
-                                    result_users.push(all_user[i]);
-                                }
+                        var result_users = [];
+                        for (let i = 0; i < all_user.length; i++) {
+                            if (all_user[i].username.includes(pattern.toLowerCase())) {
+                                result_users.push(all_user[i]);
                             }
-                            allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Spieler mit "${pattern}"</th></tr>`
-                            allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";            
-                            for (let i = 0; i < result_users.length; i++) {
-                                const insertPlayer = `<tr><td>${i+1}</td><td>${result_users[i].email}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
-                                allPlayers.innerHTML += insertPlayer;
-                            }            
                         }
-                        setUpButtonsAllPlayers()
+                        allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Spieler mit "${pattern}"</th></tr>`
+                        allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
+                        for (let i = 0; i < result_users.length; i++) {
+                            const insertPlayer = `<tr><td>${i + 1}</td><td>${result_users[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                            allPlayers.innerHTML += insertPlayer;
+                        }
+                    }
+                    setUpButtonsAllPlayers()
+                } else {
+                    //alert("no data");
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
+
+        }
+
+        function setUpButtonsAllPlayers() {
+            var cells = document.querySelectorAll("#all-players td");
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].addEventListener("click", function () {
+                    if (this.innerHTML.includes("button")) {
+                        var num = -1;
+                        var z = this.innerHTML;
+                        z = z.substring(20, 21);
+                        document.getElementById("lookPlayerInput").value = all_user[z - 1].username;
                     } else {
-                        //alert("no data");
-                        console.log("No data available");
+                        if (isNumeric(this.innerHTML)) {
+                            document.getElementById("lookPlayerInput").value = all_user[parseInt(this.innerHTML) - 1].username;
+                        } else {
+                            document.getElementById("lookPlayerInput").value = this.innerHTML;
+                        }
                     }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
+
                 });
-                
             }
+        }
 
-            function setUpButtonsAllPlayers() {
-                var cells = document.querySelectorAll("#all-players td");
-                for (var i = 0; i < cells.length; i++) {
-                    cells[i].addEventListener("click", function() {
-                       if(this.innerHTML.includes("button")){
-                            var num = -1;
-                            var z = this.innerHTML;
-                            z = z.substring(20,21);
-                            document.getElementById("lookPlayerInput").value = all_user[z-1].email;
-                       } else {
-                            if(this.innerHTML.includes("@")){
-                                document.getElementById("lookPlayerInput").value = this.innerHTML;
-                            } else {
-                                document.getElementById("lookPlayerInput").value = all_user[parseInt(this.innerHTML)-1].email;
-                            }
-                       }
-                       
-                    });
-                }
-            }
-
-            function setUpButtonsJoinHostedGames() {
-                var cells = document.querySelectorAll("#hosted-games td");
-                for (var i = 0; i < cells.length; i++) {
-                    cells[i].addEventListener("click", function() {
-                        if(this.innerHTML.includes("button")){
-                            var num = -1;
-                            var z = this.innerHTML;
-                            z = parseInt(z.substring(21, 22));
-                            //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
-                            swal({
-                                title: "Achtung!",
-                                text: `Wollen Sie ${onlineGames[z - 1].email} wirklich beitreten?`,
-                                icon: "warning",
-                                buttons: true,
-                                dangerMode: true,
-                            })
-                                .then((willDelete) => {
-                                    if (willDelete) {
-                                        swal(`Sie spielen jetzt mit: ${onlineGames[z-1].email} (hier jetzt die Lobby)`, {
-                                            icon: "success",
-                                        });
-                                    } else {
-                                        //swal("abgebrochen",{icon: "error"});
-                                    }
-                                });
-                            //var x = confirm(`Wollen Sie ${onlineGames[z - 1].email} wirklich beitreten?`);
-                            if (x) {
-                                alert(`Sie spielen jetzt mit: ${onlineGames[z-1].email} (hier jetzt die Lobby)`)
-                            }
-                        } else {
-                            if(this.innerHTML.includes("@")){
-                            //alert(`Do you want to join Game: ${this.innerHTML}`);
-                            
-                            var x = confirm(`Wollen Sie ${this.innerHTML} wirklich beitreten?`);
-                            if(x){
-                                alert(`Sie spielen jetzt mit: ${this.innerHTML} (hier jetzt die Lobby)`)
-                            }
-                        } else {
-                            for (let i = 0; i < onlineGames.length; i++) {
-                                if(i+1 === parseInt(this.innerHTML) || onlineGames[i].gameName === this.innerHTML || onlineGames[i].start === this.innerHTML){
-                                    //alert(`Do you want to join Game: ${onlineGames[i].email}`);
-                                    var x = confirm(`Wollen Sie ${onlineGames[i].email} wirklich beitreten?`);
-                                    if(x){
-                                        alert(`Sie spielen jetzt mit: ${onlineGames[i].email} (hier jetzt die Lobby)`)
-                                    }
+        function setUpButtonsJoinHostedGames() {
+            var cells = document.querySelectorAll("#hosted-games td");
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].addEventListener("click", function () {
+                    if (this.innerHTML.includes("button")) {
+                        var num = -1;
+                        var z = this.innerHTML;
+                        z = parseInt(z.substring(21, 22));
+                        //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
+                        swal({
+                            title: "Achtung!",
+                            text: `Wollen Sie ${onlineGames[z - 1].username} wirklich beitreten?`,
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                            .then((willDelete) => {
+                                if (willDelete) {
+                                    swal(`Sie spielen jetzt mit: ${onlineGames[z - 1].username} (hier jetzt die Lobby)`, {
+                                        icon: "success",
+                                    });
+                                } else {
+                                    //swal("abgebrochen",{icon: "error"});
                                 }
-                            }   
-                        }
-                        }
-                        
-                       
-                       
-                    });
-                }
-            }
+                            });
+                        //var x = confirm(`Wollen Sie ${onlineGames[z - 1].email} wirklich beitreten?`);
+                    } else {
 
-            function setUpButtonsJoinInvitations() {
-                var cells = document.querySelectorAll("#invitation-container td");
-                for (var i = 0; i < cells.length; i++) {
-                    cells[i].addEventListener("click", function() {
-                        if(this.innerHTML.includes("button")){
-                            var num = -1;
-                            var z = this.innerHTML;
-                            z = parseInt(z.substring(20,21));
-                            //alert(`Do you want to join Game: ${all_invitations[z-1].player}`);
-                            var x = confirm(`Wollen Sie ${all_invitations[z-1].player} wirklich beitreten?`);
-                            if(x){
-                                alert(`Sie spielen jetzt mit: ${all_invitations[z-1].player} (hier jetzt die Lobby)`)
+                        for (let i = 0; i < onlineGames.length; i++) {
+                            if (i + 1 === parseInt(this.innerHTML) || onlineGames[i].gameName === this.innerHTML || onlineGames[i].start === this.innerHTML || onlineGames[i].username === this.innerHTML) {
+                                //alert(`Do you want to join Game: ${onlineGames[i].email}`);
+                                swal({
+                                    title: "Achtung!",
+                                    text: `Wollen Sie ${onlineGames[i].username} wirklich beitreten?`,
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                })
+                                    .then((willDelete) => {
+                                        if (willDelete) {
+                                            swal(`Sie spielen jetzt mit: ${onlineGames[i].username} (hier jetzt die Lobby)`, {
+                                                icon: "success",
+                                            });
+                                        } else {
+                                            //swal("abgebrochen",{icon: "error"});
+                                        }
+                                    });
+
+
                             }
-                        } else {
-                            if(this.innerHTML.includes("@")){
-                            //alert(`Do you want to join Game: ${this.innerHTML}`);
-                            var x = confirm(`Wollen Sie ${this.innerHTML} beitreten?`)
-                            if(x){
-                                alert(`Sie spielen jetzt mit: ${this.innerHTML} (hier jetzt die Lobby)`)
-                            }
-                        } else {
-                            for (let i = 0; i < all_invitations.length; i++) {
-                                if(i+1 === parseInt(this.innerHTML) || all_invitations[i].message === this.innerHTML || all_invitations[i].received === this.innerHTML){
-                                    //alert(`Do you want to join Game: ${all_invitations[i].player}`);
-                                    var x = confirm(`Wollen Sie ${all_invitations[i].player} wirklich beitreten?`)
-                                    if(x){
-                                        alert(`Sie spielen jetzt mit: ${all_invitations[i].player} (hier jetzt die Lobby)`)
-                                    }
+                        }
+                    }
+
+
+
+                });
+            }
+        }
+
+        function setUpButtonsJoinInvitations() {
+            var cells = document.querySelectorAll("#invitation-container td");
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].addEventListener("click", function () {
+                    if (this.innerHTML.includes("button")) {
+                        var num = -1;
+                        var z = this.innerHTML;
+                        z = parseInt(z.substring(20, 21));
+                        //alert(`Do you want to join Game: ${all_invitations[z-1].username}`);
+                        swal({
+                            title: "Achtung!",
+                            text: `Wollen Sie ${all_invitations[z - 1].username} wirklich beitreten?`,
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                            .then((willDelete) => {
+                                if (willDelete) {
+                                    swal(`Sie spielen jetzt mit: ${all_invitations[z - 1].username} (hier jetzt die Lobby)`, {
+                                        icon: "success",
+                                    });
+                                } else {
+                                    //swal("abgebrochen",{icon: "error"});
                                 }
-                            }   
-                        }
-                        }
-                    });
-                }
-            }
-
-            function loadAllInvitations() {
-                const auth = getAuth(app);
-                const user = auth.currentUser;
-                get(child(dbRef, `users/${user.uid}/invitations`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        all_invitations = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
-                        invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
+                            });
+                    } else {
                         for (let i = 0; i < all_invitations.length; i++) {
-                            const insertInvitation = `<tr><td>${i+1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].player}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i+1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
-                            invitations.innerHTML += insertInvitation;
+                            if (i + 1 === parseInt(this.innerHTML) || all_invitations[i].message === this.innerHTML || all_invitations[i].received === this.innerHTML || all_invitations[i].username === this.innerHTML) {
+                                //alert(`Do you want to join Game: ${all_invitations[i].username}`);
+                                swal({
+                                    title: "Achtung!",
+                                    text: `Wollen Sie ${all_invitations[i].username} wirklich beitreten?`,
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                })
+                                    .then((willDelete) => {
+                                        if (willDelete) {
+                                            swal(`Sie spielen jetzt mit: ${all_invitations[i].username} (hier jetzt die Lobby)`, {
+                                                icon: "success",
+                                            });
+                                        } else {
+                                            //swal("abgebrochen",{icon: "error"});
+                                        }
+                                    });
+                            }
                         }
-                        setUpButtonsJoinInvitations();
-                    } else {
-                        //alert("no data");
-                        console.log("No data available");
                     }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
                 });
-                
             }
+        }
+
+        function loadAllInvitations() {
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            get(child(dbRef, `users/${user.uid}/invitations`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    all_invitations = snapshot.val();
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                    invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
+                    for (let i = 0; i < all_invitations.length; i++) {
+                        const insertInvitation = `<tr><td>${i + 1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].username}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                        invitations.innerHTML += insertInvitation;
+                    }
+                    setUpButtonsJoinInvitations();
+                } else {
+                    //alert("no data");
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
+
+        }
+
+        function isNumeric(str) {
+            if (typeof str != "string") return false // we only process strings!  
+            return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+                !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+        }
 
     </script>
 
-<footer id="gameFooter" class="bottom">
-    <div style="margin-bottom: 8px; line-height: 15px;">
-        Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
-        Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
-    </div>
-    <hr class="trenn-linie" style="margin-bottom: 5px;">
-    </hr>
-    <dev>
-        Copyright 2022
-        <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
-        IT-Abteilung der Berufsschule Freising. <br>
-    </dev>
-    <dev>
-        <a href="index.html" title="Welcome">Welcome </a>
-        |
-        <a href="impressum.html" title="Impressum">Impressum</a>
-    </dev>
-</footer>
+    <footer id="gameFooter" class="bottom">
+        <div style="margin-bottom: 8px; line-height: 15px;">
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+        </div>
+        <hr class="trenn-linie" style="margin-bottom: 5px;">
+        </hr>
+        <dev>
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising. <br>
+        </dev>
+        <dev>
+            <a href="index.html" title="Welcome">Welcome </a>
+            |
+            <a href="impressum.html" title="Impressum">Impressum</a>
+        </dev>
+    </footer>
 
 </body>
 
