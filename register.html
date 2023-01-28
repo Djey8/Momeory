@@ -1,187 +1,240 @@
 <!DOCTYPE html>
 <html lang="de">
-    <head>
-        <meta charset="UTF-8">
-        <title>Registrieren</title>
-        <link rel ="stylesheet" type="text/css" href="CSS/formate.css"/>
-        <script src="Skripte/Script1.js" type="text/javascript"></script>
-    </head>
-    <body>
-        <header>
-            <div><a id="links" href="profile.html" title="Memory"> <img class="yin" src="Bilder/yinyang.jpg"></a></div>
-            <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img src="Bilder/logo.png" width="250"></a></div>
-            <div><h1 id="mitte" class=center>Profil</h1></div>
-        </header>
-            <div id="register-container">
-                <h2 class="headprofile">Registrieren</h2>
-                <hr class="linieprofile">
-                <div id="emailContainer">
-                    <span>
-                        <label for="email" id="emailLabel"><b>Email</b></label>    
-                        <input style="font-size: large;" type="text" placholder="Enter Email" name="email" id="emailregister" required>
-                    </span>
-                </div>
-                <div id="pswContainer">
-                    <span>
-                        <label for="password" id="pswLabel"><b>Passwort</b></label>
-                        <input style="font-size: large;" type="password" placeholder="Password" name="psw" id="psw" required>
-                    </span>
-                </div>
-                <div id="errorMessageContainer"><p id="errorMessage"></p></div>
-                <hr class="linieprofile">
-                <button type="button" id="Registerbtn" name="Registerbtn" class="Registerbtn">Registrieren</button>
-            </div>
-            <footer class="endBottom">
-                <div style="margin-bottom: 8px; line-height: 15px;">
-                    Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
-                    Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br/>
-                </div>
-                <hr class="trenn-linie" style="margin-bottom: 5px;"></hr> 
-                <dev>
-                    Copyright 2022
-                    <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
-                    IT-Abteilung der Berufsschule Freising. <br>
-                </dev>
-                <dev>
-                    <a href="index.html" title="Welcome">Welcome </a>
-                      |     
-                    <a href="impressum.html" title="Impressum">Impressum</a>
-                </dev>
-            </footer>
-        
 
-        <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-            import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
-            import { getAuth, createUserWithEmailAndPassword, browserLocalPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-            import { getDatabase, ref, set, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-            // TODO: Add SDKs for Firebase products that you want to use
-            // https://firebase.google.com/docs/web/setup#available-libraries
-          
-            // Your web app's Firebase configuration
-            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-            const firebaseConfig = {
-              apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
-              authDomain: "memory-app-b17ee.firebaseapp.com",
-              projectId: "memory-app-b17ee",
-              storageBucket: "memory-app-b17ee.appspot.com",
-              messagingSenderId: "3637204477",
-              appId: "1:3637204477:web:1493290d44957d81997594",
-              measurementId: "G-XWPBGZWB4S",
-              databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
-            };
-          
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
-            const auth = getAuth(app);
-            const dbRef = ref(getDatabase(app));
+<head>
+    <meta charset="UTF-8">
+    <title>Registrieren</title>
+    <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
+    <link rel="icon" type="image/x-icon"
+        href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
+    <script src="Skripte/Script1.js" type="text/javascript"></script>
+</head>
 
-            setPersistence(auth, browserLocalPersistence)
-                .then(() => {
-                 // Existing and future Auth states are now persisted in the current
-                    // session only. Closing the window would clear any existing state even
-                    // if a user forgets to sign out.
-                    // ...
-                    // New sign-in will be persisted with session persistence.
-                    return signInWithEmailAndPassword(auth, email, password);
-                })
-                .catch((error) => {
-                    // Handle Errors here.
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                });
-            const database = getDatabase(app);
+<body>
+    <header>
+        <div><a id="links" href="profile.html" title="Memory"> <img class="yin" src="Bilder/yinyang.jpg"></a></div>
+        <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img
+                    src="Bilder/logo.png" width="250"></a></div>
+        <div>
+            <h1 id="mitte" class=center>Profil</h1>
+        </div>
+    </header>
+    <div id="register-container">
+        <h2 class="headprofile">Registrieren</h2>
+        <hr class="linieprofile">
+        <div id="nameContainer">
+            <span>
+                <label for="username" id="usernameLabel"><b>Benutzername</b></label>
+                <input style="font-size: large;" type="text" placholder="Enter Username" name="username" id="username"
+                    required>
+            </span>
+        </div>
+        <div id="emailContainer">
+            <span>
+                <label for="email" id="emailLabel"><b>Email</b></label>
+                <input style="font-size: large;" type="text" placholder="Enter Email" name="email" id="emailregister"
+                    required>
+            </span>
+        </div>
+        <div id="pswContainer">
+            <span>
+                <label for="password" id="pswLabel"><b>Passwort</b></label>
+                <input style="font-size: large;" type="password" placeholder="Password" name="psw" id="psw" required>
+            </span>
+        </div>
+        <div id="errorMessageContainer">
+            <p id="errorMessage"></p>
+        </div>
+        <hr class="linieprofile">
+        <button type="button" id="Registerbtn" name="Registerbtn" class="Registerbtn">Registrieren</button>
+    </div>
+    <footer class="endBottom">
+        <div style="margin-bottom: 8px; line-height: 15px;">
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+        </div>
+        <hr class="trenn-linie" style="margin-bottom: 5px;">
+        </hr>
+        <dev>
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising. <br>
+        </dev>
+        <dev>
+            <a href="index.html" title="Welcome">Welcome </a>
+            |
+            <a href="impressum.html" title="Impressum">Impressum</a>
+        </dev>
+    </footer>
 
-            Registerbtn.addEventListener('click', (e) => {
 
-                var email = document.getElementById('emailregister').value;
-                var password = document.getElementById('psw').value;
-                var lgDate = new Date();
-                
-                //alert(lgDate)
-                
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+        import { getAuth, createUserWithEmailAndPassword, browserLocalPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, set, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        // Signed in 
-                        const user = userCredential.user;
-                        // ... user.uid
-                        var list_all_users = [];
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
+            authDomain: "memory-app-b17ee.firebaseapp.com",
+            projectId: "memory-app-b17ee",
+            storageBucket: "memory-app-b17ee.appspot.com",
+            messagingSenderId: "3637204477",
+            appId: "1:3637204477:web:1493290d44957d81997594",
+            measurementId: "G-XWPBGZWB4S",
+            databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
+        };
 
-                        set(ref(database, 'users/' + user.uid), {
-                            email: email,
-                            first_login: lgDate.toUTCString()
-                        })
-                        .then(() => {
-                            //Read list_all_users
-                            get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    console.log(snapshot.val());
-                                    //alert(snapshot.val())
-                                    list_all_users = snapshot.val()
-                                    //Update list_all_users
-                                    let new_user = {
-                                        uid: user.uid,
-                                        email: user.email
-                                    }
-                                    
-                                    list_all_users.push(new_user);
-                                    update(ref(database), {
-                                        list_all_users
-                                    })
-                                    .then(() => {
-                                        // Data saved successfully!
-                                        //alert("udpated list_all_users")
-                                        window.location.href = "profile.html"
-                                    })
-                                    .catch((error) => {
-                                        alert(error)
-                                    });
-                                } else {
-                                     //write first user to list_all_users
-                                    //alert("no users yet")
-                                    console.log("no users yet");
-                                    let new_user = {
-                                        uid: user.uid,
-                                        email: user.email
-                                    }
-                                    list_all_users.push(new_user);
-                                    update(ref(database), {
-                                        list_all_users
-                                    })
-                                    .then(() => {
-                                        //alert("sucessfully set list_all_users")
-                                        window.location.href = "profile.html"
-                                    })
-                                    .catch((error) => {
-                                        // The write failed...
-                                        document.getElementById("errorMessage").innerText = error
-                                        //alert(error)
-                                    });
-                                }
-                            }).catch((error) => {
-                                alert(error)
-                                console.error(error);
-                            });
-                            // Data saved successfully!
-                            //window.location.href = "profile.html"
-                        })
-                        .catch((error) => {
-                            // The write failed...
-                            document.getElementById("errorMessage").innerText = error
-                            //alert(error)
-                        });
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        // ..
-                        document.getElementById("errorMessage").innerText = error
-                        //alert(errorMessage)
-                    });
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const dbRef = ref(getDatabase(app));
+
+        var list_all_users = [];
+
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                // Existing and future Auth states are now persisted in the current
+                // session only. Closing the window would clear any existing state even
+                // if a user forgets to sign out.
+                // ...
+                // New sign-in will be persisted with session persistence.
+                return signInWithEmailAndPassword(auth, email, password);
+            })
+            .catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
             });
-          </script>
-    </body>
+        const database = getDatabase(app);
+
+        Registerbtn.addEventListener('click', (e) => {
+
+            var username = document.getElementById('username').value;
+            var email = document.getElementById('emailregister').value;
+            var password = document.getElementById('psw').value;
+            var lgDate = new Date();
+
+            if (username === "" || email === "" || password === "") {
+                document.getElementById("errorMessage").innerText = "Eingabe Fehler";
+            } else {
+                //alert(lgDate)
+                get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        list_all_users = snapshot.val();
+
+                        //look if Username is already taken
+                        var found = false;
+                        for (let i = 0; i < list_all_users.length; i++) {
+                            if (username === list_all_users[i].username) {
+                                document.getElementById("errorMessage").innerText = "Benutzername bereits vergeben";
+                                found = true;
+                            }
+                        }
+
+                        if (!found) {
+                            //create new User
+                            createUserWithEmailAndPassword(auth, email, password)
+                                .then((userCredential) => {
+                                    // Signed in 
+                                    const user = userCredential.user;
+                                    // ... user.uid
+
+                                    set(ref(database, 'users/' + user.uid), {
+                                        username: username,
+                                        email: email,
+                                        first_login: lgDate.toUTCString()
+                                    })
+                                        .then(() => {
+                                            //Read list_all_users
+                                            get(child(dbRef, `list_all_users`)).then((snapshot) => {
+                                                if (snapshot.exists()) {
+                                                    console.log(snapshot.val());
+                                                    //alert(snapshot.val())
+                                                    list_all_users = snapshot.val()
+                                                    //Update list_all_users
+                                                    let new_user = {
+                                                        username: username,
+                                                        uid: user.uid,
+                                                        email: user.email
+                                                    }
+
+                                                    list_all_users.push(new_user);
+                                                    update(ref(database), {
+                                                        list_all_users
+                                                    })
+                                                        .then(() => {
+                                                            // Data saved successfully!
+                                                            //alert("udpated list_all_users")
+                                                            window.location.href = "profile.html"
+                                                        })
+                                                        .catch((error) => {
+                                                            alert(error)
+                                                        });
+                                                } else {
+                                                    //write first user to list_all_users
+                                                    //alert("no users yet")
+                                                    console.log("no users yet");
+                                                    let new_user = {
+                                                        username: username,
+                                                        uid: user.uid,
+                                                        email: user.email
+                                                    }
+                                                    list_all_users.push(new_user);
+                                                    update(ref(database), {
+                                                        list_all_users
+                                                    })
+                                                        .then(() => {
+                                                            //alert("sucessfully set list_all_users")
+                                                            window.location.href = "profile.html"
+                                                        })
+                                                        .catch((error) => {
+                                                            // The write failed...
+                                                            document.getElementById("errorMessage").innerText = error
+                                                            //alert(error)
+                                                        });
+                                                }
+                                            }).catch((error) => {
+                                                alert(error)
+                                                console.error(error);
+                                            });
+                                            // Data saved successfully!
+                                            //window.location.href = "profile.html"
+                                        })
+                                        .catch((error) => {
+                                            // The write failed...
+                                            document.getElementById("errorMessage").innerText = error
+                                            //alert(error)
+                                        });
+                                })
+                                .catch((error) => {
+                                    const errorCode = error.code;
+                                    const errorMessage = error.message;
+                                    // ..
+                                    document.getElementById("errorMessage").innerText = error
+                                    //alert(errorMessage)
+                                });
+                        }
+                    } else {
+                        document.getElementById("errorMessage").innerText = "Keine Benutzer gefunden";
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+            }
+
+
+        });
+    </script>
+</body>
+
 </html>
