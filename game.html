@@ -422,62 +422,62 @@
             var username = "";
 
             swal({
-                            title: "Achtung!",
-                            text: `Wollen Sie wirklich das Spiel ${message} erstellen?`,
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                        })
-                            .then((willDelete) => {
-                                if (willDelete) {
-                                    get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    username = snapshot.val();
-                    let new_game = {
-                        gameName: message,
-                        email: email,
-                        username: username,
-                        start: date.toUTCString(),
-                        done: false
-                    };
+                title: "Achtung!",
+                text: `Wollen Sie wirklich das Spiel ${message} erstellen?`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                            if (snapshot.exists()) {
+                                console.log(snapshot.val());
+                                //alert(snapshot.val())
+                                username = snapshot.val();
+                                let new_game = {
+                                    gameName: message,
+                                    email: email,
+                                    username: username,
+                                    start: date.toUTCString(),
+                                    done: false
+                                };
 
-                    onlineGames.push(new_game);
+                                onlineGames.push(new_game);
 
-                    console.log(new_game);
-                    update(ref(database, `memory`), {
-                        list_hosted_games: onlineGames
-                    })
-                        .then(() => {
-                            // Data saved successfully!
-                            //alert("secessfully saved data")
-                            swal(`Sie warten jetzt einen Mitspieler im Spiel ${message}`, {
-                                        icon: "success",
+                                console.log(new_game);
+                                update(ref(database, `memory`), {
+                                    list_hosted_games: onlineGames
+                                })
+                                    .then(() => {
+                                        // Data saved successfully!
+                                        //alert("secessfully saved data")
+                                        swal(`Sie warten jetzt einen Mitspieler im Spiel ${message}`, {
+                                            icon: "success",
+                                        });
+
+                                    })
+                                    .catch((error) => {
+                                        // The write failed...
+                                        alert(error);
+                                        //alert(error)
                                     });
-    
-                        })
-                        .catch((error) => {
-                            // The write failed...
-                            alert(error);
+                            } else {
+                                //alert("no data")
+                                console.log("no user logged in");
+                            }
+                        }).catch((error) => {
                             //alert(error)
+                            console.error(error);
                         });
-                } else {
-                    //alert("no data")
-                    console.log("no user logged in");
-                }
-            }).catch((error) => {
-                //alert(error)
-                console.error(error);
-            });
 
-                                    
-                                } else {
-                                    //swal("abgebrochen",{icon: "error"});
-                                }
-                            });
 
-            
+                    } else {
+                        //swal("abgebrochen",{icon: "error"});
+                    }
+                });
+
+
 
 
         });
@@ -713,14 +713,14 @@
                         //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
                         swal({
                             title: "Achtung!",
-                            text: `Wollen Sie ${onlineGames[z - 1].username} wirklich beitreten?`,
+                            text: `Wollen Sie ${onlineGames[z - 1].username} "${onlineGames[z - 1].gameName}" wirklich beitreten?`,
                             icon: "warning",
                             buttons: true,
                             dangerMode: true,
                         })
                             .then((willDelete) => {
                                 if (willDelete) {
-                                    swal(`Sie spielen jetzt mit: ${onlineGames[z - 1].username} (hier jetzt die Lobby)`, {
+                                    swal(`Sie spielen jetzt mit: ${onlineGames[z - 1].username} "${onlineGames[z - 1].gameName}" (hier jetzt die Lobby)`, {
                                         icon: "success",
                                     });
                                 } else {
@@ -735,14 +735,14 @@
                                 //alert(`Do you want to join Game: ${onlineGames[i].email}`);
                                 swal({
                                     title: "Achtung!",
-                                    text: `Wollen Sie ${onlineGames[i].username} wirklich beitreten?`,
+                                    text: `Wollen Sie ${onlineGames[i].username} "${onlineGames[i].gameName}" wirklich beitreten?`,
                                     icon: "warning",
                                     buttons: true,
                                     dangerMode: true,
                                 })
                                     .then((willDelete) => {
                                         if (willDelete) {
-                                            swal(`Sie spielen jetzt mit: ${onlineGames[i].username} (hier jetzt die Lobby)`, {
+                                            swal(`Sie spielen jetzt mit: ${onlineGames[i].username} "${onlineGames[i].gameName}" (hier jetzt die Lobby)`, {
                                                 icon: "success",
                                             });
                                         } else {
@@ -772,14 +772,14 @@
                         //alert(`Do you want to join Game: ${all_invitations[z-1].username}`);
                         swal({
                             title: "Achtung!",
-                            text: `Wollen Sie ${all_invitations[z - 1].username} wirklich beitreten?`,
+                            text: `Wollen Sie ${all_invitations[z - 1].username} "${all_invitations[z - 1].message}" wirklich beitreten?`,
                             icon: "warning",
                             buttons: true,
                             dangerMode: true,
                         })
                             .then((willDelete) => {
                                 if (willDelete) {
-                                    swal(`Sie spielen jetzt mit: ${all_invitations[z - 1].username} (hier jetzt die Lobby)`, {
+                                    swal(`Sie spielen jetzt mit: ${all_invitations[z - 1].username} "${all_invitations[z - 1].message}" (hier jetzt die Lobby)`, {
                                         icon: "success",
                                     });
                                 } else {
@@ -792,14 +792,14 @@
                                 //alert(`Do you want to join Game: ${all_invitations[i].username}`);
                                 swal({
                                     title: "Achtung!",
-                                    text: `Wollen Sie ${all_invitations[i].username} wirklich beitreten?`,
+                                    text: `Wollen Sie ${all_invitations[i].username} "${all_invitations[i].message}" wirklich beitreten?`,
                                     icon: "warning",
                                     buttons: true,
                                     dangerMode: true,
                                 })
                                     .then((willDelete) => {
                                         if (willDelete) {
-                                            swal(`Sie spielen jetzt mit: ${all_invitations[i].username} (hier jetzt die Lobby)`, {
+                                            swal(`Sie spielen jetzt mit: ${all_invitations[i].username} "${all_invitations[i].message}" (hier jetzt die Lobby)`, {
                                                 icon: "success",
                                             });
                                         } else {

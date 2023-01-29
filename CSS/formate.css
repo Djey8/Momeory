@@ -3,18 +3,19 @@
 }
 
 table {
-  border:1px solid black;
+  border: 1px solid black;
   padding: 5px;
   border-radius: 7px;
   background-color: white;
 }
+
 #bestGameLabel th {
   background-color: transparent;
   font-family: "garamond-bold";
 }
 
 th {
-  border:1px solid black;
+  border: 1px solid black;
   background-color: rgba(122, 122, 122, 0.5);
 }
 
@@ -23,7 +24,16 @@ td {
   text-align: center;
 }
 
-#leaderboard-table, #online-table, #offline-table, #average-table, #highlight-table, #hosted-games, #invitation-container, #createGame-container, #lookPlayer-container, #all-players {
+#leaderboard-table,
+#online-table,
+#offline-table,
+#average-table,
+#highlight-table,
+#hosted-games,
+#invitation-container,
+#createGame-container,
+#lookPlayer-container,
+#all-players {
   margin-top: 20px;
   width: 100%;
 }
@@ -42,26 +52,31 @@ td {
 
 #noUser {
   text-align: center;
-  color:red;
+  color: red;
   margin-top: 20px;
 }
 
-#createGame-container, #lookPlayer-container {
+#createGame-container,
+#lookPlayer-container {
   width: 100%;
   border-radius: 10px;
   padding: 5px;
   background-color: white;
 }
 
-#gameNameLabel, #lookPlayerLabel, #messageLabel {
+#gameNameLabel,
+#lookPlayerLabel,
+#messageLabel {
   margin-top: 25px;
   display: block;
   font-size: 25px;
-  font-weight:bold;
+  font-weight: bold;
   font-family: "garamond-bold";
 }
 
-#gameNameInput, #lookPlayerInput, #messageInput {
+#gameNameInput,
+#lookPlayerInput,
+#messageInput {
   border-color: black;
   border-width: 1%;
   margin-top: 10px;
@@ -73,7 +88,9 @@ td {
 }
 
 
-#leaderboardbtn, #offlinebtn, #onlinebtn {
+#leaderboardbtn,
+#offlinebtn,
+#onlinebtn {
   border-radius: 10px;
   padding: 10px;
   width: 30%;
@@ -88,6 +105,7 @@ td {
 #offlinebtn {
   margin-left: 4.3%;
 }
+
 #onlinebtn {
   margin-left: 4.3%;
 }
@@ -97,7 +115,7 @@ td {
   float: left;
 }
 
-.container{
+.container {
   box-sizing: content-box;
   width: 400px;
   padding: 30px;
@@ -112,7 +130,7 @@ td {
 
 
 
-.profile-container{
+.profile-container {
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -132,7 +150,7 @@ td {
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 }
 
-#login-container{
+#login-container {
   margin-top: 30px;
   margin-left: 10%;
   width: 80%;
@@ -148,8 +166,8 @@ td {
 }
 
 .headprofile {
-  padding-top: 25px; 
-  font-weight:bolder; 
+  padding-top: 25px;
+  font-weight: bolder;
   font-family: "garamond-bold";
 }
 
@@ -157,6 +175,7 @@ h2 {
   text-align: center;
   margin-bottom: 10px;
 }
+
 p {
   margin-top: 10px;
   margin-bottom: 20px;
@@ -164,18 +183,23 @@ p {
 }
 
 
-#errorMessage{
+#errorMessage {
   color: red;
   font-size: 15px;
 }
 
-#emailLabel, #pswLabel, #usernameLabel{
+#emailLabel,
+#pswLabel,
+#usernameLabel {
   margin-left: 5%;
   width: 10%;
   font-family: "garamond-bold";
 }
 
-#email, #psw, #emailregister, #username {
+#email,
+#psw,
+#emailregister,
+#username {
   text-align: center;
   margin-bottom: 20px;
   border-color: black;
@@ -185,7 +209,8 @@ p {
   width: 70%;
 }
 
-#emailregister, #psw{
+#emailregister,
+#psw {
   margin-top: 10px;
 }
 
@@ -198,7 +223,7 @@ p {
   margin-left: 85px;
 }
 
-#psw{
+#psw {
   margin-left: 50px;
 }
 
@@ -222,7 +247,7 @@ p {
   border-color: black;
 }
 
-#logoutbtn{
+#logoutbtn {
   margin-top: 25px;
   margin-left: 25%;
   width: 50%;
@@ -279,12 +304,17 @@ p {
   color: black;
 }
 
-#links { float: left; }
-#rechts { float: right; }
+#links {
+  float: left;
+}
+
+#rechts {
+  float: right;
+}
 
 body {
   background-color: rgb(3, 52, 107);
-	transition: background-color 25s;
+  transition: background-color 25s;
   font-family: "futura-bold";
   font-size: 20px;
 }
@@ -294,8 +324,8 @@ body {
 }
 
 .centering {
-  display: flex; 
-  justify-content: center; 
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
 
@@ -313,26 +343,30 @@ h3 {
 header {
   margin: 5px;
 }
+
 .info {
-  width:62px;
-  height:62px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   border-width: 2px;
   border-color: black;
 }
+
 .profile {
-  width:62px;
-  height:62px;
+  width: 62px;
+  height: 62px;
   border-radius: 100%;
 }
+
 .yin {
-  width:60px;
-  height:60px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
 }
+
 .yin15 {
-  width:15px;
-  height:15px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
 }
 
@@ -357,7 +391,7 @@ h1 {
 }
 
 .bottom {
-  position:absolute;
+  position: absolute;
   bottom: 5px;
 }
 
@@ -401,10 +435,10 @@ footer {
   font-family: "Poppins", sans-serif;
 }
 
-.stack-top{
+.stack-top {
   z-index: 9;
 }
- 
+
 #wrapper {
   box-sizing: content-box;
   width: 19.87em;
@@ -417,25 +451,30 @@ footer {
   border-radius: 0.6em;
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 }
+
 .game-container {
   position: relative;
   width: 100%;
   display: grid;
   gap: 0.8em;
 }
+
 .stats-container {
   text-align: right;
   margin-bottom: 1.2em;
 }
+
 .stats-container span {
   font-weight: 600;
 }
+
 .card-container {
   position: relative;
   width: 4.15em;
   height: 4.15em;
   cursor: pointer;
 }
+
 .card-before,
 .card-after {
   position: absolute;
@@ -449,21 +488,26 @@ footer {
   transition: transform 0.7s ease-out;
   backface-visibility: hidden;
 }
+
 .card-before {
   background-color: #f4c531;
   font-size: 2.8em;
   font-weight: 600;
 }
+
 .card-after {
   background-color: #ffffff;
   transform: rotateY(180deg);
 }
+
 .card-container.flipped .card-before {
   transform: rotateY(180deg);
 }
+
 .card-container.flipped .card-after {
   transform: rotateY(0deg);
 }
+
 .controls-container {
   padding-left: 5%;
   padding-right: 5%;
@@ -479,7 +523,7 @@ footer {
   left: 50%;
   top: 50%;
   border-radius: 0.6em;
-  box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);   
+  box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 }
 
 #backbtn {
@@ -492,12 +536,16 @@ footer {
   height: 50px;
   float: left;
 }
+
 #online-back {
   width: 100%;
   height: 100%;
 }
 
-#lookGamebtn, #createGamebtn, #invitePlayerbtn, #invitationbtn {
+#lookGamebtn,
+#createGamebtn,
+#invitePlayerbtn,
+#invitationbtn {
   display: block;
   width: 80%;
   margin-left: 10%;
@@ -510,7 +558,8 @@ footer {
   color: black;
 }
 
-#newGamebtn, #lookPlayerbtn {
+#newGamebtn,
+#lookPlayerbtn {
   display: block;
   width: 20%;
   margin-left: 40%;
@@ -543,7 +592,7 @@ footer {
   background-color: #5192ed;
 }
 
-.online-container{
+.online-container {
   padding: 2%;
   margin-top: 20px;
   margin-left: 2%;
@@ -553,11 +602,13 @@ footer {
   text-align: center;
 }
 
-#hosted-games, #invitation-container {
+#hosted-games,
+#invitation-container {
   width: 100%;
 }
 
-#start, #multiplayerbtn{
+#start,
+#multiplayerbtn {
   margin-bottom: 20px;
   padding: 10px;
   border-radius: 10px;
@@ -576,13 +627,14 @@ footer {
   border-width: 0px;
   border-radius: 10px;
 }
+
 #memory {
   text-align: center;
   width: 30%;
   border: none;
   border-radius: 0.3em;
   padding: 1em 1.5em;
-  cursor: pointer;                          
+  cursor: pointer;
   font-size: 1.1em;
   display: block;
   margin: 1.1em auto 0 auto;
@@ -593,18 +645,22 @@ footer {
 .hide {
   display: none;
 }
+
 #result {
   text-align: center;
 }
+
 #result h2 {
   font-size: 3.5em;
   padding: 10px;
 }
+
 #result h4 {
   font-size: 1.6em;
   margin-top: 10px;
-  font-family:'Times New Roman', Times, serif;
+  font-family: 'Times New Roman', Times, serif;
 }
+
 .image {
   width: 100%;
   height: 100%;
