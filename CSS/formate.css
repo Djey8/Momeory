@@ -364,6 +364,31 @@ header {
   border-radius: 50%;
 }
 
+#picturesContainer{
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5%;
+}
+
+.imageShow{
+  margin-top: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 25px;
+}
+
+.baum {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border-width: 5px;
+  border-color: black;
+  margin-left: 10px;
+}
+
 .yin15 {
   width: 15px;
   height: 15px;
