@@ -1,3 +1,71 @@
+#player1Container, #player2Container{
+  background-color: white;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 20px;
+  display: block;
+}
+
+#player1Label, #player2Label{
+  text-align: center;
+  font-family: "garamond-bold";
+  font-size: 25px;
+}
+
+#name1Label, #name2Label{
+  display: flex;
+  float: left;
+  margin-left: 40%;
+  padding: 5px;
+  font-family: "garamond-bold";
+  font-size: 20px;
+}
+
+#status1, #status2{
+  display: flex;
+  float: right;
+  height: 30px;
+  aspect-ratio: 1/1;
+  border-radius: 100%;
+  margin-right: 40%;
+}
+
+#ready1btn, #ready2btn{
+  border-color: transparent;
+  border-radius: 20px;
+  color: white;
+  margin-top: 10px;
+  margin-left: 20%;
+  margin-right: 20%;
+  width: 60%;
+  padding: 5px;
+  font-family: "garamond-bold";
+  font-size: 20px;
+}
+
+#verlassenbtn{
+  margin-top: 25px;
+  margin-left: 25%;
+  width: 50%;
+  background-color: #8f0d0d;
+  border-radius: 15px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 10px;
+  border-color: black;
+}
+
+.red{
+  background-color: red;
+}
+
+.blue{
+  background-color: #0b4595;
+}
+
 #modusLabel {
   margin-top: 25px;
 }
@@ -362,6 +430,31 @@ header {
   width: 60px;
   height: 60px;
   border-radius: 50%;
+}
+
+#picturesContainer{
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5%;
+}
+
+.imageShow{
+  margin-top: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 25px;
+}
+
+.baum {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border-width: 5px;
+  border-color: black;
+  margin-left: 10px;
 }
 
 .yin15 {

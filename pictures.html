@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alle Bilder</title>
+    <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
+    <link rel="icon" type="image/x-icon"
+        href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
+    <script src="Skripte/Script1.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <header>
+        <div>
+            <a id="links" href="instructions.html" title="Zurück zur Anleitung"> <img class="yin"
+                    src="Bilder/yinyang.jpg"></a>
+        </div>
+        <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img
+                    src="Bilder/logo.png" width="250"></a></div>
+        <div>
+            <h1 id="mitte" class=center>Alle Bilder</h1>
+        </div>
+    </header>
+    <h3 class="center" style="color: white;"> Memory - Gedächtnisspiel<br></h3>
+
+    <div id="picturesContainer">
+    </div>
+    <script type="module">
+        const picturesContainer = document.getElementById("picturesContainer");
+        const items = [
+            { name: "pic1", image: "../Bilder/pic1-klein.jpeg" },
+            { name: "pic2", image: "../Bilder/pic2-klein.jpeg" },
+            { name: "pic3", image: "../Bilder/pic3-klein.jpeg" },
+            { name: "pic4", image: "../Bilder/pic4-klein.jpeg" },
+            { name: "pic5", image: "../Bilder/pic5-klein.jpeg" },
+            { name: "pic6", image: "../Bilder/pic6-klein.jpeg" },
+            { name: "pic7", image: "../Bilder/pic7-klein.jpeg" },
+            { name: "pic8", image: "../Bilder/pic8-klein.jpeg" },
+            { name: "pic9", image: "../Bilder/pic9-klein.jpeg" },
+            { name: "pic10", image: "../Bilder/pic10-klein.jpeg" },
+            { name: "pic11", image: "../Bilder/pic11-klein.jpeg" },
+            { name: "pic12", image: "../Bilder/pic12-klein.jpeg" },
+            { name: "pic13", image: "../Bilder/pic13-klein.jpg" },
+            { name: "pic14", image: "../Bilder/pic14-klein.jpg" },
+            { name: "pic15", image: "../Bilder/pic15-klein.jpg" },
+            { name: "pic16", image: "../Bilder/pic16-klein.jpg" },
+            { name: "pic17", image: "../Bilder/pic17-klein.jpg" },
+            { name: "pic18", image: "../Bilder/pic18-klein.jpg" },
+            { name: "pic19", image: "../Bilder/pic19-klein.jpg" },
+            { name: "pic20", image: "../Bilder/pic20-klein.jpg" },
+            { name: "pic21", image: "../Bilder/pic21-klein.jpg" },
+            { name: "pic22", image: "../Bilder/pic22-klein.jpg" },
+            { name: "pic23", image: "../Bilder/pic23-klein.jpg" },
+            { name: "pic24", image: "../Bilder/pic24-klein.jpg" },
+            { name: "pic25", image: "../Bilder/pic25-klein.jpg" },
+            { name: "pic26", image: "../Bilder/pic26-klein.jpg" },
+            { name: "pic27", image: "../Bilder/pic27-klein.jpg" },
+            { name: "pic28", image: "../Bilder/pic28-klein.jpg" },
+            { name: "pic29", image: "../Bilder/pic29-klein.jpg" },
+            { name: "pic30", image: "../Bilder/pic30-klein.jpg" },
+        ];
+
+        for (let i = 0; i < items.length; i++) {
+            const newImage = `<img src="${items[i].image}" class="imageShow"/>`
+            picturesContainer.innerHTML += newImage;
+        }
+
+    </script>
+    <footer class="endBottom">
+        <div style="margin-bottom: 8px; line-height: 15px;">
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+        </div>
+        <hr class="trenn-linie" style="margin-bottom: 5px;">
+        </hr>
+        <dev>
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising. <br>
+        </dev>
+        <dev>
+            <a href="index.html" title="Welcome">Welcome </a>
+            |
+            <a href="impressum.html" title="Impressum">Impressum</a>
+        </dev>
+    </footer>
+</body>
+
+</html>

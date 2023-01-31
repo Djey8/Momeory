@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lobby</title>
+    <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
+    <link rel="icon" type="image/x-icon"
+        href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
+    <script src="Skripte/Script1.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div>
+            <a id="links" href="game.html" title="Lobby verlassen"> <img class="yin" src="Bilder/yinyang.jpg"></a>
+        </div>
+        <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img
+                    src="Bilder/logo.png" width="250"></a></div>
+        <div>
+            <h1 id="mitte" class=center>Lobby</h1>
+        </div>
+    </header>
+    <h3 id="gameLabel" class="center" style="color: white;"></h3>
+    <div id="player1Container">
+        <h4 id="player1Label">Spieler 1</h4>
+        <h6 id="name1Label"></h6>
+        <img id="status1" src="Bilder/red.png" alt="Kein status">
+        <p><br></p>
+        <button class="blue" id="ready1btn">bereit</button>
+    </div>
+    <div id="player2Container">
+        <h4 id="player2Label">Spieler 2</h4>
+        <h6 id="name2Label">[kein Spieler]</h6>
+        <img id="status2" src="Bilder/red.png" alt="Kein status">
+        <p><br></p>
+        <button class="blue" id="ready2btn">bereit</button>
+    </div>
+    <button id="verlassenbtn">Lobby verlassen</button>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
+            authDomain: "memory-app-b17ee.firebaseapp.com",
+            projectId: "memory-app-b17ee",
+            storageBucket: "memory-app-b17ee.appspot.com",
+            messagingSenderId: "3637204477",
+            appId: "1:3637204477:web:1493290d44957d81997594",
+            measurementId: "G-XWPBGZWB4S",
+            databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase(app));
+        const container = document.getElementById("login-container");
+        const logoutC = document.getElementById("profile");
+        const error = document.getElementById("errorMessage");
+
+        var onlineGames = [];
+        var all_invitations = [];
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+
+                var myName = "";
+                get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        myName = snapshot.val();
+                    } else {
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+
+                var id = localStorage.getItem("gameID");
+                if (!(id === "")) {
+                    //hosted Game
+                    onlineGames = [];
+                    get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            const readyOne = document.getElementById("ready1btn");
+                            const readyTwo = document.getElementById("ready2btn");
+                            readyOne.classList.remove("hide");
+                            readyTwo.classList.add("hide");
+                            document.getElementById("gameLabel").innerText = `"${onlineGames[id].gameName}"`
+                            document.getElementById("name1Label").innerText = `${onlineGames[id].username}`
+                            if (!(myName === onlineGames[id].username)) {
+                                readyOne.classList.add("hide");
+                                readyTwo.classList.remove("hide");
+                                document.getElementById("name2Label").innerText = myName;
+                            }
+
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                } else {
+                    //Inivation Game
+                    var inviteId = localStorage.getItem("invitationID");
+                    var opp_uid = localStorage.getItem("opp_uid");
+                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            all_invitations = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            const readyOne = document.getElementById("ready1btn");
+                            const readyTwo = document.getElementById("ready2btn");
+                            readyOne.classList.remove("hide");
+                            readyTwo.classList.add("hide");
+                            document.getElementById("gameLabel").innerText = `"${all_invitations[inviteId].message}"`
+                            document.getElementById("name1Label").innerText = `${all_invitations[inviteId].username}`
+                            if (!(myName === all_invitations[inviteId].username)) {
+                                readyOne.classList.add("hide");
+                                readyTwo.classList.remove("hide");
+                                document.getElementById("name2Label").innerText = myName;
+                            }
+
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                }
+                // ...
+
+            } else {
+                // User is signed out
+                // ...
+                container.classList.remove("hide");
+                logoutC.classList.add("hide");
+            }
+        });
+
+        const readyOne = document.getElementById("ready1btn");
+        const readyTwo = document.getElementById("ready2btn");
+        ready1btn.addEventListener('click', (e) => {
+            if (document.getElementById("status1").src.includes("Bilder/red.png")) {
+                document.getElementById("status1").src = "Bilder/green.png";
+                readyOne.innerText = "nicht bereit";
+                readyOne.classList.remove("blue");
+                readyOne.classList.add("red");
+            } else {
+                document.getElementById("status1").src = "Bilder/red.png";
+                readyOne.innerText = "bereit";
+                readyOne.classList.add("blue");
+                readyOne.classList.remove("red");
+            }
+        });
+
+        ready2btn.addEventListener('click', (e) => {
+            if (document.getElementById("status2").src.includes("Bilder/red.png")) {
+                document.getElementById("status2").src = "Bilder/green.png";
+                readyTwo.innerText = "nicht bereit";
+                readyTwo.classList.remove("blue");
+                readyTwo.classList.add("red");
+            } else {
+                document.getElementById("status2").src = "Bilder/red.png";
+                readyTwo.innerText = "bereit";
+                readyTwo.classList.add("blue");
+                readyTwo.classList.remove("red");
+            }
+        });
+
+        verlassenbtn.addEventListener('click', (e) => {
+            swal({
+                title: "Achtung!",
+                text: `Wollen Sie die Lobby verlassen?`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        window.location.href = "game.html";
+                    } else {
+                        //swal("abgebrochen",{icon: "error"});
+                    }
+                });
+
+        });
+    </script>
+    <footer class="endBottom">
+        <div style="margin-bottom: 8px; line-height: 15px;">
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+        </div>
+        <hr class="trenn-linie" style="margin-bottom: 5px;">
+        </hr>
+        <dev>
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising. <br>
+        </dev>
+        <dev>
+            <a href="index.html" title="Welcome">Welcome </a>
+            |
+            <a href="impressum.html" title="Impressum">Impressum</a>
+        </dev>
+    </footer>
+</body>
+
+</html>

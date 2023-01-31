@@ -452,9 +452,8 @@
                                     .then(() => {
                                         // Data saved successfully!
                                         //alert("secessfully saved data")
-                                        swal(`Sie warten jetzt einen Mitspieler im Spiel ${message}`, {
-                                            icon: "success",
-                                        });
+                                        localStorage.setItem("gameID", onlineGames.length - 1);
+                                        window.location.href = "lobby.html";
 
                                     })
                                     .catch((error) => {
@@ -537,10 +536,10 @@
                                             })
                                                 .then(() => {
                                                     // Data saved successfully!
-                                                    swal(`Sie warten jetzt auf: ${opponent} (hier jetzt die Lobby)`, {
-                                                        icon: "success",
-                                                    });
-
+                                                    localStorage.setItem("gameID", "");
+                                                    localStorage.setItem("invitationID", invitations.length - 1);
+                                                    localStorage.setItem("opp_uid", opp_uid);
+                                                    window.location.href = "lobby.html";
                                                 })
                                                 .catch((error) => {
                                                     alert("error with invite");
@@ -555,9 +554,10 @@
                                             update(ref(database, `users/${opp_uid}`), {
                                                 invitations
                                             })
-                                            swal(`Sie warten jetzt auf: ${opponent} (hier jetzt die Lobby)`, {
-                                                icon: "success",
-                                            });
+                                            localStorage.setItem("gameID", "");
+                                            localStorage.setItem("invitationID", invitations.length - 1);
+                                            localStorage.setItem("opp_uid", opp_uid);
+                                            window.location.href = "lobby.html";
                                         }
                                     }).catch((error) => {
                                         //alert(error)
@@ -658,7 +658,7 @@
                     } else {
                         var result_users = [];
                         for (let i = 0; i < all_user.length; i++) {
-                            if (all_user[i].username.includes(pattern.toLowerCase())) {
+                            if (all_user[i].username.toLowerCase().includes(pattern.toLowerCase())) {
                                 result_users.push(all_user[i]);
                             }
                         }
@@ -720,9 +720,20 @@
                         })
                             .then((willDelete) => {
                                 if (willDelete) {
-                                    swal(`Sie spielen jetzt mit: ${onlineGames[z - 1].username} "${onlineGames[z - 1].gameName}" (hier jetzt die Lobby)`, {
-                                        icon: "success",
-                                    });
+                                    onlineGames[z - 1].done = true;
+                                    var list_hosted_games = onlineGames;
+                                    update(ref(database, `memory`), {
+                                        list_hosted_games
+                                    })
+                                        .then(() => {
+                                            // Data saved successfully!
+                                            localStorage.setItem("gameID", z - 1);
+                                            localStorage.setItem("invitationID", "");
+                                            window.location.href = "lobby.html"
+                                        })
+                                        .catch((error) => {
+                                            alert("error with invite");
+                                        });
                                 } else {
                                     //swal("abgebrochen",{icon: "error"});
                                 }
@@ -742,9 +753,21 @@
                                 })
                                     .then((willDelete) => {
                                         if (willDelete) {
-                                            swal(`Sie spielen jetzt mit: ${onlineGames[i].username} "${onlineGames[i].gameName}" (hier jetzt die Lobby)`, {
-                                                icon: "success",
-                                            });
+                                            onlineGames[i].done = true;
+                                            var list_hosted_games = onlineGames;
+                                            update(ref(database, `memory`), {
+                                                list_hosted_games
+                                            })
+                                                .then(() => {
+                                                    // Data saved successfully!
+                                                    localStorage.setItem("gameID", i);
+                                                    localStorage.setItem("invitationID", "");
+                                                    window.location.href = "lobby.html"
+                                                })
+                                                .catch((error) => {
+                                                    alert("error with invite");
+                                                });
+
                                         } else {
                                             //swal("abgebrochen",{icon: "error"});
                                         }
@@ -779,9 +802,24 @@
                         })
                             .then((willDelete) => {
                                 if (willDelete) {
-                                    swal(`Sie spielen jetzt mit: ${all_invitations[z - 1].username} "${all_invitations[z - 1].message}" (hier jetzt die Lobby)`, {
-                                        icon: "success",
-                                    });
+                                    const auth = getAuth(app);
+                                    const user = auth.currentUser;
+                                    //window.location.href = "lobby.html";
+                                    all_invitations[z - 1].done = true;
+                                    var invitations = all_invitations;
+                                    update(ref(database, `users/${user.uid}`), {
+                                        invitations
+                                    })
+                                        .then(() => {
+                                            // Data saved successfully!
+                                            localStorage.setItem("gameID", "");
+                                            localStorage.setItem("invitationID", z - 1);
+                                            localStorage.setItem("opp_uid", user.uid);
+                                            window.location.href = "lobby.html";
+                                        })
+                                        .catch((error) => {
+                                            alert("error with invite");
+                                        });
                                 } else {
                                     //swal("abgebrochen",{icon: "error"});
                                 }
@@ -799,9 +837,24 @@
                                 })
                                     .then((willDelete) => {
                                         if (willDelete) {
-                                            swal(`Sie spielen jetzt mit: ${all_invitations[i].username} "${all_invitations[i].message}" (hier jetzt die Lobby)`, {
-                                                icon: "success",
-                                            });
+                                            const auth = getAuth(app);
+                                            const user = auth.currentUser;
+
+                                            all_invitations[i].done = true;
+                                            var invitations = all_invitations;
+                                            update(ref(database, `users/${user.uid}`), {
+                                                invitations
+                                            })
+                                                .then(() => {
+                                                    // Data saved successfully!
+                                                    localStorage.setItem("gameID", "");
+                                                    localStorage.setItem("invitationID", i);
+                                                    localStorage.setItem("opp_uid", user.uid);
+                                                    window.location.href = "lobby.html";
+                                                })
+                                                .catch((error) => {
+                                                    alert("error with invite");
+                                                });
                                         } else {
                                             //swal("abgebrochen",{icon: "error"});
                                         }
@@ -825,8 +878,10 @@
                     //alert("games loaded");
                     invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
                     for (let i = 0; i < all_invitations.length; i++) {
-                        const insertInvitation = `<tr><td>${i + 1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].username}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
-                        invitations.innerHTML += insertInvitation;
+                        if (!all_invitations[i].done) {
+                            const insertInvitation = `<tr><td>${i + 1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].username}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                            invitations.innerHTML += insertInvitation;
+                        }
                     }
                     setUpButtonsJoinInvitations();
                 } else {
