@@ -14,7 +14,8 @@
 <body>
     <header>
         <div>
-            <a id="links" href="game.html" title="Lobby verlassen"> <img class="yin" src="Bilder/yinyang.jpg"></a>
+            <a class="hide" id="l1" style="float: left;" title="Lobby löschen"> <img class="yin"
+                    src="Bilder/yinyang.jpg"></a>
         </div>
         <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img
                     src="Bilder/logo.png" width="250"></a></div>
@@ -119,6 +120,8 @@
                             //alert("games loaded");
                             const readyOne = document.getElementById("ready1btn");
                             const readyTwo = document.getElementById("ready2btn");
+                            const trash = document.getElementById("l1");
+                            trash.classList.add("hide");
                             readyOne.classList.remove("hide");
                             readyTwo.classList.add("hide");
                             document.getElementById("gameLabel").innerText = `"${onlineGames[id].gameName}"`
@@ -127,6 +130,20 @@
                                 readyOne.classList.add("hide");
                                 readyTwo.classList.remove("hide");
                                 document.getElementById("name2Label").innerText = myName;
+                            } else {
+                                trash.classList.remove("hide");
+                                onlineGames[id].done = false;
+                                var list_hosted_games = onlineGames;
+                                update(ref(database, `memory`), {
+                                    list_hosted_games
+                                })
+                                    .then(() => {
+                                        // Data saved successfully!
+                                        console.log("game live again");
+                                    })
+                                    .catch((error) => {
+                                        alert("error with invite");
+                                    });
                             }
 
                         } else {
@@ -150,6 +167,7 @@
                             //alert("games loaded");
                             const readyOne = document.getElementById("ready1btn");
                             const readyTwo = document.getElementById("ready2btn");
+                            const trash = document.getElementById("l1");
                             readyOne.classList.remove("hide");
                             readyTwo.classList.add("hide");
                             document.getElementById("gameLabel").innerText = `"${all_invitations[inviteId].message}"`
@@ -158,6 +176,20 @@
                                 readyOne.classList.add("hide");
                                 readyTwo.classList.remove("hide");
                                 document.getElementById("name2Label").innerText = myName;
+                            } else {
+                                trash.classList.remove("hide");
+                                all_invitations[inviteId].done = false;
+                                var invitations = all_invitations;
+                                update(ref(database, `users/${opp_uid}`), {
+                                    invitations
+                                })
+                                    .then(() => {
+                                        // Data saved successfully!
+                                        console.log("game live again");
+                                    })
+                                    .catch((error) => {
+                                        alert("error with invite");
+                                    });
                             }
 
                         } else {
@@ -209,22 +241,64 @@
             }
         });
 
-        verlassenbtn.addEventListener('click', (e) => {
+        l1.addEventListener('click', (e) => {
+            verlassen(true, "Wollen Sie die Lobby wirklich löschen", "error");
+        });
+
+        function verlassen(w, message, icon) {
             swal({
                 title: "Achtung!",
-                text: `Wollen Sie die Lobby verlassen?`,
-                icon: "warning",
+                text: `${message}?`,
+                icon: icon,
                 buttons: true,
                 dangerMode: true,
             })
                 .then((willDelete) => {
                     if (willDelete) {
-                        window.location.href = "game.html";
+                        var id = localStorage.getItem("gameID");
+                        if (!(id === "")) {
+                            onlineGames[id].done = w;
+                            var list_hosted_games = onlineGames;
+                            update(ref(database, `memory`), {
+                                list_hosted_games
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("game live again");
+                                    window.location.href = "game.html"
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+                        } else {
+                            var inviteId = localStorage.getItem("invitationID");
+                            var opp_uid = localStorage.getItem("opp_uid");
+                            const auth = getAuth(app);
+                            const user = auth.currentUser;
+                            //window.location.href = "lobby.html";
+                            all_invitations[inviteId].done = w;
+                            var invitations = all_invitations;
+                            update(ref(database, `users/${opp_uid}`), {
+                                invitations
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("game live again");
+                                    window.location.href = "game.html";
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+                        }
+
                     } else {
                         //swal("abgebrochen",{icon: "error"});
                     }
                 });
+        }
 
+        verlassenbtn.addEventListener('click', (e) => {
+            verlassen(false, "Wollen Sie die Lobby verlassen", "warning");
         });
     </script>
     <footer class="endBottom">
