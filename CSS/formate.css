@@ -1,11 +1,12 @@
 #player1Container, #player2Container{
   background-color: white;
-  width: 90%;
-  margin-left: 5%;
+  margin-left: auto;
+  margin-right: auto;
   margin-top: 15px;
-  padding: 10px;
+  padding: 20px;
   border-radius: 20px;
   display: block;
+  width: 40%;
 }
 
 #player1Label, #player2Label{
@@ -15,21 +16,15 @@
 }
 
 #name1Label, #name2Label{
-  display: flex;
-  float: left;
-  margin-left: 40%;
   padding: 5px;
   font-family: "garamond-bold";
   font-size: 20px;
 }
 
 #status1, #status2{
-  display: flex;
-  float: right;
   height: 30px;
   aspect-ratio: 1/1;
   border-radius: 100%;
-  margin-right: 40%;
 }
 
 #ready1btn, #ready2btn{
@@ -37,12 +32,12 @@
   border-radius: 20px;
   color: white;
   margin-top: 10px;
-  margin-left: 20%;
-  margin-right: 20%;
-  width: 60%;
-  padding: 5px;
+  margin-left: 5%;
+  width: 90%;
+  padding: 8px;
   font-family: "garamond-bold";
   font-size: 20px;
+  margin-bottom: 10px;
 }
 
 #verlassenbtn{
@@ -91,11 +86,18 @@ td {
   padding: 10px;
   text-align: center;
 }
+#player1-table, #player2-table {
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  margin-bottom: 20px;
+}
 
 #leaderboard-table,
 #online-table,
 #offline-table,
-#average-table,
+#average-table, 
 #highlight-table,
 #hosted-games,
 #invitation-container,

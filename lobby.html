@@ -25,16 +25,30 @@
     <h3 id="gameLabel" class="center" style="color: white;"></h3>
     <div id="player1Container">
         <h4 id="player1Label">Spieler 1</h4>
-        <h6 id="name1Label"></h6>
-        <img id="status1" src="Bilder/red.png" alt="Kein status">
-        <p><br></p>
+        <table id="player1-table" class="">
+            <tr>
+                <th>Spieler</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td id="name1Label">[Kein Spieler]</td>
+                <td><img id="status1" src="Bilder/red.png" alt="Kein status"></td>
+            </tr>
+        </table>
         <button class="blue" id="ready1btn">bereit</button>
     </div>
     <div id="player2Container">
         <h4 id="player2Label">Spieler 2</h4>
-        <h6 id="name2Label">[kein Spieler]</h6>
-        <img id="status2" src="Bilder/red.png" alt="Kein status">
-        <p><br></p>
+        <table id="player2-table" class="">
+            <tr>
+                <th>Spieler</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td id="name2Label">[Kein Spieler]</td>
+                <td><img id="status2" src="Bilder/red.png" alt="Kein status"></td>
+            </tr>
+        </table>
         <button class="blue" id="ready2btn">bereit</button>
     </div>
     <button id="verlassenbtn">Lobby verlassen</button>
