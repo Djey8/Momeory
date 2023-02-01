@@ -57,7 +57,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, update, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -74,6 +74,8 @@
             databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
         };
 
+
+
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
@@ -85,15 +87,19 @@
         const logoutC = document.getElementById("profile");
         const error = document.getElementById("errorMessage");
 
+
+
         var onlineGames = [];
         var all_invitations = [];
+        var id = localStorage.getItem("gameID");
+
+        var myName = "";
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 const uid = user.uid;
 
-                var myName = "";
                 get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
                     if (snapshot.exists()) {
                         console.log(snapshot.val());
@@ -107,7 +113,7 @@
                     console.error(error);
                 });
 
-                var id = localStorage.getItem("gameID");
+
                 if (!(id === "")) {
                     //hosted Game
                     onlineGames = [];
@@ -117,6 +123,57 @@
                             //alert(snapshot.val())
                             onlineGames = snapshot.val();
                             //noUser.classList.add("hide");
+                            get(child(dbRef, `memory/list_hosted_games/${id}/opp_username`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    document.getElementById("name2Label").innerText = snapshot.val()
+                                } else {
+                                    //alert("no data")
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
+
+                            get(child(dbRef, `users/${uid}/username`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    myName = snapshot.val();
+                                    //noUser.classList.add("hide");
+                                    //alert("games loaded");
+                                } else {
+                                    //alert("no data");
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
+
+
+                            get(child(dbRef, `memory/list_hosted_games/${id}/ready2`)).then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    //alert(snapshot.val())
+                                    var status2 = snapshot.val();
+                                    if (status2) {
+                                        document.getElementById("status1").src = "Bilder/green.png";
+                                    }
+                                } else {
+                                    //alert("no data")
+                                    console.log("No data available");
+                                }
+                            }).catch((error) => {
+                                //alert(error)
+                                console.error(error);
+                            });
+
+
+
+
                             //alert("games loaded");
                             const readyOne = document.getElementById("ready1btn");
                             const readyTwo = document.getElementById("ready2btn");
@@ -130,7 +187,36 @@
                                 readyOne.classList.add("hide");
                                 readyTwo.classList.remove("hide");
                                 document.getElementById("name2Label").innerText = myName;
+                                const ready1 = ref(database, `memory/list_hosted_games/${id}/ready1`);
+                                onValue(ready1, (snapshot) => {
+                                    const data = snapshot.val();
+                                    //alert("ready1 changed");
+                                    //alert(data);
+                                    if (data) {
+                                        document.getElementById("status1").src = "Bilder/green.png";
+                                    } else {
+                                        document.getElementById("status1").src = "Bilder/red.png";
+                                    }
+                                });
                             } else {
+                                const ready2 = ref(database, `memory/list_hosted_games/${id}/ready2`);
+                                onValue(ready2, (snapshot) => {
+                                    const data = snapshot.val();
+                                    //alert("ready2 changed");
+                                    //alert(data);
+                                    if (data) {
+                                        document.getElementById("status2").src = "Bilder/green.png";
+                                    } else {
+                                        document.getElementById("status2").src = "Bilder/red.png";
+                                    }
+                                });
+                                const opp_name = ref(database, `memory/list_hosted_games/${id}/opp_username`);
+                                onValue(opp_name, (snapshot) => {
+                                    const data = snapshot.val();
+                                    //alert("ready2 changed");
+                                    //alert(data);
+                                    document.getElementById("name2Label").innerText = data;
+                                });
                                 trash.classList.remove("hide");
                                 onlineGames[id].done = false;
                                 var list_hosted_games = onlineGames;
@@ -173,10 +259,39 @@
                             document.getElementById("gameLabel").innerText = `"${all_invitations[inviteId].message}"`
                             document.getElementById("name1Label").innerText = `${all_invitations[inviteId].username}`
                             if (!(myName === all_invitations[inviteId].username)) {
+                                const ready1 = ref(database, `users/${opp_uid}/invitations/${inviteId}/ready1`);
+                                onValue(ready1, (snapshot) => {
+                                    const data = snapshot.val();
+                                    //alert("ready1 changed");
+                                    //alert(data);
+                                    if (data) {
+                                        document.getElementById("status1").src = "Bilder/green.png";
+                                    } else {
+                                        document.getElementById("status1").src = "Bilder/red.png";
+                                    }
+                                });
                                 readyOne.classList.add("hide");
                                 readyTwo.classList.remove("hide");
                                 document.getElementById("name2Label").innerText = myName;
                             } else {
+                                const ready2 = ref(database, `users/${opp_uid}/invitations/${inviteId}/ready2`);
+                                onValue(ready2, (snapshot) => {
+                                    const data = snapshot.val();
+                                    //alert("ready2 changed");
+                                    //alert(data);
+                                    if (data) {
+                                        document.getElementById("status2").src = "Bilder/green.png";
+                                    } else {
+                                        document.getElementById("status2").src = "Bilder/red.png";
+                                    }
+                                });
+                                const opp_name = ref(database, `users/${opp_uid}/invitations/${inviteId}/opp_username`);
+                                onValue(opp_name, (snapshot) => {
+                                    const data = snapshot.val();
+                                    //alert("ready2 changed");
+                                    //alert(data);
+                                    document.getElementById("name2Label").innerText = data;
+                                });
                                 trash.classList.remove("hide");
                                 all_invitations[inviteId].done = false;
                                 var invitations = all_invitations;
@@ -219,11 +334,140 @@
                 readyOne.innerText = "nicht bereit";
                 readyOne.classList.remove("blue");
                 readyOne.classList.add("red");
+                var id = localStorage.getItem("gameID");
+                if (!(id === "")) {
+                    //hosted Game
+                    onlineGames = [];
+                    get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            onlineGames[id].ready1 = true;
+                            var list_hosted_games = onlineGames;
+                            update(ref(database, `memory`), {
+                                list_hosted_games
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 1 ready");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                } else {
+                    //Inivation Game
+                    var inviteId = localStorage.getItem("invitationID");
+                    var opp_uid = localStorage.getItem("opp_uid");
+                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            all_invitations = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            all_invitations[inviteId].ready1 = true;
+                            var invitations = all_invitations;
+                            update(ref(database, `users/${opp_uid}`), {
+                                invitations
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 1 ready");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                }
+
             } else {
                 document.getElementById("status1").src = "Bilder/red.png";
                 readyOne.innerText = "bereit";
                 readyOne.classList.add("blue");
                 readyOne.classList.remove("red");
+                var id = localStorage.getItem("gameID");
+                if (!(id === "")) {
+                    //hosted Game
+                    onlineGames = [];
+                    get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            onlineGames[id].ready1 = false;
+                            var list_hosted_games = onlineGames;
+                            update(ref(database, `memory`), {
+                                list_hosted_games
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 1 not ready! Delet Lobby");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                } else {
+                    //Inivation Game
+                    var inviteId = localStorage.getItem("invitationID");
+                    var opp_uid = localStorage.getItem("opp_uid");
+                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            all_invitations = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            all_invitations[inviteId].ready1 = false;
+                            var invitations = all_invitations;
+                            update(ref(database, `users/${opp_uid}`), {
+                                invitations
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 1 not ready! Delet Lobby");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                }
             }
         });
 
@@ -233,11 +477,139 @@
                 readyTwo.innerText = "nicht bereit";
                 readyTwo.classList.remove("blue");
                 readyTwo.classList.add("red");
+                var id = localStorage.getItem("gameID");
+                if (!(id === "")) {
+                    //hosted Game
+                    onlineGames = [];
+                    get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            onlineGames[id].ready2 = true;
+                            var list_hosted_games = onlineGames;
+                            update(ref(database, `memory`), {
+                                list_hosted_games
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 2 ready");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                } else {
+                    //Inivation Game
+                    var inviteId = localStorage.getItem("invitationID");
+                    var opp_uid = localStorage.getItem("opp_uid");
+                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            all_invitations = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            all_invitations[inviteId].ready2 = true;
+                            var invitations = all_invitations;
+                            update(ref(database, `users/${opp_uid}`), {
+                                invitations
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 2 ready");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                }
             } else {
                 document.getElementById("status2").src = "Bilder/red.png";
                 readyTwo.innerText = "bereit";
                 readyTwo.classList.add("blue");
                 readyTwo.classList.remove("red");
+                var id = localStorage.getItem("gameID");
+                if (!(id === "")) {
+                    //hosted Game
+                    onlineGames = [];
+                    get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            onlineGames[id].ready2 = false;
+                            var list_hosted_games = onlineGames;
+                            update(ref(database, `memory`), {
+                                list_hosted_games
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 2 not ready!");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                } else {
+                    //Inivation Game
+                    var inviteId = localStorage.getItem("invitationID");
+                    var opp_uid = localStorage.getItem("opp_uid");
+                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            all_invitations = snapshot.val();
+                            //noUser.classList.add("hide");
+                            //alert("games loaded");
+                            all_invitations[inviteId].ready2 = false;
+                            var invitations = all_invitations;
+                            update(ref(database, `users/${opp_uid}`), {
+                                invitations
+                            })
+                                .then(() => {
+                                    // Data saved successfully!
+                                    console.log("player 2 not ready!");
+                                })
+                                .catch((error) => {
+                                    alert("error with invite");
+                                });
+
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
+                }
             }
         });
 
@@ -246,6 +618,21 @@
         });
 
         function verlassen(w, message, icon) {
+            get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    onlineGames = snapshot.val();
+                    //noUser.classList.add("hide");
+                    //alert("games loaded");
+                } else {
+                    //alert("no data");
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
             swal({
                 title: "Achtung!",
                 text: `${message}?`,
@@ -258,6 +645,11 @@
                         var id = localStorage.getItem("gameID");
                         if (!(id === "")) {
                             onlineGames[id].done = w;
+                            if (onlineGames[id].opp_username === myName) {
+                                onlineGames[id].opp_username = "[kein Spieler]";
+                            }
+                            onlineGames[id].ready1 = false;
+                            onlineGames[id].ready2 = false;
                             var list_hosted_games = onlineGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
@@ -277,6 +669,12 @@
                             const user = auth.currentUser;
                             //window.location.href = "lobby.html";
                             all_invitations[inviteId].done = w;
+                            all_invitations[inviteId].ready1 = false;
+                            all_invitations[inviteId].ready2 = false;
+                            if ((all_invitations[inviteId].opp_username === myName)) {
+                                all_invitations[inviteId].opp_username = `[${all_invitations[inviteId].opp_username}] verlassen`
+                            }
+
                             var invitations = all_invitations;
                             update(ref(database, `users/${opp_uid}`), {
                                 invitations
