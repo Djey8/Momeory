@@ -157,6 +157,7 @@
         var onlineGames = [];
         var all_user = [];
         var all_invitations = [];
+        var myName = "";
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -171,6 +172,22 @@
                         //alert(snapshot.val())
                         all_user = snapshot.val();
                     } else {
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
+
+                get(child(dbRef, `users/${uid}/username`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        myName = snapshot.val();
+                        //noUser.classList.add("hide");
+                        //alert("games loaded");
+                    } else {
+                        //alert("no data");
                         console.log("No data available");
                     }
                 }).catch((error) => {
@@ -440,7 +457,10 @@
                                     email: email,
                                     username: username,
                                     start: date.toUTCString(),
-                                    done: false
+                                    done: false,
+                                    ready1: false,
+                                    readz2: false,
+                                    opp_username: "[Kein Spieler]"
                                 };
 
                                 onlineGames.push(new_game);
@@ -489,6 +509,20 @@
             const opponent = document.getElementById("lookPlayerInput").value;
             const message = document.getElementById("messageInput").value;
             var email = `${user.email}`
+            var myName = "";
+            get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+                        //alert(snapshot.val())
+                        myName = snapshot.val()
+                    } else {
+                        //alert("no data")
+                        console.log("No data available");
+                    }
+                }).catch((error) => {
+                    //alert(error)
+                    console.error(error);
+                });
 
             var username = "";
 
@@ -507,20 +541,24 @@
                                 //alert(snapshot.val())
                                 username = snapshot.val();
 
-                                let new_invitation = {
-                                    message: message,
-                                    email: email,
-                                    username: username,
-                                    received: date.toUTCString(),
-                                    done: false
-                                };
-
+                                var oppName = "";
                                 var opp_uid = "";
                                 for (let i = 0; i < all_user.length; i++) {
                                     if (all_user[i].username === opponent) {
                                         opp_uid = all_user[i].uid;
+                                        oppName = all_user[i].username;
                                     }
                                 }
+
+                                let new_invitation = {
+                                    message: message,
+                                    email: email,
+                                    username: username,
+                                    opp_username: `[${oppName}] eingeladen`,
+                                    received: date.toUTCString(),
+                                    done: false
+                                };
+
 
                                 if (!(opp_uid === "")) {
                                     get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
@@ -596,7 +634,7 @@
                     //alert("games loaded");
                     hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
                     for (let i = 0; i < onlineGames.length; i++) {
-                        if (!onlineGames[i].done) {
+                        if (!onlineGames[i].done || (onlineGames[i].username === myName)) {
                             const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
                             hostedGames.innerHTML += insertGame;
                         }
@@ -706,79 +744,141 @@
             var cells = document.querySelectorAll("#hosted-games td");
             for (var i = 0; i < cells.length; i++) {
                 cells[i].addEventListener("click", function () {
-                    if (this.innerHTML.includes("button")) {
-                        var num = -1;
-                        var z = this.innerHTML;
-                        z = parseInt(z.substring(21, 22));
-                        //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
-                        swal({
-                            title: "Achtung!",
-                            text: `Wollen Sie ${onlineGames[z - 1].username} "${onlineGames[z - 1].gameName}" wirklich beitreten?`,
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                        })
-                            .then((willDelete) => {
-                                if (willDelete) {
-                                    onlineGames[z - 1].done = true;
-                                    var list_hosted_games = onlineGames;
-                                    update(ref(database, `memory`), {
-                                        list_hosted_games
-                                    })
-                                        .then(() => {
-                                            // Data saved successfully!
-                                            localStorage.setItem("gameID", z - 1);
-                                            localStorage.setItem("invitationID", "");
-                                            window.location.href = "lobby.html"
-                                        })
-                                        .catch((error) => {
-                                            alert("error with invite");
-                                        });
+                    var auth = getAuth(app);
+                    var user = auth.currentUser;
+                    onlineGames = [];
+                    get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            //alert(snapshot.val())
+                            onlineGames = snapshot.val();
+                            //noUser.classList.add("hide");
+                            if (this.innerHTML.includes("button")) {
+                                var num = -1;
+                                var z = this.innerHTML;
+                                z = parseInt(z.substring(21, 22));
+                                if (onlineGames[z - 1].done && !(onlineGames[z - 1].username === myName)) {
+                                    swal("Ups!", "Diese Lobby ist leider voll.", "error");
                                 } else {
-                                    //swal("abgebrochen",{icon: "error"});
-                                }
-                            });
-                        //var x = confirm(`Wollen Sie ${onlineGames[z - 1].email} wirklich beitreten?`);
-                    } else {
+                                    //alert(`Do you want to join Game: ${onlineGames[z-1].email}`);
+                                    swal({
+                                        title: "Achtung!",
+                                        text: `Wollen Sie ${onlineGames[z - 1].username} "${onlineGames[z - 1].gameName}" wirklich beitreten?`,
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                    })
+                                        .then((willDelete) => {
+                                            if (willDelete) {
 
-                        for (let i = 0; i < onlineGames.length; i++) {
-                            if (i + 1 === parseInt(this.innerHTML) || onlineGames[i].gameName === this.innerHTML || onlineGames[i].start === this.innerHTML || onlineGames[i].username === this.innerHTML) {
-                                //alert(`Do you want to join Game: ${onlineGames[i].email}`);
-                                swal({
-                                    title: "Achtung!",
-                                    text: `Wollen Sie ${onlineGames[i].username} "${onlineGames[i].gameName}" wirklich beitreten?`,
-                                    icon: "warning",
-                                    buttons: true,
-                                    dangerMode: true,
-                                })
-                                    .then((willDelete) => {
-                                        if (willDelete) {
-                                            onlineGames[i].done = true;
-                                            var list_hosted_games = onlineGames;
-                                            update(ref(database, `memory`), {
-                                                list_hosted_games
-                                            })
-                                                .then(() => {
-                                                    // Data saved successfully!
-                                                    localStorage.setItem("gameID", i);
-                                                    localStorage.setItem("invitationID", "");
-                                                    window.location.href = "lobby.html"
-                                                })
-                                                .catch((error) => {
-                                                    alert("error with invite");
+                                                get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                                                    if (snapshot.exists()) {
+                                                        console.log(snapshot.val());
+                                                        //alert(snapshot.val())
+                                                        var username = snapshot.val();
+                                                        onlineGames[z - 1].done = true;
+                                                        if (!(onlineGames[z - 1].username === username)) {
+                                                            onlineGames[z - 1]["opp_username"] = username;
+                                                        }
+                                                        var list_hosted_games = onlineGames;
+                                                        update(ref(database, `memory`), {
+                                                            list_hosted_games
+                                                        })
+                                                            .then(() => {
+                                                                // Data saved successfully!
+                                                                localStorage.setItem("gameID", z - 1);
+                                                                localStorage.setItem("invitationID", "");
+                                                                window.location.href = "lobby.html"
+                                                            })
+                                                            .catch((error) => {
+                                                                alert("error with invite");
+                                                            });
+                                                    } else {
+                                                        //alert("no data")
+                                                        console.log("no user logged in");
+                                                    }
+                                                }).catch((error) => {
+                                                    //alert(error)
+                                                    console.error(error);
                                                 });
 
-                                        } else {
-                                            //swal("abgebrochen",{icon: "error"});
+                                            } else {
+                                                //swal("abgebrochen",{icon: "error"});
+                                            }
+                                        });
+                                }
+
+                                //var x = confirm(`Wollen Sie ${onlineGames[z - 1].email} wirklich beitreten?`);
+                            } else {
+                                for (let i = 0; i < onlineGames.length; i++) {
+                                    if (onlineGames[i].done && !(onlineGames[i].username === myName)) {
+                                        swal("Ups!", "Diese Lobby ist leider voll.", "error");
+                                    } else {
+                                        if (i + 1 === parseInt(this.innerHTML) || onlineGames[i].gameName === this.innerHTML || onlineGames[i].start === this.innerHTML || onlineGames[i].username === this.innerHTML) {
+                                            //alert(`Do you want to join Game: ${onlineGames[i].email}`);
+                                            swal({
+                                                title: "Achtung!",
+                                                text: `Wollen Sie ${onlineGames[i].username} "${onlineGames[i].gameName}" wirklich beitreten?`,
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                            })
+                                                .then((willDelete) => {
+                                                    if (willDelete) {
+                                                        get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                                                            if (snapshot.exists()) {
+                                                                console.log(snapshot.val());
+                                                                //alert(snapshot.val())
+                                                                var username = snapshot.val();
+                                                                onlineGames[i].done = true;
+                                                                if (!(onlineGames[i].username === username)) {
+                                                                    onlineGames[i]["opp_username"] = username;
+                                                                    onlineGames[i]["ready1"] = false;
+                                                                    onlineGames[i]["ready2"] = false;
+                                                                }
+                                                                var list_hosted_games = onlineGames;
+                                                                update(ref(database, `memory`), {
+                                                                    list_hosted_games
+                                                                })
+                                                                    .then(() => {
+                                                                        // Data saved successfully!
+                                                                        localStorage.setItem("gameID", i);
+                                                                        localStorage.setItem("invitationID", "");
+                                                                        window.location.href = "lobby.html"
+                                                                    })
+                                                                    .catch((error) => {
+                                                                        alert("error with invite");
+                                                                    });
+                                                            } else {
+                                                                //alert("no data")
+                                                                console.log("no user logged in");
+                                                            }
+                                                        }).catch((error) => {
+                                                            //alert(error)
+                                                            console.error(error);
+                                                        });
+
+
+
+                                                    } else {
+                                                        //swal("abgebrochen",{icon: "error"});
+                                                    }
+                                                });
+
+
                                         }
-                                    });
+                                    }
 
-
+                                }
                             }
+                        } else {
+                            //alert("no data");
+                            console.log("No data available");
                         }
-                    }
-
-
+                    }).catch((error) => {
+                        //alert(error)
+                        console.error(error);
+                    });
 
                 });
             }
@@ -806,6 +906,7 @@
                                     const user = auth.currentUser;
                                     //window.location.href = "lobby.html";
                                     all_invitations[z - 1].done = true;
+                                    all_invitations[z - 1].opp_username = myName;
                                     var invitations = all_invitations;
                                     update(ref(database, `users/${user.uid}`), {
                                         invitations
@@ -839,7 +940,7 @@
                                         if (willDelete) {
                                             const auth = getAuth(app);
                                             const user = auth.currentUser;
-
+                                            all_invitations[i].opp_username = myName;
                                             all_invitations[i].done = true;
                                             var invitations = all_invitations;
                                             update(ref(database, `users/${user.uid}`), {
