@@ -98,7 +98,7 @@
                 <th>Karma</th>
             </tr>
         </table>
-        <h4 id="noUser">Kein Benutzer angemeldet</h4>
+        <h4 id="noUser" class="hide">Kein Benutzer angemeldet</h4>
 
 
     </div>
@@ -162,256 +162,177 @@
 
         var offlineGames = [];
         var onlineGames = [];
+        async function loadUserGames(user) {
+            try {
+                const [offlineSnapshot, onlineSnapshot] = await Promise.all([
+                    get(child(dbRef, `users/${user.uid}/offline_games`)),
+                    get(child(dbRef, `users/${user.uid}/online_games`))
+                ]);
+
+                offlineGames = offlineSnapshot.exists() ? offlineSnapshot.val() : [];
+                onlineGames = onlineSnapshot.exists() ? onlineSnapshot.val() : [];
+                noUser.classList.add("hide");
+            } catch (error) {
+                console.error(error);
+                console.error('Failed to load games');
+
+            }
+        }
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in, see docs for a list of available properties
-                // https://firebase.google.com/docs/reference/js/firebase.User
-                const uid = user.uid;
-                // ...
-
-                get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        offlineGames = snapshot.val();
-                        noUser.classList.add("hide");
-                        //alert("games loaded");
-                    } else {
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
-
-                get(child(dbRef, `users/${user.uid}/online_games`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        onlineGames = snapshot.val();
-                        noUser.classList.add("hide");
-                        //alert("games loaded");
-                    } else {
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
-
+                loadUserGames(user);
             } else {
-                // User is signed out
-                // ...
                 noUser.classList.remove("hide");
 
             }
         });
 
+
+        function toggleTableVisibility(leaderboard, online, offline, average, highlight, label) {
+            leaderboardTable.classList.toggle("hide", leaderboard);
+            onlineTable.classList.toggle("hide", online);
+            offlineTable.classList.toggle("hide", offline);
+            averageTable.classList.toggle("hide", average);
+            highlightTable.classList.toggle("hide", highlight);
+            modusLabel.innerText = label;
+        }
+
         leaderboardbtn.addEventListener('click', (e) => {
-            leaderboardTable.classList.remove("hide");
-            onlineTable.classList.add("hide");
-            offlineTable.classList.add("hide");
-            averageTable.classList.add("hide");
-            highlightTable.classList.add("hide");
-            modusLabel.innerText = "Bestliste";
-        })
+            toggleTableVisibility(false, true, true, true, true, "Bestliste");
+        });
 
         offlinebtn.addEventListener('click', (e) => {
-            leaderboardTable.classList.add("hide");
-            onlineTable.classList.add("hide");
-            offlineTable.classList.remove("hide");
-            averageTable.classList.remove("hide");
-            highlightTable.classList.remove("hide");
-            modusLabel.innerText = "Einzelspieler";
+            toggleTableVisibility(true, true, false, false, false, "Einzelspieler");
             loadOfflineAverage();
             loadOfflineHighlights();
             loadOfflineGames();
-
-        })
+        });
 
         onlinebtn.addEventListener('click', (e) => {
-            leaderboardTable.classList.add("hide");
-            onlineTable.classList.remove("hide");
-            offlineTable.classList.add("hide");
-            averageTable.classList.remove("hide");
-            highlightTable.classList.remove("hide");
+            toggleTableVisibility(true, false, true, false, false, "Mehrspieler");
             loadOnlineHighlights();
             loadOnlineGames();
             loadOnlineAverage();
-            modusLabel.innerText = "Mehrspieler";
-        })
+        });
 
-        function loadOfflineHighlights() {
+
+        function loadOfflineHighlights(criteria) {
             highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
-            var bestPoints = 9999;
-            var winIndex = 0;
-            for (let i = 0; i < offlineGames.length; i++) {
-                if (offlineGames[i].won) {
-                    var temp_points = parseInt(offlineGames[i].moves);
-                    const long_new_time = offlineGames[i].time;
-                    const timeArray = long_new_time.split(":");
-                    const minutes = parseInt(timeArray[0]);
-                    const seconds = parseInt(timeArray[1]);
-                    temp_points += minutes * 60 + seconds;
-                    if (temp_points < bestPoints) {
-                        bestPoints = temp_points;
-                        winIndex = i;
+            let bestPoints;
+            let winIndex;
+
+            offlineGames.forEach((game, index) => {
+                if (game.won) {
+                    const startTime = new Date(game.start);
+                    const endTime = new Date(game.end);
+                    const gameDuration = (endTime - startTime) / 1000;
+                    const tempPoints = game.moves + gameDuration;
+
+                    if (typeof bestPoints === "undefined" || tempPoints < bestPoints) {
+                        bestPoints = tempPoints;
+                        winIndex = index;
                     }
                 }
-            }
-            const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${offlineGames[winIndex].moves}</td><td>${offlineGames[winIndex].start}</td><td>${offlineGames[winIndex].end}</td><td>${offlineGames[winIndex].time}</td><td>x</td></tr>`
-            highlightTable.innerHTML += insertBestGame;
-        }
+            });
 
-        function loadOnlineHighlights() {
-            highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
-            if (onlineGames.length > 0) {
-                var bestPoints = 9999;
-                var winIndex = 0;
-                for (let i = 0; i < onlineGames.length; i++) {
-                    if (onlineGames[i].won) {
-                        var temp_points = parseInt(onlineGames[i].moves);
-                        const long_new_time = onlineGames[i].time;
-                        const timeArray = long_new_time.split(":");
-                        const minutes = parseInt(timeArray[0]);
-                        const seconds = parseInt(timeArray[1]);
-                        temp_points += minutes * 60 + seconds;
-                        if (temp_points < bestPoints) {
-                            bestPoints = temp_points;
-                            winIndex = i;
-                        }
-                    }
-                }
-                const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${onlineGames[winIndex].moves}</td><td>${onlineGames[winIndex].start}</td><td>${onlineGames[winIndex].end}</td><td>${onlineGames[winIndex].time}</td><td>x</td></tr>`
+            if (typeof winIndex !== "undefined") {
+                const bestGame = offlineGames[winIndex];
+                const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${bestGame.time}</td><td>x</td></tr>`;
                 highlightTable.innerHTML += insertBestGame;
             }
         }
 
-        function loadOfflineGames() {
-            offlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
-            for (let i = 0; i < offlineGames.length; i++) {
-                var z = offlineGames.length - i - 1;
-                var win = "";
-                if (offlineGames[z].won) {
-                    win = "x"
+
+        function loadOnlineHighlights(criteria) {
+            highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+            if (onlineGames.length > 0) {
+                let bestPoints;
+                let winIndex;
+
+                onlineGames.forEach((game, index) => {
+                    if (game.won) {
+                        const startTime = new Date(game.start);
+                        const endTime = new Date(game.end);
+                        const gameDuration = (endTime - startTime) / 1000;
+                        const tempPoints = game.moves + gameDuration;
+
+                        if (typeof bestPoints === "undefined" || tempPoints < bestPoints) {
+                            bestPoints = tempPoints;
+                            winIndex = index;
+                        }
+                    }
+                });
+
+                if (typeof winIndex !== "undefined") {
+                    const bestGame = onlineGames[winIndex];
+                    const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${bestGame.time}</td><td>x</td></tr>`;
+                    highlightTable.innerHTML += insertBestGame;
                 }
-                const insertGame = `<tr><td>${z + 1}</td><td>${offlineGames[z].moves}</td><td>${offlineGames[z].start}</td><td>${offlineGames[z].end}</td><td>${offlineGames[z].time}</td><td>${win}</td></tr>`
-                offlineTable.innerHTML += insertGame;
             }
         }
 
-        function loadOnlineGames() {
-            onlineTable.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
-            for (let i = 0; i < onlineGames.length; i++) {
-                var z = onlineGames.length - i - 1;
-                var win = "";
-                if (onlineGames[z].won) {
-                    win = "x"
-                }
-                const insertGame = `<tr><td>${z + 1}</td><td>${onlineGames[z].moves}</td><td>${onlineGames[z].start}</td><td>${onlineGames[z].end}</td><td>${onlineGames[z].time}</td><td>${win}</td></tr>`
-                onlineTable.innerHTML += insertGame;
+
+        function loadGames(table, games) {
+            table.innerHTML = "<tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+            for (let i = 0; i < games.length; i++) {
+                const z = games.length - i - 1;
+                const win = games[z].won ? "x" : "";
+                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].time}</td><td>${win}</td></tr>`
+                table.innerHTML += insertGame;
             }
+        }
+
+        function loadOfflineGames() {
+            loadGames(offlineTable, offlineGames);
+        }
+
+        function loadOnlineGames() {
+            loadGames(onlineTable, onlineGames);
         }
 
         function loadOfflineAverage() {
             averageTable.innerHTML = "<tr><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
-            //calc avarage moves
-            var average = 0.0;
-            var count = 0;
-            for (let i = 0; i < offlineGames.length; i++) {
-                if (offlineGames[i].won) {
-                    average += parseFloat(offlineGames[i].moves);
-                    count++;
-                }
-            }
-            average = average / count;
-            average = average.toFixed(2);
 
-            //calc G/V
-            var ratio = 0.0;
-            var win = 0;
-            var count = 0;
-            for (let i = 0; i < offlineGames.length; i++) {
-                if (offlineGames[i].won) {
-                    win++;
-                }
-                count++;
-            }
+            const totalWonGames = offlineGames.filter(game => game.won).length;
+            const averageMoves = totalWonGames === 0 ? 0 : offlineGames
+                .reduce((sum, game) => sum + (game.won ? parseFloat(game.moves) : 0), 0) / totalWonGames;
 
-            ratio = win / count;
-            ratio = ratio * 100;
-            ratio = ratio.toFixed(2);
+            const winRatio = (totalWonGames / offlineGames.length) * 100 || 0;
 
+            const averageTime = offlineGames.length === 0 ? 0 : offlineGames
+                .reduce((sum, game) => {
+                    const [minutes, seconds] = game.time.split(":").map(time => parseInt(time));
+                    return sum + minutes * 60 + seconds;
+                }, 0) / offlineGames.length;
 
-            //calc average time
-            var time = 0.0;
-            var count = 0;
-            for (let i = 0; i < offlineGames.length; i++) {
-                const long_new_time = offlineGames[i].time;
-                var timeArray = long_new_time.split(":");
-                var minutes = parseInt(timeArray[0]);
-                var seconds = parseInt(timeArray[1]);
-                time += minutes * 60 + seconds;
-                count++;
-            }
-            time = time / count;
-            const final_minutes = parseInt(time / 60);
-            const final_seconds = parseFloat(time - (final_minutes * 60)).toFixed(2);
-            const final_time = `${final_minutes}:${final_seconds}`
+            const finalTime = averageTime === 0 ? "0:00.00" : `${Math.floor(averageTime / 60)}:${(averageTime - Math.floor(averageTime / 60) * 60).toFixed(2)}`;
 
-            const insertGame = `<tr><td>${average}</td><td>${final_time}</td><td>${ratio} %</td></tr>`
-            averageTable.innerHTML += insertGame;
+            averageTable.innerHTML += `<tr><td>${averageMoves.toFixed(2)}</td><td>${finalTime}</td><td>${winRatio.toFixed(2)} %</td></tr>`;
         }
+
 
         function loadOnlineAverage() {
             averageTable.innerHTML = "<tr><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
-            //calc avarage moves
-            var average = 0.0;
-            var count = 0;
-            for (let i = 0; i < onlineGames.length; i++) {
-                if (onlineGames[i].won) {
-                    average += parseFloat(onlineGames[i].moves);
-                    count++;
-                }
+            if (!Array.isArray(onlineGames)) {
+                console.error("onlineGames is not an array: ", onlineGames);
+                return;
             }
-            average = average / count;
-            average = average.toFixed(2);
+            const totalWonGames = onlineGames.filter(game => game.won).length;
+            const averageMoves = totalWonGames === 0 ? 0 : onlineGames
+                .reduce((sum, game) => sum + (game.won ? parseFloat(game.moves) : 0), 0) / totalWonGames;
 
-            //calc G/V
-            var ratio = 0.0;
-            var win = 0;
-            var count = 0;
-            for (let i = 0; i < onlineGames.length; i++) {
-                if (onlineGames[i].won) {
-                    win++;
-                }
-                count++;
-            }
+            const winRatio = (totalWonGames / onlineGames.length) * 100 || 0;
 
-            ratio = win / count;
-            ratio = ratio * 100;
-            ratio = ratio.toFixed(2);
+            const averageTime = onlineGames.length === 0 ? 0 : onlineGames
+                .reduce((sum, game) => {
+                    const [minutes, seconds] = game.time.split(":").map(time => parseInt(time));
+                    return sum + minutes * 60 + seconds;
+                }, 0) / onlineGames.length;
 
+            const finalTime = averageTime === 0 ? "0:00.00" : `${Math.floor(averageTime / 60)}:${(averageTime - Math.floor(averageTime / 60) * 60).toFixed(2)}`;
 
-            //calc average time
-            var time = 0.0;
-            var count = 0;
-            for (let i = 0; i < onlineGames.length; i++) {
-                const long_new_time = onlineGames[i].time;
-                var timeArray = long_new_time.split(":");
-                var minutes = parseInt(timeArray[0]);
-                var seconds = parseInt(timeArray[1]);
-                time += minutes * 60 + seconds;
-                count++;
-            }
-            time = time / count;
-            const final_minutes = parseInt(time / 60);
-            const final_seconds = parseFloat(time - (final_minutes * 60)).toFixed(2);
-            const final_time = `${final_minutes}:${final_seconds}`
-
-            const insertGame = `<tr><td>${average}</td><td>${final_time}</td><td>${ratio} %</td></tr>`
-            averageTable.innerHTML += insertGame;
+            averageTable.innerHTML += `<tr><td>${averageMoves.toFixed(2)}</td><td>${finalTime}</td><td>${winRatio.toFixed(2)} %</td></tr>`;
         }
 
     </script>

@@ -24,21 +24,21 @@
         <hr class="linieprofile">
         <div id="nameContainer">
             <span>
-                <label for="username" id="usernameLabel"><b>Benutzername</b></label>
+                <label for="username" id="usernameLabel" class="prevent-select"><b>Benutzername</b></label>
                 <input style="font-size: large;" type="text" placholder="Enter Username" name="username" id="username"
                     required>
             </span>
         </div>
         <div id="emailContainer">
             <span>
-                <label for="email" id="emailLabel"><b>Email</b></label>
+                <label for="email" id="emailLabel" class="prevent-select"><b>Email</b></label>
                 <input style="font-size: large;" type="text" placholder="Enter Email" name="email" id="emailregister"
                     required>
             </span>
         </div>
         <div id="pswContainer">
             <span>
-                <label for="password" id="pswLabel"><b>Passwort</b></label>
+                <label for="password" id="pswLabel" class="prevent-select"><b>Passwort</b></label>
                 <input style="font-size: large;" type="password" placeholder="Password" name="psw" id="psw" required>
             </span>
         </div>
@@ -115,125 +115,61 @@
         const database = getDatabase(app);
 
         Registerbtn.addEventListener('click', (e) => {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('emailregister').value;
+            const password = document.getElementById('psw').value;
+            const lgDate = new Date();
 
-            var username = document.getElementById('username').value;
-            var email = document.getElementById('emailregister').value;
-            var password = document.getElementById('psw').value;
-            var lgDate = new Date();
-
-            if (username === "" || email === "" || password === "") {
-                document.getElementById("errorMessage").innerText = "Eingabe Fehler";
-            } else {
-                //alert(lgDate)
-                get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        list_all_users = snapshot.val();
-
-                        //look if Username is already taken
-                        var found = false;
-                        for (let i = 0; i < list_all_users.length; i++) {
-                            if (username === list_all_users[i].username) {
-                                document.getElementById("errorMessage").innerText = "Benutzername bereits vergeben";
-                                found = true;
-                            }
-                        }
-
-                        if (!found) {
-                            //create new User
-                            createUserWithEmailAndPassword(auth, email, password)
-                                .then((userCredential) => {
-                                    // Signed in 
-                                    const user = userCredential.user;
-                                    // ... user.uid
-
-                                    set(ref(database, 'users/' + user.uid), {
-                                        username: username,
-                                        email: email,
-                                        first_login: lgDate.toUTCString()
-                                    })
-                                        .then(() => {
-                                            //Read list_all_users
-                                            get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                                                if (snapshot.exists()) {
-                                                    console.log(snapshot.val());
-                                                    //alert(snapshot.val())
-                                                    list_all_users = snapshot.val()
-                                                    //Update list_all_users
-                                                    let new_user = {
-                                                        username: username,
-                                                        uid: user.uid,
-                                                        email: user.email
-                                                    }
-
-                                                    list_all_users.push(new_user);
-                                                    update(ref(database), {
-                                                        list_all_users
-                                                    })
-                                                        .then(() => {
-                                                            // Data saved successfully!
-                                                            //alert("udpated list_all_users")
-                                                            window.location.href = "profile.html"
-                                                        })
-                                                        .catch((error) => {
-                                                            alert(error)
-                                                        });
-                                                } else {
-                                                    //write first user to list_all_users
-                                                    //alert("no users yet")
-                                                    console.log("no users yet");
-                                                    let new_user = {
-                                                        username: username,
-                                                        uid: user.uid,
-                                                        email: user.email
-                                                    }
-                                                    list_all_users.push(new_user);
-                                                    update(ref(database), {
-                                                        list_all_users
-                                                    })
-                                                        .then(() => {
-                                                            //alert("sucessfully set list_all_users")
-                                                            window.location.href = "profile.html"
-                                                        })
-                                                        .catch((error) => {
-                                                            // The write failed...
-                                                            document.getElementById("errorMessage").innerText = error
-                                                            //alert(error)
-                                                        });
-                                                }
-                                            }).catch((error) => {
-                                                alert(error)
-                                                console.error(error);
-                                            });
-                                            // Data saved successfully!
-                                            //window.location.href = "profile.html"
-                                        })
-                                        .catch((error) => {
-                                            // The write failed...
-                                            document.getElementById("errorMessage").innerText = error
-                                            //alert(error)
-                                        });
-                                })
-                                .catch((error) => {
-                                    const errorCode = error.code;
-                                    const errorMessage = error.message;
-                                    // ..
-                                    document.getElementById("errorMessage").innerText = error
-                                    //alert(errorMessage)
-                                });
-                        }
-                    } else {
-                        document.getElementById("errorMessage").innerText = "Keine Benutzer gefunden";
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
+            if (username === '' || email === '' || password === '') {
+                displayError('Eingabe Fehler');
+                return;
             }
 
+            get(child(dbRef, 'list_all_users'))
+                .then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        displayError('Keine Benutzer gefunden');
+                        return;
+                    }
 
+                    const list_all_users = snapshot.val();
+
+                    if (list_all_users.find(user => user.username === username)) {
+                        displayError('Benutzername bereits vergeben');
+                        return;
+                    }
+
+                    return createUserWithEmailAndPassword(auth, email, password);
+                })
+                .then((userCredential) => {
+                    const user = userCredential.user;
+
+                    return set(ref(database, `users/${user.uid}`), {
+                        username,
+                        email,
+                        first_login: lgDate.toUTCString(),
+                    });
+                })
+                .then(() => {
+                    return get(child(dbRef, 'list_all_users'));
+                })
+                .then((snapshot) => {
+                    const list_all_users = snapshot.val();
+                    list_all_users.push({ username, uid: user.uid, email: user.email });
+
+                    return update(ref(database), { list_all_users });
+                })
+                .then(() => {
+                    window.location.href = 'profile.html';
+                })
+                .catch((error) => {
+                    displayError(error);
+                });
         });
+
+        function displayError(message) {
+            document.getElementById('errorMessage').innerText = message;
+        }
     </script>
 </body>
 

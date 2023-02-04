@@ -123,53 +123,36 @@
                             //alert(snapshot.val())
                             onlineGames = snapshot.val();
                             //noUser.classList.add("hide");
-                            get(child(dbRef, `memory/list_hosted_games/${id}/opp_username`)).then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    console.log(snapshot.val());
-                                    //alert(snapshot.val())
-                                    document.getElementById("name2Label").innerText = snapshot.val()
-                                } else {
-                                    //alert("no data")
-                                    console.log("No data available");
-                                }
-                            }).catch((error) => {
-                                //alert(error)
-                                console.error(error);
-                            });
-
-                            get(child(dbRef, `users/${uid}/username`)).then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    console.log(snapshot.val());
-                                    //alert(snapshot.val())
-                                    myName = snapshot.val();
-                                    //noUser.classList.add("hide");
-                                    //alert("games loaded");
-                                } else {
-                                    //alert("no data");
-                                    console.log("No data available");
-                                }
-                            }).catch((error) => {
-                                //alert(error)
-                                console.error(error);
-                            });
-
-
-                            get(child(dbRef, `memory/list_hosted_games/${id}/ready2`)).then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    console.log(snapshot.val());
-                                    //alert(snapshot.val())
-                                    var status2 = snapshot.val();
-                                    if (status2) {
-                                        document.getElementById("status1").src = "Bilder/green.png";
+                            async function loadData(id, uid) {
+                                try {
+                                    const oppUsernameSnapshot = await get(child(dbRef, `memory/list_hosted_games/${id}/opp_username`));
+                                    if (oppUsernameSnapshot.exists()) {
+                                        document.getElementById("name2Label").innerText = oppUsernameSnapshot.val();
+                                    } else {
+                                        console.log("No oppUsername data available");
                                     }
-                                } else {
-                                    //alert("no data")
-                                    console.log("No data available");
+
+                                    const usernameSnapshot = await get(child(dbRef, `users/${uid}/username`));
+                                    if (usernameSnapshot.exists()) {
+                                        myName = usernameSnapshot.val();
+                                    } else {
+                                        console.log("No username data available");
+                                    }
+
+                                    const ready2Snapshot = await get(child(dbRef, `memory/list_hosted_games/${id}/ready2`));
+                                    if (ready2Snapshot.exists()) {
+                                        var status2 = ready2Snapshot.val();
+                                        if (status2) {
+                                            document.getElementById("status1").src = "Bilder/green.png";
+                                        }
+                                    } else {
+                                        console.log("No ready2 data available");
+                                    }
+                                } catch (error) {
+                                    console.error(error);
                                 }
-                            }).catch((error) => {
-                                //alert(error)
-                                console.error(error);
-                            });
+                            }
+
 
 
 
@@ -179,57 +162,43 @@
                             const readyTwo = document.getElementById("ready2btn");
                             const trash = document.getElementById("l1");
                             trash.classList.add("hide");
-                            readyOne.classList.remove("hide");
-                            readyTwo.classList.add("hide");
-                            document.getElementById("gameLabel").innerText = `"${onlineGames[id].gameName}"`
-                            document.getElementById("name1Label").innerText = `${onlineGames[id].username}`
-                            if (!(myName === onlineGames[id].username)) {
-                                readyOne.classList.add("hide");
-                                readyTwo.classList.remove("hide");
-                                document.getElementById("name2Label").innerText = myName;
-                                const ready1 = ref(database, `memory/list_hosted_games/${id}/ready1`);
-                                onValue(ready1, (snapshot) => {
+
+                            document.getElementById("gameLabel").innerText = `"${onlineGames[id].gameName}"`;
+                            document.getElementById("name1Label").innerText = `${onlineGames[id].username}`;
+
+                            const ready1Ref = ref(database, `memory/list_hosted_games/${id}/ready1`);
+                            const oppNameRef = ref(database, `memory/list_hosted_games/${id}/opp_username`);
+                            const ready2Ref = ref(database, `memory/list_hosted_games/${id}/ready2`);
+
+                            if (myName === onlineGames[id].username) {
+                                readyOne.classList.remove("hide");
+                                readyTwo.classList.add("hide");
+                                onValue(ready2Ref, (snapshot) => {
                                     const data = snapshot.val();
-                                    //alert("ready1 changed");
-                                    //alert(data);
-                                    if (data) {
-                                        document.getElementById("status1").src = "Bilder/green.png";
-                                    } else {
-                                        document.getElementById("status1").src = "Bilder/red.png";
-                                    }
+                                    document.getElementById("status2").src = data ? "Bilder/green.png" : "Bilder/red.png";
                                 });
-                            } else {
-                                const ready2 = ref(database, `memory/list_hosted_games/${id}/ready2`);
-                                onValue(ready2, (snapshot) => {
-                                    const data = snapshot.val();
-                                    //alert("ready2 changed");
-                                    //alert(data);
-                                    if (data) {
-                                        document.getElementById("status2").src = "Bilder/green.png";
-                                    } else {
-                                        document.getElementById("status2").src = "Bilder/red.png";
-                                    }
-                                });
-                                const opp_name = ref(database, `memory/list_hosted_games/${id}/opp_username`);
-                                onValue(opp_name, (snapshot) => {
-                                    const data = snapshot.val();
-                                    //alert("ready2 changed");
-                                    //alert(data);
-                                    document.getElementById("name2Label").innerText = data;
+                                onValue(oppNameRef, (snapshot) => {
+                                    document.getElementById("name2Label").innerText = snapshot.val();
                                 });
                                 trash.classList.remove("hide");
                                 onlineGames[id].done = false;
-                                var list_hosted_games = onlineGames;
                                 update(ref(database, `memory`), {
-                                    list_hosted_games
+                                    list_hosted_games: onlineGames
                                 })
                                     .then(() => {
-                                        // Data saved successfully!
                                         console.log("game live again");
                                     })
                                     .catch((error) => {
-                                        alert("error with invite");
+                                        console.error("error with invite", error);
                                     });
+                            } else {
+                                readyOne.classList.add("hide");
+                                readyTwo.classList.remove("hide");
+                                document.getElementById("name2Label").innerText = myName;
+                                onValue(ready1Ref, (snapshot) => {
+                                    const data = snapshot.val();
+                                    document.getElementById("status1").src = data ? "Bilder/green.png" : "Bilder/red.png";
+                                });
                             }
 
                         } else {
@@ -647,9 +616,10 @@
                             onlineGames[id].done = w;
                             if (onlineGames[id].opp_username === myName) {
                                 onlineGames[id].opp_username = "[kein Spieler]";
+                                onlineGames[id].ready2 = false;
+                            } else {
+                                onlineGames[id].ready1 = false;
                             }
-                            onlineGames[id].ready1 = false;
-                            onlineGames[id].ready2 = false;
                             var list_hosted_games = onlineGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
@@ -669,10 +639,12 @@
                             const user = auth.currentUser;
                             //window.location.href = "lobby.html";
                             all_invitations[inviteId].done = w;
-                            all_invitations[inviteId].ready1 = false;
-                            all_invitations[inviteId].ready2 = false;
+
                             if ((all_invitations[inviteId].opp_username === myName)) {
-                                all_invitations[inviteId].opp_username = `[${all_invitations[inviteId].opp_username}] verlassen`
+                                all_invitations[inviteId].opp_username = `[${all_invitations[inviteId].opp_username}] verlassen`;
+                                all_invitations[inviteId].ready2 = false;
+                            } else {
+                                all_invitations[inviteId].ready1 = false;
                             }
 
                             var invitations = all_invitations;
