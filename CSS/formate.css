@@ -1,3 +1,23 @@
+#picturesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.imageShow {
+  width: 20%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+@media (max-width: 767px) {
+  .imageShow {
+      width: 30%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+  }
+}
+
 #player1Container, #player2Container{
   background-color: white;
   margin-left: auto;
@@ -262,8 +282,13 @@ p {
 #pswLabel,
 #usernameLabel {
   margin-left: 5%;
-  width: 10%;
   font-family: "garamond-bold";
+}
+
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
 #email,
@@ -284,9 +309,9 @@ p {
   margin-top: 10px;
 }
 
-#email {
+#email {  
   margin-top: 40px;
-  margin-left: 85px;
+  margin-left: 90px;
 }
 
 #emailregister {
