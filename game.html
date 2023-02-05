@@ -543,6 +543,21 @@
 
 
         function loadHostedGames() {
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            let myName = "";
+            get(child(dbRef, `users/${user.uid}/username`))
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        myName = snapshot.val();
+                    } else {
+                        console.error("No user logged in");
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+
             const hostedGamesRef = ref(database, `memory/list_hosted_games`);
 
             onValue(hostedGamesRef, handleSnapshot);
@@ -563,7 +578,7 @@
                 hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
                 for (let i = 0; i < onlineGames.length; i++) {
                     if (!onlineGames[i].done || (onlineGames[i].username === myName)) {
-                        const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                        const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten ${i + 1}</button></td></tr>`
                         hostedGames.innerHTML += insertGame;
                     }
                 }
@@ -667,13 +682,13 @@
             const auth = await getAuth(app);
             const user = auth.currentUser;
             const list_hosted_games = await get(child(dbRef, `memory/list_hosted_games`));
-
+            const myName = await get(child(dbRef, `users/${user.uid}/username`));
             if (list_hosted_games.exists()) {
                 let onlineGames = list_hosted_games.val();
-
                 let index = -1;
-                if (cell.innerHTML.includes("button")) {
-                    index = parseInt(cell.innerHTML.substring(21, 22)) - 1;
+                if (cell.innerHTML.includes("beitreten")) {
+                    const innerCellSplit = cell.innerHTML.split(" ");
+                    index = parseInt(innerCellSplit[1]) - 1;
                 } else {
                     for (let i = 0; i < onlineGames.length; i++) {
                         if (i + 1 === parseInt(cell.innerHTML) || onlineGames[i].gameName === cell.innerHTML || onlineGames[i].start === cell.innerHTML || onlineGames[i].username === cell.innerHTML) {
@@ -682,11 +697,10 @@
                         }
                     }
                 }
-
                 if (index >= 0) {
                     const game = onlineGames[index];
 
-                    if (game.done && game.username !== myName) {
+                    if (game.done && !(game.username === myName.val())) {
                         swal("Ups!", "Diese Lobby ist leider voll.", "error");
                         return;
                     }
@@ -711,9 +725,10 @@
 
                     const username = usernameSnapshot.val();
 
-                    game.done = true;
+                    
                     if (game.username !== username) {
                         game["opp_username"] = username;
+                        game.done = true;
                     }
 
                     onlineGames[index] = game;
@@ -733,6 +748,7 @@
         async function setUpButtonsJoinHostedGames() {
             const cells = document.querySelectorAll("#hosted-games td");
             for (let i = 0; i < cells.length; i++) {
+                //alert(cells[i].innerHTML);
                 cells[i].addEventListener("click", joinHostedGame);
             }
         }

@@ -452,14 +452,13 @@
         ready2btn.addEventListener('click', (e) => {
             if (document.getElementById("status2").src.includes("Bilder/red.png")) {
                 document.getElementById("status2").src = "Bilder/green.png";
-                if(readyOne.src.includes("Bilder/green.png")){
-                    alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
-                }
                 readyTwo.innerText = "nicht bereit";
                 readyTwo.classList.remove("blue");
                 readyTwo.classList.add("red");
                 var id = localStorage.getItem("gameID");
+                
                 if (!(id === "")) {
+                    
                     //hosted Game
                     onlineGames = [];
                     get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
