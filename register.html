@@ -120,56 +120,53 @@
             const password = document.getElementById('psw').value;
             const lgDate = new Date();
 
-            if (username === '' || email === '' || password === '') {
-                displayError('Eingabe Fehler');
+            if (!username || !email || !password) {
+                document.getElementById("errorMessage").innerText = "Eingabe Fehler";
                 return;
             }
 
             get(child(dbRef, 'list_all_users'))
-                .then((snapshot) => {
+                .then(snapshot => {
                     if (!snapshot.exists()) {
-                        displayError('Keine Benutzer gefunden');
+                        showError("Keine Benutzer gefunden");
                         return;
                     }
 
                     const list_all_users = snapshot.val();
-
-                    if (list_all_users.find(user => user.username === username)) {
-                        displayError('Benutzername bereits vergeben');
+                    if (list_all_users.some(user => user.username === username)) {
+                        showError("Benutzername bereits vergeben");
                         return;
                     }
 
-                    return createUserWithEmailAndPassword(auth, email, password);
+                    createUserWithEmailAndPassword(auth, email, password)
+                        .then(userCredential => {
+                            const user = userCredential.user;
+                            set(ref(database, `users/${user.uid}`), { username, email, first_login: lgDate.toUTCString() })
+                                .then(() => {
+                                    const new_user = { username, uid: user.uid, email: user.email };
+                                    update(ref(database), { list_all_users: [...list_all_users, new_user] })
+                                        .then(() => { window.location.href = "profile.html" })
+                                        .catch(error => {
+                                            showError(error);
+                                        });
+                                })
+                                .catch(error => {
+                                    showError(error);
+                                });
+                        })
+                        .catch(error => {
+                            showError(error);
+                        });
                 })
-                .then((userCredential) => {
-                    const user = userCredential.user;
-
-                    return set(ref(database, `users/${user.uid}`), {
-                        username,
-                        email,
-                        first_login: lgDate.toUTCString(),
-                    });
-                })
-                .then(() => {
-                    return get(child(dbRef, 'list_all_users'));
-                })
-                .then((snapshot) => {
-                    const list_all_users = snapshot.val();
-                    list_all_users.push({ username, uid: user.uid, email: user.email });
-
-                    return update(ref(database), { list_all_users });
-                })
-                .then(() => {
-                    window.location.href = 'profile.html';
-                })
-                .catch((error) => {
-                    displayError(error);
+                .catch(error => {
+                    showError(error);
                 });
         });
 
-        function displayError(message) {
-            document.getElementById('errorMessage').innerText = message;
+        function showError(message){
+            document.getElementById("errorMessage").innerText = message;
         }
+
     </script>
 </body>
 

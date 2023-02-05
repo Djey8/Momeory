@@ -769,50 +769,66 @@
         function setUpButtonsJoinInvitations() {
             document.querySelectorAll("#invitation-container td").forEach(cell => {
                 cell.addEventListener("click", () => {
-                    let invitationIndex;
-                    if (cell.innerHTML.includes("button")) {
-                        invitationIndex = parseInt(cell.innerHTML.substring(20, 21)) - 1;
-                    } else {
-                        invitationIndex = all_invitations.findIndex(invitation =>
-                            [invitation.received, invitation.message, invitation.username].includes(cell.innerHTML)
-                        );
-                    }
+                    const invitationIndex = getInvitationIndex(cell);
 
                     if (invitationIndex === -1) {
                         return;
                     }
 
-                    const { username, message } = all_invitations[invitationIndex];
-                    swal({
-                        title: "Achtung!",
-                        text: `Wollen Sie ${username} "${message}" wirklich beitreten?`,
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true
-                    }).then(willDelete => {
-                        if (!willDelete) {
-                            return;
-                        }
-
-                        const auth = getAuth(app);
-                        const user = auth.currentUser;
-                        all_invitations[invitationIndex].opp_username = myName;
-                        all_invitations[invitationIndex].done = true;
-
-                        update(ref(database, `users/${user.uid}`), { invitations: all_invitations })
-                            .then(() => {
-                                localStorage.setItem("gameID", "");
-                                localStorage.setItem("invitationID", invitationIndex);
-                                localStorage.setItem("opp_uid", user.uid);
-                                window.location.href = "lobby.html";
-                            })
-                            .catch(error => {
-                                alert("error with invite");
-                            });
-                    });
+                    showJoinConfirmation(invitationIndex);
                 });
             });
         }
+
+        function getInvitationIndex(cell) {
+            if (cell.innerHTML.includes("button")) {
+                return parseInt(cell.innerHTML.substring(20, 21)) - 1;
+            }
+
+            return all_invitations.findIndex(invitation => [invitation.received, invitation.message, invitation.username].includes(cell.innerHTML));
+        }
+
+        async function showJoinConfirmation(invitationIndex) {
+            const { username, message } = all_invitations[invitationIndex];
+            const confirmed = await swal({
+                title: "Achtung!",
+                text: `Wollen Sie ${username} "${message}" wirklich beitreten?`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            });
+
+            if (!confirmed) {
+                return;
+            }
+
+            joinInvitation(invitationIndex);
+        }
+
+        async function joinInvitation(invitationIndex) {
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const myName = await get(child(dbRef, `users/${user.uid}/username`));
+
+            if (!myName.exists()) {
+                console.error("No user logged in");
+                return;
+            }
+
+            all_invitations[invitationIndex].opp_username = myName.val();
+            all_invitations[invitationIndex].done = true;
+
+            try {
+                await update(ref(database, `users/${user.uid}`), { invitations: all_invitations });
+                localStorage.setItem("gameID", "");
+                localStorage.setItem("invitationID", invitationIndex);
+                localStorage.setItem("opp_uid", user.uid);
+                window.location.href = "lobby.html";
+            } catch (error) {
+                alert("error with invite");
+            }
+        }
+
 
 
         function loadAllInvitations() {
@@ -838,9 +854,9 @@
                 invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
                 for (let i = 0; i < all_invitations.length; i++) {
                     if (!all_invitations[i].done) {
-                            const insertInvitation = `<tr><td>${i + 1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].username}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
-                            invitations.innerHTML += insertInvitation;
-                        }
+                        const insertInvitation = `<tr><td>${i + 1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].username}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                        invitations.innerHTML += insertInvitation;
+                    }
                 }
                 setUpButtonsJoinInvitations();
             }
