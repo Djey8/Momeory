@@ -155,7 +155,11 @@
             window.location.href = "register.html"
         });
 
-        submitData.addEventListener('click', (e) => {
+        submitData.addEventListener('click', handleSubmit);
+
+        function handleSubmit(e) {
+            e.preventDefault();
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('psw').value;
             const lgDate = new Date();
@@ -171,17 +175,27 @@
                                 .then(snapshot => {
                                     if (snapshot.exists()) {
                                         console.log(snapshot.val());
-                                        document.getElementById("pemail").innerText = snapshot.val();
+                                        document.getElementById("pemail").innerText = `${snapshot.val()}`;
                                     } else {
-                                        console.log("No data available");
+                                        console.error("No data available");
                                     }
                                 })
-                                .catch(error => console.error(error));
+                                .catch(error => {
+                                    console.error(error);
+                                    document.getElementById("errorMessage").innerText = error;
+                                });
                         })
-                        .catch(error => document.getElementById("errorMessage").innerText = error);
+                        .catch(error => {
+                            console.error(error);
+                            document.getElementById("errorMessage").innerText = error;
+                        });
                 })
-                .catch(error => document.getElementById("errorMessage").innerText = error.message);
-        });
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById("errorMessage").innerText = error.message;
+                });
+        }
+
 
 
         logoutbtn.addEventListener('click', (e) => {

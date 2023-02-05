@@ -587,85 +587,55 @@
         });
 
         function verlassen(w, message, icon) {
-            get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    onlineGames = snapshot.val();
-                    //noUser.classList.add("hide");
-                    //alert("games loaded");
-                } else {
-                    //alert("no data");
-                    console.log("No data available");
-                }
-            }).catch((error) => {
-                //alert(error)
-                console.error(error);
-            });
+            get(child(dbRef, `memory/list_hosted_games`))
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        console.debug(snapshot.val());
+                        onlineGames = snapshot.val();
+                    }
+                })
+                .catch(error => console.error(error));
+
             swal({
                 title: "Achtung!",
                 text: `${message}?`,
-                icon: icon,
+                icon,
                 buttons: true,
-                dangerMode: true,
+                dangerMode: true
             })
-                .then((willDelete) => {
+                .then(willDelete => {
                     if (willDelete) {
-                        var id = localStorage.getItem("gameID");
-                        if (!(id === "")) {
-                            onlineGames[id].done = w;
-                            if (onlineGames[id].opp_username === myName) {
-                                onlineGames[id].opp_username = "[kein Spieler]";
-                                onlineGames[id].ready2 = false;
-                            } else {
-                                onlineGames[id].ready1 = false;
-                            }
-                            var list_hosted_games = onlineGames;
-                            update(ref(database, `memory`), {
-                                list_hosted_games
-                            })
-                                .then(() => {
-                                    // Data saved successfully!
-                                    console.log("game live again");
-                                    window.location.href = "game.html"
-                                })
-                                .catch((error) => {
-                                    alert("error with invite");
-                                });
+                        const id = localStorage.getItem("gameID");
+                        if (id) {
+                            updateGameData(w, id, onlineGames, "gameID", "opp_username", "ready2", "game.html");
                         } else {
-                            var inviteId = localStorage.getItem("invitationID");
-                            var opp_uid = localStorage.getItem("opp_uid");
-                            const auth = getAuth(app);
-                            const user = auth.currentUser;
-                            //window.location.href = "lobby.html";
-                            all_invitations[inviteId].done = w;
-
-                            if ((all_invitations[inviteId].opp_username === myName)) {
-                                all_invitations[inviteId].opp_username = `[${all_invitations[inviteId].opp_username}] verlassen`;
-                                all_invitations[inviteId].ready2 = false;
-                            } else {
-                                all_invitations[inviteId].ready1 = false;
-                            }
-
-                            var invitations = all_invitations;
-                            update(ref(database, `users/${opp_uid}`), {
-                                invitations
-                            })
-                                .then(() => {
-                                    // Data saved successfully!
-                                    console.log("game live again");
-                                    window.location.href = "game.html";
-                                })
-                                .catch((error) => {
-                                    alert("error with invite");
-                                });
+                            const inviteId = localStorage.getItem("invitationID");
+                            const opp_uid = localStorage.getItem("opp_uid");
+                            updateGameData(w, inviteId, all_invitations, "invitationID", "opp_username", "ready1", "game.html");
                         }
-
-                    } else {
-                        //swal("abgebrochen",{icon: "error"});
                     }
                 });
         }
+
+        function updateGameData(w, id, data, idKey, oppUsernameKey, readyKey, redirectUrl) {
+            data[id].done = w;
+            if (data[id][oppUsernameKey] === myName) {
+                data[id][oppUsernameKey] = "[kein Spieler]";
+                data[id][readyKey] = false;
+            } else {
+                data[id][readyKey] = false;
+            }
+
+            update(ref(database, `${idKey === "gameID" ? "memory" : `users/${opp_uid}`}`), {
+                [idKey === "gameID" ? "list_hosted_games" : "invitations"]: data
+            })
+                .then(() => {
+                    console.debug("game live again");
+                    window.location.href = redirectUrl;
+                })
+                .catch(error => console.error("error with invite", error));
+        }
+
 
         verlassenbtn.addEventListener('click', (e) => {
             verlassen(false, "Wollen Sie die Lobby verlassen", "warning");

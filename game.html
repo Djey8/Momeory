@@ -112,7 +112,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, update, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -165,68 +165,29 @@
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 const uid = user.uid;
                 // ...
-                all_user = [];
-                get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        all_user = snapshot.val();
-                    } else {
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
+                let all_user = [];
+                let myName = "";
+                let all_invitations = [];
+                let onlineGames = [];
 
-                get(child(dbRef, `users/${uid}/username`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        myName = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
-                    } else {
-                        //alert("no data");
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
+                const dataToFetch = [
+                    { path: `list_all_users`, target: all_user },
+                    { path: `users/${uid}/username`, target: myName },
+                    { path: `users/${uid}/invitations`, target: all_invitations },
+                    { path: `memory/list_hosted_games`, target: onlineGames },
+                ];
 
-                all_invitations = [];
-                get(child(dbRef, `users/${uid}/invitations`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        all_invitations = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
-                    } else {
-                        //alert("no data");
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
-                });
-
-                onlineGames = [];
-                get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        //alert(snapshot.val())
-                        onlineGames = snapshot.val();
-                        //noUser.classList.add("hide");
-                        //alert("games loaded");
-                    } else {
-                        //alert("no data");
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    //alert(error)
-                    console.error(error);
+                dataToFetch.forEach(({ path, target }) => {
+                    get(child(dbRef, path)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            console.log(snapshot.val());
+                            target = snapshot.val();
+                        } else {
+                            console.log("No data available");
+                        }
+                    }).catch((error) => {
+                        console.error(error);
+                    });
                 });
 
                 var games = [];
@@ -328,34 +289,33 @@
                     })
                         .then(() => {
                             // Data saved successfully!
-                            //alert("secessfully saved data")
-                            get(child(dbRef, `users/${user.uid}/offline_games`)).then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    console.log(snapshot.val());
-                                    //alert(snapshot.val())
-                                    games = snapshot.val();
-                                    //alert("games loaded");
-                                    new_game = {
-                                        start: "not started yet",
-                                        moves: "",
-                                        time: "",
-                                        end: "",
-                                        won: false
-                                    };
-                                } else {
-                                    console.log("No data available");
-                                }
-                            }).catch((error) => {
-                                //alert(error)
-                                console.error(error);
-                            });
+                            // alert("secessfully saved data")
+                            return get(child(dbRef, `users/${user.uid}/offline_games`));
+                        })
+                        .then((snapshot) => {
+                            if (snapshot.exists()) {
+                                console.log(snapshot.val());
+                                // alert(snapshot.val())
+                                games = snapshot.val();
+                                // alert("games loaded");
+                                new_game = {
+                                    start: "not started yet",
+                                    moves: "",
+                                    time: "",
+                                    end: "",
+                                    won: false
+                                };
+                            } else {
+                                console.log("No data available");
+                            }
                         })
                         .catch((error) => {
                             // The write failed...
-                            document.getElementById("errorMessage").innerText = error
-                            //alert(error)
+                            document.getElementById("errorMessage").innerText = error;
+                            // alert(error)
                         });
                 });
+
 
             } else {
                 // User is signed out
@@ -504,27 +464,12 @@
         lookPlayerbtn.addEventListener('click', (e) => {
             const auth = getAuth(app);
             const user = auth.currentUser;
-            const date = new Date();
-
             const opponent = document.getElementById("lookPlayerInput").value;
             const message = document.getElementById("messageInput").value;
-            var email = `${user.email}`
-            var myName = "";
-            get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    myName = snapshot.val()
-                } else {
-                    //alert("no data")
-                    console.log("No data available");
-                }
-            }).catch((error) => {
-                //alert(error)
-                console.error(error);
-            });
-
-            var username = "";
+            const date = new Date();
+            let myName = "";
+            let oppName = "";
+            let opp_uid = "";
 
             swal({
                 title: "Achtung!",
@@ -535,186 +480,164 @@
             })
                 .then((willDelete) => {
                     if (willDelete) {
-                        get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
-                            if (snapshot.exists()) {
-                                console.log(snapshot.val());
-                                //alert(snapshot.val())
-                                username = snapshot.val();
 
-                                var oppName = "";
-                                var opp_uid = "";
-                                for (let i = 0; i < all_user.length; i++) {
-                                    if (all_user[i].username === opponent) {
-                                        opp_uid = all_user[i].uid;
-                                        oppName = all_user[i].username;
-                                    }
-                                }
-
-                                let new_invitation = {
-                                    message: message,
-                                    email: email,
-                                    username: username,
-                                    opp_username: `[${oppName}] eingeladen`,
-                                    received: date.toUTCString(),
-                                    done: false
-                                };
-
-
-                                if (!(opp_uid === "")) {
-                                    get(child(dbRef, `users/${opp_uid}/invitations`)).then((snapshot) => {
-                                        if (snapshot.exists()) {
-                                            console.log(snapshot.val());
-                                            //alert(snapshot.val())
-                                            var invitations = snapshot.val();
-                                            //noUser.classList.add("hide");
-                                            //alert("games loaded");
-                                            invitations.push(new_invitation);
-                                            update(ref(database, `users/${opp_uid}`), {
-                                                invitations
-                                            })
-                                                .then(() => {
-                                                    // Data saved successfully!
-                                                    localStorage.setItem("gameID", "");
-                                                    localStorage.setItem("invitationID", invitations.length - 1);
-                                                    localStorage.setItem("opp_uid", opp_uid);
-                                                    window.location.href = "lobby.html";
-                                                })
-                                                .catch((error) => {
-                                                    alert("error with invite");
-                                                });
-                                        } else {
-                                            //alert("no data");
-                                            console.log("No data available. Writing data...");
-                                            var invitations = [];
-                                            //noUser.classList.add("hide");
-                                            //alert("games loaded");
-                                            invitations.push(new_invitation);
-                                            update(ref(database, `users/${opp_uid}`), {
-                                                invitations
-                                            })
-                                            localStorage.setItem("gameID", "");
-                                            localStorage.setItem("invitationID", invitations.length - 1);
-                                            localStorage.setItem("opp_uid", opp_uid);
-                                            window.location.href = "lobby.html";
+                        get(child(dbRef, `users/${user.uid}/username`))
+                            .then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    myName = snapshot.val();
+                                    for (let i = 0; i < all_user.length; i++) {
+                                        if (all_user[i].username === opponent) {
+                                            opp_uid = all_user[i].uid;
+                                            oppName = all_user[i].username;
+                                            break;
                                         }
-                                    }).catch((error) => {
-                                        //alert(error)
-                                        console.error(error);
-                                    })
+                                    }
+                                    if (opp_uid) {
+                                        const newInvitation = {
+                                            message,
+                                            email: user.email,
+                                            username: myName,
+                                            opp_username: `[${oppName}] eingeladen`,
+                                            received: date.toUTCString(),
+                                            done: false
+                                        };
+                                        get(child(dbRef, `users/${opp_uid}/invitations`))
+                                            .then((snapshot) => {
+                                                let invitations = [];
+                                                if (snapshot.exists()) {
+                                                    invitations = snapshot.val();
+                                                }
+                                                invitations.push(newInvitation);
+                                                update(ref(database, `users/${opp_uid}`), { invitations })
+                                                    .then(() => {
+                                                        localStorage.setItem("gameID", "");
+                                                        localStorage.setItem("invitationID", invitations.length - 1);
+                                                        localStorage.setItem("opp_uid", opp_uid);
+                                                        window.location.href = "lobby.html";
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error("error with invite:", error);
+                                                    });
+                                            })
+                                            .catch((error) => {
+                                                console.error(error);
+                                            });
+                                    } else {
+                                        console.error("Spieler nicht gefunden!");
+                                    }
                                 } else {
-
-                                    alert("Spieler nicht gefunden!");
+                                    console.error("No user logged in");
                                 }
-                            } else {
-                                //alert("no data")
-                                console.log("no user logged in");
-                            }
-                        }).catch((error) => {
-                            //alert(error)
-                            console.error(error);
-                        });
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+
                     } else {
                         //swal("abgebrochen",{icon: "error"});
                     }
                 });
 
 
-
-
-
         });
 
-        function loadHostedGames() {
-            get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    onlineGames = snapshot.val();
-                    //noUser.classList.add("hide");
-                    //alert("games loaded");
-                    hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
-                    for (let i = 0; i < onlineGames.length; i++) {
-                        if (!onlineGames[i].done || (onlineGames[i].username === myName)) {
-                            const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
-                            hostedGames.innerHTML += insertGame;
-                        }
-                    }
-                    setUpButtonsJoinHostedGames();
-                } else {
-                    //alert("no data");
-                    console.log("No data available");
-                }
-            }).catch((error) => {
-                //alert(error)
-                console.error(error);
-            });
 
+        function loadHostedGames() {
+            const hostedGamesRef = ref(database, `memory/list_hosted_games`);
+
+            onValue(hostedGamesRef, handleSnapshot);
+
+            get(child(dbRef, `memory/list_hosted_games`))
+                .then(handleSnapshot)
+                .catch((error) => {
+                    console.error(error);
+                });
+
+            function handleSnapshot(snapshot) {
+                if (!snapshot.exists()) {
+                    console.log("No data available");
+                    return;
+                }
+                console.log(snapshot.val());
+                onlineGames = snapshot.val();
+                hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
+                for (let i = 0; i < onlineGames.length; i++) {
+                    if (!onlineGames[i].done || (onlineGames[i].username === myName)) {
+                        const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
+                        hostedGames.innerHTML += insertGame;
+                    }
+                }
+                setUpButtonsJoinHostedGames();
+            }
         }
 
+
         function loadAllPlayers() {
+            const allPlayerRef = ref(database, `list_all_users`);
+
+            onValue(allPlayerRef, handleSnapshot);
+
+            get(child(dbRef, `list_all_users`))
+                .then(handleSnapshot)
+                .catch((error) => {
+                    console.error(error);
+                });
+
+            function handleSnapshot(snapshot) {
+                if (!snapshot.exists()) {
+                    console.log("No data available");
+                    return;
+                }
+                console.log(snapshot.val());
+                all_user = snapshot.val();
+                allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
+                allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
+                for (let i = 0; i < all_user.length; i++) {
+                    const insertGame = `<tr><td>${i + 1}</td><td>${all_user[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                    allPlayers.innerHTML += insertGame;
+                }
+                setUpButtonsAllPlayers();
+            }
+        }
+
+        function loadFilteredPlayers() {
             get(child(dbRef, `list_all_users`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    all_user = snapshot.val();
-                    //noUser.classList.add("hide");
-                    //alert("games loaded");
-                    allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
-                    allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
-                    for (let i = 0; i < all_user.length; i++) {
-                        const insertGame = `<tr><td>${i + 1}</td><td>${all_user[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
-                        allPlayers.innerHTML += insertGame;
+                    const allUsers = snapshot.val();
+                    let pattern = document.getElementById("lookPlayerInput").value.toLowerCase();
+                    let filteredUsers = allUsers;
+
+                    if (pattern !== "") {
+                        filteredUsers = allUsers.filter(user => user.username.toLowerCase().includes(pattern));
                     }
+
+                    allPlayers.innerHTML = createPlayersTable(filteredUsers, pattern);
                     setUpButtonsAllPlayers();
                 } else {
-                    //alert("no data");
                     console.log("No data available");
                 }
             }).catch((error) => {
-                //alert(error)
                 console.error(error);
             });
-
         }
 
-            function loadFilteredPlayers() {
-                get(child(dbRef, `list_all_users`)).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
-                        const allUsers = snapshot.val();
-                        let pattern = document.getElementById("lookPlayerInput").value.toLowerCase();
-                        let filteredUsers = allUsers;
-
-                        if (pattern !== "") {
-                            filteredUsers = allUsers.filter(user => user.username.toLowerCase().includes(pattern));
-                        }
-
-                        allPlayers.innerHTML = createPlayersTable(filteredUsers, pattern);
-                        setUpButtonsAllPlayers();
-                    } else {
-                        console.log("No data available");
-                    }
-                }).catch((error) => {
-                    console.error(error);
-                });
+        function createPlayersTable(filteredUsers, pattern) {
+            let tableHeader = `<tr><th colspan="3" style="padding: 10px;">`;
+            if (pattern === "") {
+                tableHeader += `Alle Spieler</th></tr>`;
+            } else {
+                tableHeader += `Spieler mit "${pattern}"</th></tr>`;
             }
 
-            function createPlayersTable(filteredUsers, pattern) {
-                let tableHeader = `<tr><th colspan="3" style="padding: 10px;">`;
-                if (pattern === "") {
-                    tableHeader += `Alle Spieler</th></tr>`;
-                } else {
-                    tableHeader += `Spieler mit "${pattern}"</th></tr>`;
-                }
-
-                let tableBody = "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
-                for (let i = 0; i < filteredUsers.length; i++) {
-                    const insertPlayer = `<tr><td>${i + 1}</td><td>${filteredUsers[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
-                    tableBody += insertPlayer;
-                }
-
-                return tableHeader + tableBody;
+            let tableBody = "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
+            for (let i = 0; i < filteredUsers.length; i++) {
+                const insertPlayer = `<tr><td>${i + 1}</td><td>${filteredUsers[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                tableBody += insertPlayer;
             }
+
+            return tableHeader + tableBody;
+        }
 
 
         function setUpButtonsAllPlayers() {
@@ -895,29 +818,32 @@
         function loadAllInvitations() {
             const auth = getAuth(app);
             const user = auth.currentUser;
-            get(child(dbRef, `users/${user.uid}/invitations`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    //alert(snapshot.val())
-                    all_invitations = snapshot.val();
-                    //noUser.classList.add("hide");
-                    //alert("games loaded");
-                    invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
-                    for (let i = 0; i < all_invitations.length; i++) {
-                        if (!all_invitations[i].done) {
+            const invitationRef = ref(database, `users/${user.uid}/invitations`);
+
+            onValue(invitationRef, handleSnapshot);
+
+            get(child(dbRef, `users/${user.uid}/invitations`))
+                .then(handleSnapshot)
+                .catch((error) => {
+                    console.error(error);
+                });
+
+            function handleSnapshot(snapshot) {
+                if (!snapshot.exists()) {
+                    console.log("No data available");
+                    return;
+                }
+                console.log(snapshot.val());
+                all_invitations = snapshot.val();
+                invitations.innerHTML = `<tr><th colspan="5" style="padding: 10px;">Einladungen</th></tr><tr><th>ID</th><th>Message</th><th>Spieler</th><th>Empfangen</th><th>Aktion</th></tr>`
+                for (let i = 0; i < all_invitations.length; i++) {
+                    if (!all_invitations[i].done) {
                             const insertInvitation = `<tr><td>${i + 1}</td><td>${all_invitations[i].message}</td><td>${all_invitations[i].username}</td><td>${all_invitations[i].received}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten</button></td></tr>`
                             invitations.innerHTML += insertInvitation;
                         }
-                    }
-                    setUpButtonsJoinInvitations();
-                } else {
-                    //alert("no data");
-                    console.log("No data available");
                 }
-            }).catch((error) => {
-                //alert(error)
-                console.error(error);
-            });
+                setUpButtonsJoinInvitations();
+            }
 
         }
 
