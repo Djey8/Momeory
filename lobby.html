@@ -627,12 +627,16 @@
                     if (willDelete) {
                         var id = localStorage.getItem("gameID");
                         if (!(id === "")) {
-                            onlineGames[id].done = w;
+                            if(w){
+                                onlineGames[id].finished = true;
+                                onlineGames[id].done = true;
+                            }
                             if (onlineGames[id].opp_username === myName) {
                                 onlineGames[id].opp_username = "[kein Spieler]";
                                 onlineGames[id].ready2 = false;
                             } else {
                                 onlineGames[id].ready1 = false;
+                                onlineGames[id].done = true;
                             }
                             var list_hosted_games = onlineGames;
                             update(ref(database, `memory`), {
@@ -652,13 +656,12 @@
                             const auth = getAuth(app);
                             const user = auth.currentUser;
                             //window.location.href = "lobby.html";
-                            all_invitations[inviteId].done = w;
-
                             if ((all_invitations[inviteId].opp_username === myName)) {
                                 all_invitations[inviteId].opp_username = `[${all_invitations[inviteId].opp_username}] verlassen`;
                                 all_invitations[inviteId].ready2 = false;
                             } else {
                                 all_invitations[inviteId].ready1 = false;
+                                all_invitations[inviteId].done = true;
                             }
 
                             var invitations = all_invitations;
