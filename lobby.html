@@ -366,6 +366,57 @@
         //create online Object, start setting for a new Game
         function startOnlineGame(player1, player2) {
             console.log("startOnlineGame");
+            const items = [
+                { name: "pic1", image: "../Bilder/pic1-klein.jpeg" },
+                { name: "pic2", image: "../Bilder/pic2-klein.jpeg" },
+                { name: "pic3", image: "../Bilder/pic3-klein.jpeg" },
+                { name: "pic4", image: "../Bilder/pic4-klein.jpeg" },
+                { name: "pic5", image: "../Bilder/pic5-klein.jpeg" },
+                { name: "pic6", image: "../Bilder/pic6-klein.jpeg" },
+                { name: "pic7", image: "../Bilder/pic7-klein.jpeg" },
+                { name: "pic8", image: "../Bilder/pic8-klein.jpeg" },
+                { name: "pic9", image: "../Bilder/pic9-klein.jpeg" },
+                { name: "pic10", image: "../Bilder/pic10-klein.jpeg" },
+                { name: "pic11", image: "../Bilder/pic11-klein.jpeg" },
+                { name: "pic12", image: "../Bilder/pic12-klein.jpeg" },
+                { name: "pic13", image: "../Bilder/pic13-klein.jpg" },
+                { name: "pic14", image: "../Bilder/pic14-klein.jpg" },
+                { name: "pic15", image: "../Bilder/pic15-klein.jpg" },
+                { name: "pic16", image: "../Bilder/pic16-klein.jpg" },
+                { name: "pic17", image: "../Bilder/pic17-klein.jpg" },
+                { name: "pic18", image: "../Bilder/pic18-klein.jpg" },
+                { name: "pic19", image: "../Bilder/pic19-klein.jpg" },
+                { name: "pic20", image: "../Bilder/pic20-klein.jpg" },
+                { name: "pic21", image: "../Bilder/pic21-klein.jpg" },
+                { name: "pic22", image: "../Bilder/pic22-klein.jpg" },
+                { name: "pic23", image: "../Bilder/pic23-klein.jpg" },
+                { name: "pic24", image: "../Bilder/pic24-klein.jpg" },
+                { name: "pic25", image: "../Bilder/pic25-klein.jpg" },
+                { name: "pic26", image: "../Bilder/pic26-klein.jpg" },
+                { name: "pic27", image: "../Bilder/pic27-klein.jpg" },
+                { name: "pic28", image: "../Bilder/pic28-klein.jpg" },
+                { name: "pic29", image: "../Bilder/pic29-klein.jpg" },
+                { name: "pic30", image: "../Bilder/pic30-klein.jpg" },
+            ];
+
+            var new_map = [];
+            //create Map
+            //get 8 numbers between 0 and 29
+            for (let i = 0; i < 16; i++) {
+                const rndInt = Math.floor(Math.random() * 30)
+                if (!new_map.includes(items[rndInt])) {
+                    new_map.push(items[rndInt]);
+                    new_map.push(items[rndInt]);
+                    i++;
+                }
+            }
+            //alert(new_map.length);
+
+            function shuffle(array) {
+                array.sort(() => Math.random() - 0.5);
+            }
+            shuffle(new_map);
+
             const auth = getAuth(app);
             const user = auth.currentUser;
             const date = new Date();
@@ -435,7 +486,7 @@
                         start: date.toUTCString(),
                         status: "Game startet",
                         ID: `${uid1}${uid2}${date.toUTCString()}`,
-                        gameNotation: {}
+                        game_map: new_map
                     };
 
                     allOnlineGames.push(new_game);
