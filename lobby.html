@@ -53,6 +53,7 @@
         <button class="blue" id="ready2btn">bereit</button>
     </div>
     <button id="verlassenbtn">Lobby verlassen</button>
+    <p id="counter" class="hide"></p>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
@@ -88,14 +89,35 @@
         const error = document.getElementById("errorMessage");
 
 
-
+        var allOnlineGames = [];
         var onlineGames = [];
+        var hostedGames = [];
         var all_invitations = [];
         var id = localStorage.getItem("gameID");
+        var all_user = [];
+
+        async function loadUserGames(user) {
+            try {
+                const [allOnlineSnapshot, onlineSnapshot, allUserSnapshot] = await Promise.all([
+                    get(child(dbRef, `memory/list_online_games`)),
+                    get(child(dbRef, `users/${user.uid}/online_games`)),
+                    get(child(dbRef, `list_all_users`))
+                ]);
+
+                allOnlineGames = allOnlineSnapshot.exists() ? allOnlineSnapshot.val() : [];
+                onlineGames = onlineSnapshot.exists() ? onlineSnapshot.val() : [];
+                all_user = allUserSnapshot.exists() ? allUserSnapshot.val() : [];
+            } catch (error) {
+                console.error(error);
+                console.error('Failed to load games');
+
+            }
+        }
 
         var myName = "";
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                loadUserGames(user);
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 const uid = user.uid;
@@ -116,12 +138,12 @@
 
                 if (!(id === "")) {
                     //hosted Game
-                    onlineGames = [];
+                    hostedGames = [];
                     get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log(snapshot.val());
                             //alert(snapshot.val())
-                            onlineGames = snapshot.val();
+                            hostedGames = snapshot.val();
                             //noUser.classList.add("hide");
                             async function loadData(id, uid) {
                                 try {
@@ -163,30 +185,33 @@
                             const trash = document.getElementById("l1");
                             trash.classList.add("hide");
 
-                            document.getElementById("gameLabel").innerText = `"${onlineGames[id].gameName}"`;
-                            document.getElementById("name1Label").innerText = `${onlineGames[id].username}`;
+                            document.getElementById("gameLabel").innerText = `"${hostedGames[id].gameName}"`;
+                            document.getElementById("name1Label").innerText = `${hostedGames[id].username}`;
 
                             const ready1Ref = ref(database, `memory/list_hosted_games/${id}/ready1`);
                             const oppNameRef = ref(database, `memory/list_hosted_games/${id}/opp_username`);
                             const ready2Ref = ref(database, `memory/list_hosted_games/${id}/ready2`);
 
-                            if (myName === onlineGames[id].username) {
+                            if (myName === hostedGames[id].username) {
                                 readyOne.classList.remove("hide");
                                 readyTwo.classList.add("hide");
                                 onValue(ready2Ref, (snapshot) => {
                                     const data = snapshot.val();
                                     document.getElementById("status2").src = data ? "Bilder/green.png" : "Bilder/red.png";
-                                    if(data && document.getElementById("status1").src.includes("Bilder/green.png")){
+
+                                    if (data && document.getElementById("status1").src.includes("Bilder/green.png")) {
+                                        //Start Online Game
                                         alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
+                                        startCountDown(false);
                                     }
                                 });
                                 onValue(oppNameRef, (snapshot) => {
                                     document.getElementById("name2Label").innerText = snapshot.val();
                                 });
                                 trash.classList.remove("hide");
-                                onlineGames[id].done = false;
+                                hostedGames[id].done = false;
                                 update(ref(database, `memory`), {
-                                    list_hosted_games: onlineGames
+                                    list_hosted_games: hostedGames
                                 })
                                     .then(() => {
                                         console.log("game live again");
@@ -201,8 +226,11 @@
                                 onValue(ready1Ref, (snapshot) => {
                                     const data = snapshot.val();
                                     document.getElementById("status1").src = data ? "Bilder/green.png" : "Bilder/red.png";
-                                    if(data && document.getElementById("status2").src.includes("Bilder/green.png")){
+
+                                    if (data && document.getElementById("status2").src.includes("Bilder/green.png")) {
+                                        //Start Online Game
                                         alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
+                                        startCountDown(false);
                                     }
                                 });
                             }
@@ -301,13 +329,242 @@
             }
         });
 
+        function startCountDown(neu) {
+            document.getElementById("counter").classList.remove("hide");
+            document.getElementById("counter").innerHTML = `5`
+            const myInterval = setInterval(myTimer, 1000);
+            var counter = 4
+            function myTimer() {
+                document.getElementById("counter").innerHTML = `${counter}`;
+                counter -= 1;
+                if (counter < 0) {
+                    //Really start the game
+                    myStopFunction();
+                    //create new onlineGame Object and write to Database
+                    var player1 = document.getElementById("name1Label").innerHTML;
+                    var player2 = document.getElementById("name2Label").innerHTML;
+                    if (neu) {
+                        startOnlineGame(player1, player2);
+                    } else {
+                        loadOnlineGame()
+                    }
+
+                    //Go to onlineGame
+                    //window.location.href = "onlineGame.html";
+                }
+            }
+
+            function myStopFunction() {
+                clearInterval(myInterval);
+            }
+        }
+
+        function loadOnlineGame() {
+            localStorage.setItem("gameID", "");
+            window.location.href = "onlineGame.html";
+        }
+        //create online Object, start setting for a new Game
+        function startOnlineGame(player1, player2) {
+            console.log("startOnlineGame");
+            const auth = getAuth(app);
+            const user = auth.currentUser;
+            const date = new Date();
+            var myEmail = `${user.email}`
+            var myUsername = "";
+            var uid1 = "";
+            var uid2 = "";
+            var oppUsername = "";
+            get(child(dbRef, `memory/list_online_games`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    allOnlineGames = snapshot.val();
+                    //alert("games loaded");
+                } else {
+                    allOnlineGames = [];
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
+
+            get(child(dbRef, `users/${user.uid}/username`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    //alert(snapshot.val())
+                    myUsername = snapshot.val();
+                    if (player1 === myUsername) {
+                        uid1 = user.uid;
+                        console.log("uid1");
+                        for (let i = 0; i < all_user.length; i++) {
+                            if (all_user[i].username === player2) {
+                                uid2 = all_user[i].uid;
+                                console.log("uid2");
+                                break;
+                            }
+                        }
+                    } else {
+                        uid2 = user.uid;
+                        console.log("uid2");
+                        for (let i = 0; i < all_user.length; i++) {
+                            if (all_user[i].username === player1) {
+                                uid1 = all_user[i].uid;
+                                console.log("uid1");
+                                break;
+                            }
+                        }
+                    }
+
+                    let new_game = {
+                        player1: {
+                            uid: uid1,
+                            username: player1,
+                            moves: 0,
+                            hit: 0,
+                            time: "00:00:00"
+                        },
+                        player2: {
+                            uid: uid2,
+                            username: player2,
+                            moves: 0,
+                            hit: 0,
+                            time: "00:00:00"
+                        },
+                        total_time: "00:00:00",
+                        total_moves: 0,
+                        start: date.toUTCString(),
+                        status: "Game startet",
+                        ID: `${uid1}${uid2}${date.toUTCString()}`,
+                        gameNotation: {}
+                    };
+
+                    allOnlineGames.push(new_game);
+
+                    let index = allOnlineGames.length - 1;
+                    console.log(new_game);
+                    update(ref(database, `memory`), {
+                        list_online_games: allOnlineGames
+                    })
+                        .then(() => {
+                            //create two online_games objects for each user
+                            var onlineGames1 = [];
+                            var onlineGames2 = [];
+                            async function loadOnlineGames() {
+                                try {
+                                    const [online1Snapshot, online2Snapshot, onlineSnapshot] = await Promise.all([
+                                        get(child(dbRef, `users/${uid1}/online_games`)),
+                                        get(child(dbRef, `users/${uid2}/online_games`)),
+                                        get(child(dbRef, `memory/list_hosted_games`)),
+                                    ]);
+
+                                    onlineGames1 = online1Snapshot.exists() ? online1Snapshot.val() : [];
+                                    onlineGames2 = online2Snapshot.exists() ? online2Snapshot.val() : [];
+                                    hostedGames = onlineSnapshot.exists() ? onlineSnapshot.val() : [];
+                                } catch (error) {
+                                    console.error(error);
+                                    console.error('Failed to load games');
+
+                                }
+                            }
+                            loadOnlineGames()
+                                .then(() => {
+                                    const new_onlineGame1 = {
+                                        ID: `${uid1}${uid2}${date.toUTCString()}`,
+                                        end: "not yet",
+                                        start: date.toUTCString(),
+                                        moves: 0,
+                                        time: "00:00:00",
+                                        opp: player2
+                                    }
+                                    const new_onlineGame2 = {
+                                        ID: `${uid1}${uid2}${date.toUTCString()}`,
+                                        end: "not yet",
+                                        start: date.toUTCString(),
+                                        moves: 0,
+                                        time: "00:00:00",
+                                        opp: player1
+                                    }
+                                    onlineGames1.push(new_onlineGame1);
+                                    onlineGames2.push(new_onlineGame2);
+                                    let online_games = onlineGames1;
+                                    update(ref(database, `users/${uid1}`), { online_games })
+                                        .then(() => {
+                                            online_games = onlineGames2;
+                                            update(ref(database, `users/${uid2}`), { online_games })
+                                                .then(() => {
+                                                    console.log(allOnlineGames[index].ID);
+                                                    localStorage.setItem("gameID", allOnlineGames[index].ID);
+                                                    if (!(id === "")) {
+                                                        hostedGames[id].finished = true;
+                                                        update(ref(database, `memory`), {
+                                                            list_hosted_games: hostedGames
+                                                        })
+                                                            .then(() => {
+                                                                console.log("game live again");
+                                                            })
+                                                            .catch((error) => {
+                                                                console.error("error with invite", error);
+                                                            });
+                                                    } else {
+                                                        var inviteId = localStorage.getItem("invitationID");
+                                                        var opp_uid = localStorage.getItem("opp_uid");
+                                                        all_invitations[inviteId].finished = true;
+                                                        var invitations = all_invitations;
+                                                        update(ref(database, `users/${opp_uid}`), {
+                                                            invitations
+                                                        })
+                                                            .then(() => {
+                                                                // Data saved successfully!
+                                                                console.log("game live again");
+                                                            })
+                                                            .catch((error) => {
+                                                                alert("error with invite");
+                                                            });
+
+
+                                                    }
+
+                                                    window.location.href = "onlineGame.html";
+                                                })
+                                                .catch((error) => {
+                                                    console.error("error with invite:", error);
+                                                });
+                                        })
+                                        .catch((error) => {
+                                            console.error("error with invite:", error);
+                                        });
+                                })
+                                .catch((error) => {
+                                    // The write failed...
+                                    alert(error);
+                                    //alert(error)
+                                });
+
+                        })
+                        .catch((error) => {
+                            // The write failed...
+                            alert(error);
+                            //alert(error)
+                        });
+                } else {
+                    //alert("no data")
+                    console.log("no user logged in");
+                }
+            }).catch((error) => {
+                //alert(error)
+                console.error(error);
+            });
+        }
+
         const readyOne = document.getElementById("ready1btn");
         const readyTwo = document.getElementById("ready2btn");
         ready1btn.addEventListener('click', (e) => {
             if (document.getElementById("status1").src.includes("Bilder/red.png")) {
                 document.getElementById("status1").src = "Bilder/green.png";
-                if(document.getElementById("status2").src.includes("Bilder/green.png")){
+                if (document.getElementById("status2").src.includes("Bilder/green.png")) {
+                    //Start Online Game
                     alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
+                    startCountDown(true);
                 }
                 readyOne.innerText = "nicht bereit";
                 readyOne.classList.remove("blue");
@@ -315,16 +572,16 @@
                 var id = localStorage.getItem("gameID");
                 if (!(id === "")) {
                     //hosted Game
-                    onlineGames = [];
+                    hostedGames = [];
                     get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log(snapshot.val());
                             //alert(snapshot.val())
-                            onlineGames = snapshot.val();
+                            hostedGames = snapshot.val();
                             //noUser.classList.add("hide");
                             //alert("games loaded");
-                            onlineGames[id].ready1 = true;
-                            var list_hosted_games = onlineGames;
+                            hostedGames[id].ready1 = true;
+                            var list_hosted_games = hostedGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
                             })
@@ -385,16 +642,16 @@
                 var id = localStorage.getItem("gameID");
                 if (!(id === "")) {
                     //hosted Game
-                    onlineGames = [];
+                    hostedGames = [];
                     get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log(snapshot.val());
                             //alert(snapshot.val())
-                            onlineGames = snapshot.val();
+                            hostedGames = snapshot.val();
                             //noUser.classList.add("hide");
                             //alert("games loaded");
-                            onlineGames[id].ready1 = false;
-                            var list_hosted_games = onlineGames;
+                            hostedGames[id].ready1 = false;
+                            var list_hosted_games = hostedGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
                             })
@@ -452,27 +709,29 @@
         ready2btn.addEventListener('click', (e) => {
             if (document.getElementById("status2").src.includes("Bilder/red.png")) {
                 document.getElementById("status2").src = "Bilder/green.png";
-                if(document.getElementById("status1").src.includes("Bilder/green.png")){
+                if (document.getElementById("status1").src.includes("Bilder/green.png")) {
+                    //Start Online Game
                     alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
+                    startCountDown(true);
                 }
                 readyTwo.innerText = "nicht bereit";
                 readyTwo.classList.remove("blue");
                 readyTwo.classList.add("red");
                 var id = localStorage.getItem("gameID");
-                
+
                 if (!(id === "")) {
-                    
+
                     //hosted Game
-                    onlineGames = [];
+                    hostedGames = [];
                     get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log(snapshot.val());
                             //alert(snapshot.val())
-                            onlineGames = snapshot.val();
+                            hostedGames = snapshot.val();
                             //noUser.classList.add("hide");
                             //alert("games loaded");
-                            onlineGames[id].ready2 = true;
-                            var list_hosted_games = onlineGames;
+                            hostedGames[id].ready2 = true;
+                            var list_hosted_games = hostedGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
                             })
@@ -532,16 +791,16 @@
                 var id = localStorage.getItem("gameID");
                 if (!(id === "")) {
                     //hosted Game
-                    onlineGames = [];
+                    hostedGames = [];
                     get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log(snapshot.val());
                             //alert(snapshot.val())
-                            onlineGames = snapshot.val();
+                            hostedGames = snapshot.val();
                             //noUser.classList.add("hide");
                             //alert("games loaded");
-                            onlineGames[id].ready2 = false;
-                            var list_hosted_games = onlineGames;
+                            hostedGames[id].ready2 = false;
+                            var list_hosted_games = hostedGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
                             })
@@ -605,7 +864,7 @@
                 if (snapshot.exists()) {
                     console.log(snapshot.val());
                     //alert(snapshot.val())
-                    onlineGames = snapshot.val();
+                    hostedGames = snapshot.val();
                     //noUser.classList.add("hide");
                     //alert("games loaded");
                 } else {
@@ -627,14 +886,18 @@
                     if (willDelete) {
                         var id = localStorage.getItem("gameID");
                         if (!(id === "")) {
-                            onlineGames[id].done = w;
-                            if (onlineGames[id].opp_username === myName) {
-                                onlineGames[id].opp_username = "[kein Spieler]";
-                                onlineGames[id].ready2 = false;
-                            } else {
-                                onlineGames[id].ready1 = false;
+                            if (w) {
+                                hostedGames[id].finished = true;
+                                hostedGames[id].done = true;
                             }
-                            var list_hosted_games = onlineGames;
+                            if (hostedGames[id].opp_username === myName) {
+                                hostedGames[id].opp_username = "[kein Spieler]";
+                                hostedGames[id].ready2 = false;
+                            } else {
+                                hostedGames[id].ready1 = false;
+                                hostedGames[id].done = true;
+                            }
+                            var list_hosted_games = hostedGames;
                             update(ref(database, `memory`), {
                                 list_hosted_games
                             })
@@ -652,13 +915,12 @@
                             const auth = getAuth(app);
                             const user = auth.currentUser;
                             //window.location.href = "lobby.html";
-                            all_invitations[inviteId].done = w;
-
                             if ((all_invitations[inviteId].opp_username === myName)) {
                                 all_invitations[inviteId].opp_username = `[${all_invitations[inviteId].opp_username}] verlassen`;
                                 all_invitations[inviteId].ready2 = false;
                             } else {
                                 all_invitations[inviteId].ready1 = false;
+                                all_invitations[inviteId].done = true;
                             }
 
                             var invitations = all_invitations;

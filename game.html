@@ -541,11 +541,9 @@
 
         });
 
-
         function loadHostedGames() {
             const auth = getAuth(app);
             const user = auth.currentUser;
-            let myName = "";
             get(child(dbRef, `users/${user.uid}/username`))
                 .then((snapshot) => {
                     if (snapshot.exists()) {
@@ -562,11 +560,11 @@
 
             onValue(hostedGamesRef, handleSnapshot);
 
-            get(child(dbRef, `memory/list_hosted_games`))
-                .then(handleSnapshot)
-                .catch((error) => {
-                    console.error(error);
-                });
+            //get(child(dbRef, `memory/list_hosted_games`))
+            //    .then(handleSnapshot)
+            //    .catch((error) => {
+            //        console.error(error);
+            //    });
 
             function handleSnapshot(snapshot) {
                 if (!snapshot.exists()) {
@@ -577,9 +575,16 @@
                 onlineGames = snapshot.val();
                 hostedGames.innerHTML = "<tr><th>ID</th><th>Spielname</th><th>Spieler</th><th>Sucht seit</th><th>Action</th></tr>";
                 for (let i = 0; i < onlineGames.length; i++) {
-                    if (!onlineGames[i].done || (onlineGames[i].username === myName)) {
-                        const insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten ${i + 1}</button></td></tr>`
-                        hostedGames.innerHTML += insertGame;
+                    if (!onlineGames[i].finished) {
+                        if (!onlineGames[i].done || (onlineGames[i].username === myName)) {
+                            var insertGame = ""
+                            if (onlineGames[i].done) {
+                                insertGame = `<tr style="background: rgb(128, 255, 128)" ><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten ${i + 1}</button></td></tr>`
+                            } else {
+                                insertGame = `<tr><td>${i + 1}</td><td>${onlineGames[i].gameName}</td><td>${onlineGames[i].username}</td><td>${onlineGames[i].start}</td><td><button id="beitreten${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">beitreten ${i + 1}</button></td></tr>`
+                            }
+                            hostedGames.innerHTML += insertGame;
+                        }
                     }
                 }
                 setUpButtonsJoinHostedGames();
@@ -804,7 +809,6 @@
             }
 
             all_invitations[invitationIndex].opp_username = myName.val();
-            all_invitations[invitationIndex].done = true;
 
             try {
                 await update(ref(database, `users/${user.uid}`), { invitations: all_invitations });

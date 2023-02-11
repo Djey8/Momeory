@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lobby</title>
+    <link rel="stylesheet" type="text/css" href="CSS/formate.css" />
+    <link rel="icon" type="image/x-icon"
+        href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
+    <script src="Skripte/Script1.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div>
+            <a id="l1" style="float: left;" title="Spiel verlassen"> <img class="yin" src="Bilder/yinyang.jpg"></a>
+        </div>
+        <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img
+                    src="Bilder/logo.png" width="250"></a></div>
+        <div>
+            <h1 id="mitte" class=center>Mehrspieler</h1>
+        </div>
+    </header>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgRC9CiBJRt2_gsHlRifB-MpE_xii7DXM",
+            authDomain: "memory-app-b17ee.firebaseapp.com",
+            projectId: "memory-app-b17ee",
+            storageBucket: "memory-app-b17ee.appspot.com",
+            messagingSenderId: "3637204477",
+            appId: "1:3637204477:web:1493290d44957d81997594",
+            measurementId: "G-XWPBGZWB4S",
+            databaseURL: "https://memory-app-b17ee-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase(app));
+        const leaderboardTable = document.getElementById("leaderboard-table");
+        const onlineTable = document.getElementById("online-table");
+        const offlineTable = document.getElementById("offline-table");
+        const averageTable = document.getElementById("average-table");
+        const highlightTable = document.getElementById("highlight-table");
+        const noUser = document.getElementById("noUser");
+        const modusLabel = document.getElementById("modusLabel");
+
+        var allOnlineGames = [];
+        var onlineGames = [];
+        const gameID = localStorage.getItem("gameID");
+        let index = -1;
+        async function loadUserGames(user) {
+            try {
+                const [allOnlineSnapshot, onlineSnapshot] = await Promise.all([
+                    get(child(dbRef, `memory/list_online_games`)),
+                    get(child(dbRef, `users/${user.uid}/online_games`))
+                ]);
+
+                allOnlineGames = allOnlineSnapshot.exists() ? allOnlineSnapshot.val() : [];
+                onlineGames = onlineSnapshot.exists() ? onlineSnapshot.val() : [];
+                for (let i = 0; i < allOnlineGames.length; i++) {
+                    if (allOnlineGames[i].ID === onlineGames[onlineGames.length - 1].ID) {
+                        index = i;
+                        console.log(index);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                console.error('Failed to load games');
+
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadUserGames(user)
+                    .then(() => {
+                        // do something when the promise is fulfilled
+                        //alert(allOnlineGames[index].ID);
+                        //alert(onlineGames[onlineGames.length-1].ID)
+                        //play Memory so onValue vor gameNotation
+                        const gameNotation = ref(database, `memory/list_online_games/${index}/ID`);
+                        onValue(gameNotation, (snapshot) => {
+                            const data = snapshot.val();
+                            //alert("ready2 changed");
+                            //alert(data);
+                            alert("changed");
+                        });
+                    })
+                    .catch(() => {
+                        // do something when the promise is rejected
+                    });
+            } else {
+
+            }
+        });
+    </script>
+    <footer class="endBottom">
+        <div style="margin-bottom: 8px; line-height: 15px;">
+            Die Ravensburger AG ist in Deutschland im Besitz der eingetragenen Wortmarke "Memory". <br>
+            Die Spielidee selbst geht zuzrück bis ins 12. Jahrhundert. <br />
+        </div>
+        <hr class="trenn-linie" style="margin-bottom: 5px;">
+        </hr>
+        <dev>
+            Copyright 2022
+            <a href="impressum.html" title="Impressum"> <img class="yin15" src="Bilder/yinyang.jpg"></a>
+            IT-Abteilung der Berufsschule Freising. <br>
+        </dev>
+        <dev>
+            <a href="index.html" title="Welcome">Welcome </a>
+            |
+            <a href="impressum.html" title="Impressum">Impressum</a>
+        </dev>
+    </footer>
+</body>
