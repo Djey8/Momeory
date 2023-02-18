@@ -396,14 +396,15 @@
                 { name: "pic27", image: "../Bilder/pic27-klein.jpg" },
                 { name: "pic28", image: "../Bilder/pic28-klein.jpg" },
                 { name: "pic29", image: "../Bilder/pic29-klein.jpg" },
-                { name: "pic30", image: "../Bilder/pic30-klein.jpg" },
+                { name: "pic30", image: "../Bilder/pic30-klein.jpg" }
             ];
 
             var new_map = [];
             //create Map
             //get 8 numbers between 0 and 29
             for (let i = 0; i < 16; i++) {
-                const rndInt = Math.floor(Math.random() * 30)
+                const rndInt = Math.floor(Math.random() * 29)
+                //alert(rndInt)
                 if (!new_map.includes(items[rndInt])) {
                     new_map.push(items[rndInt]);
                     new_map.push(items[rndInt]);
@@ -471,18 +472,19 @@
                             uid: uid1,
                             username: player1,
                             moves: 0,
-                            hit: 0,
+                            hits: 0,
                             time: "00:00:00"
                         },
                         player2: {
                             uid: uid2,
                             username: player2,
                             moves: 0,
-                            hit: 0,
+                            hits: 0,
                             time: "00:00:00"
                         },
                         total_time: "00:00:00",
                         total_moves: 0,
+                        total_hits: 0,
                         start: date.toUTCString(),
                         status: "Game startet",
                         ID: `${uid1}${uid2}${date.toUTCString()}`,
