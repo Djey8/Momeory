@@ -133,6 +133,12 @@
         const gameID = localStorage.getItem("gameID");
         let index = -1;
         let myName = "";
+        var timeCounter = 0;
+        var lastTime = 0;
+        setInterval(myTimer, 1650);
+        function myTimer() {
+            timeCounter += 1;
+        }
 
         var gameNotation = [];
         var secondCard = false;
@@ -193,7 +199,8 @@
                                         first: true,
                                         first_card: i,
                                         second_card: -1,
-                                        hit: false
+                                        hit: false,
+                                        time: 0
                                     };
                                     gameNotation.push(first_move);
                                     get(child(dbRef, `memory/list_online_games`))
@@ -202,6 +209,7 @@
                                                 allOnlineGames = snapshot.val();
                                             }
                                             allOnlineGames[index].gameNotation = gameNotation;
+                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} and ${allOnlineGames[index].player2.username} playing Memory ${index + 1}`;
                                             const list_online_games = allOnlineGames
                                             update(ref(database, `memory`), { list_online_games })
                                                 .then(() => {
@@ -231,19 +239,26 @@
                                                         if (snapshot.exists()) {
                                                             allOnlineGames = snapshot.val();
                                                         }
+                                                        let time = timeCounter-lastTime;
+                                                        lastTime = timeCounter;
                                                         allOnlineGames[index].total_moves += 1;
                                                         allOnlineGames[index].total_hits += 1;
-                                                        if(allOnlineGames[index].player1.username === myName){
+                                                        allOnlineGames[index].total_time += time;
+                                                        if (allOnlineGames[index].player1.username === myName) {
                                                             allOnlineGames[index].player1.hits += 1;
                                                             allOnlineGames[index].player1.moves += 1;
+                                                            allOnlineGames[index].player1.time += time;
+
                                                         } else {
                                                             allOnlineGames[index].player2.hits += 1;
                                                             allOnlineGames[index].player2.moves += 1;
+                                                            allOnlineGames[index].player2.time += time; 
                                                         }
+                                                        gameNotation[gameNotation.length-1].time = time;
                                                         allOnlineGames[index].gameNotation = gameNotation;
                                                         const list_online_games = allOnlineGames;
                                                         update(ref(database, `memory`), { list_online_games })
-                                                            .then(() => { 
+                                                            .then(() => {
                                                                 //alert("Played second card")
                                                             })
                                                             .catch((error) => {
@@ -259,13 +274,19 @@
                                                         if (snapshot.exists()) {
                                                             allOnlineGames = snapshot.val();
                                                         }
+                                                        let time = timeCounter - lastTime;
+                                                        lastTime = timeCounter;
                                                         gameNotation[gameNotation.length - 1].next = true;
                                                         allOnlineGames[index].total_moves += 1;
-                                                        if(allOnlineGames[index].player1.username === myName){
+                                                        allOnlineGames[index].total_time += time; 
+                                                        if (allOnlineGames[index].player1.username === myName) {
                                                             allOnlineGames[index].player1.moves += 1;
+                                                            allOnlineGames[index].player1.time += time;
                                                         } else {
                                                             allOnlineGames[index].player2.moves += 1;
+                                                            allOnlineGames[index].player2.time += time;
                                                         }
+                                                        gameNotation[gameNotation.length-1].time = time;
                                                         allOnlineGames[index].gameNotation = gameNotation;
                                                         const list_online_games = allOnlineGames;
                                                         update(ref(database, `memory`), { list_online_games })
@@ -300,7 +321,8 @@
                                                 first: true,
                                                 first_card: i,
                                                 second_card: -1,
-                                                hit: false
+                                                hit: false,
+                                                time: 0
                                             };
                                             gameNotation.push(new_move);
                                             get(child(dbRef, `memory/list_online_games`))
@@ -351,6 +373,18 @@
                             if (snapshot.exists()) {
                                 gameNotation = snapshot.val();
                                 //alert("weiter");
+                                for (let i = 0; i < gameNotation.length; i++) {
+                                    if (gameNotation[i].hit) {
+                                        const input1 = document.getElementById(`pic${gameNotation[i].first_card + 1}`);
+                                        const pic1 = document.getElementById(`pic${gameNotation[i].first_card + 1}-image`);
+                                        const input2 = document.getElementById(`pic${gameNotation[i].second_card + 1}`);
+                                        const pic2 = document.getElementById(`pic${gameNotation[i].second_card + 1}-image`);
+                                        input1.classList.add("hide");
+                                        pic1.classList.remove("hide");
+                                        input2.classList.add("hide");
+                                        pic2.classList.remove("hide");
+                                    }
+                                }
                                 if (!(gameNotation[gameNotation.length - 1].player === myName)) {
                                     if (gameNotation[gameNotation.length - 1].second_card === -1) {
                                         const input = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}`);

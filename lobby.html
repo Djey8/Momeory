@@ -403,12 +403,26 @@
             //create Map
             //get 8 numbers between 0 and 29
             for (let i = 0; i < 16; i++) {
-                const rndInt = Math.floor(Math.random() * 29)
+                const rndInt = Math.floor(Math.random() * 30)
                 //alert(rndInt)
                 if (!new_map.includes(items[rndInt])) {
                     new_map.push(items[rndInt]);
                     new_map.push(items[rndInt]);
                     i++;
+                }
+            }
+            var finish1 = false;
+            while(!finish1){
+                if(new_map.length === 16){
+                    finish1 = true;
+                    alert("map finished"); 
+                } else {
+                    const rndInt = Math.floor(Math.random() * 30)
+                    if (!new_map.includes(items[rndInt])) {
+                        new_map.push(items[rndInt]);
+                        new_map.push(items[rndInt]);
+                        alert("insertet extra pic");
+                }
                 }
             }
             //alert(new_map.length);
@@ -473,16 +487,16 @@
                             username: player1,
                             moves: 0,
                             hits: 0,
-                            time: "00:00:00"
+                            time: 0
                         },
                         player2: {
                             uid: uid2,
                             username: player2,
                             moves: 0,
                             hits: 0,
-                            time: "00:00:00"
+                            time: 0
                         },
-                        total_time: "00:00:00",
+                        total_time: 0,
                         total_moves: 0,
                         total_hits: 0,
                         start: date.toUTCString(),
@@ -526,7 +540,7 @@
                                         end: "not yet",
                                         start: date.toUTCString(),
                                         moves: 0,
-                                        time: "00:00:00",
+                                        time: 0,
                                         opp: player2
                                     }
                                     const new_onlineGame2 = {
@@ -534,7 +548,7 @@
                                         end: "not yet",
                                         start: date.toUTCString(),
                                         moves: 0,
-                                        time: "00:00:00",
+                                        time: 0,
                                         opp: player1
                                     }
                                     onlineGames1.push(new_onlineGame1);
