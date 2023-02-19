@@ -134,8 +134,7 @@
         let index = -1;
         let myName = "";
         var timeCounter = 0;
-        var lastTime = 0;
-        setInterval(myTimer, 1650);
+        setInterval(myTimer, 1000);
         function myTimer() {
             timeCounter += 1;
         }
@@ -239,27 +238,113 @@
                                                         if (snapshot.exists()) {
                                                             allOnlineGames = snapshot.val();
                                                         }
-                                                        let time = timeCounter-lastTime;
-                                                        lastTime = timeCounter;
                                                         allOnlineGames[index].total_moves += 1;
                                                         allOnlineGames[index].total_hits += 1;
-                                                        allOnlineGames[index].total_time += time;
+                                                        allOnlineGames[index].total_time += timeCounter;
                                                         if (allOnlineGames[index].player1.username === myName) {
                                                             allOnlineGames[index].player1.hits += 1;
                                                             allOnlineGames[index].player1.moves += 1;
-                                                            allOnlineGames[index].player1.time += time;
+                                                            allOnlineGames[index].player1.time += timeCounter;
 
                                                         } else {
                                                             allOnlineGames[index].player2.hits += 1;
                                                             allOnlineGames[index].player2.moves += 1;
-                                                            allOnlineGames[index].player2.time += time; 
+                                                            allOnlineGames[index].player2.time += timeCounter;
                                                         }
-                                                        gameNotation[gameNotation.length-1].time = time;
+                                                        gameNotation[gameNotation.length - 1].time = timeCounter;
                                                         allOnlineGames[index].gameNotation = gameNotation;
                                                         const list_online_games = allOnlineGames;
                                                         update(ref(database, `memory`), { list_online_games })
                                                             .then(() => {
                                                                 //alert("Played second card")
+                                                                timeCounter = 0;
+                                                                if (allOnlineGames[index].total_hits === 8) {
+                                                                    alert("End");
+                                                                    const date = new Date();
+                                                                    //update player 1
+                                                                    //create two online_games objects for each user
+                                                                    var onlineGames1 = [];
+                                                                    var onlineGames2 = [];
+                                                                    async function loadOnlineGames() {
+                                                                        try {
+                                                                            const [online1Snapshot, online2Snapshot, onlineSnapshot] = await Promise.all([
+                                                                                get(child(dbRef, `users/${allOnlineGames[index].player1.uid}/online_games`)),
+                                                                                get(child(dbRef, `users/${allOnlineGames[index].player2.uid}/online_games`)),
+                                                                                get(child(dbRef, `memory/list_online_games`))
+                                                                            ]);
+
+                                                                            onlineGames1 = online1Snapshot.exists() ? online1Snapshot.val() : [];
+                                                                            onlineGames2 = online2Snapshot.exists() ? online2Snapshot.val() : [];
+                                                                            allOnlineGames = onlineSnapshot.exists() ? onlineSnapshot.val() : [];
+                                                                        } catch (error) {
+                                                                            console.error(error);
+                                                                            console.error('Failed to load games');
+
+                                                                        }
+                                                                    }
+                                                                    loadOnlineGames()
+                                                                        .then(() => {
+                                                                            allOnlineGames[index].finished = true;
+                                                                            //Who won?
+                                                                            if (allOnlineGames[index].player1.hits > allOnlineGames[index].player2.hits) {
+                                                                                //Player 1 won
+                                                                                allOnlineGames[index].status = `${allOnlineGames[index].player1.username} won`;
+                                                                                onlineGames1[onlineGames1.length - 1].won = 1;
+                                                                                onlineGames2[onlineGames2.length - 1].won = -1;
+                                                                            } else {
+                                                                                if (allOnlineGames[index].player2.hits > allOnlineGames[index].player1.hits) {
+                                                                                    //Player 2 won
+                                                                                    allOnlineGames[index].status = `${allOnlineGames[index].player1.username} won`;
+                                                                                    onlineGames2[onlineGames2.length - 1].won = 1;
+                                                                                    onlineGames1[onlineGames1.length - 1].won = -1;
+                                                                                } else {
+                                                                                    //no winner
+                                                                                    allOnlineGames[index].status = `draw`;
+                                                                                    onlineGames2[onlineGames2.length - 1].won = 0;
+                                                                                    onlineGames1[onlineGames1.length - 1].won = 0;
+                                                                                }
+                                                                            }
+                                                                            const list_online_games = allOnlineGames;
+                                                                            update(ref(database, `memory`), { list_online_games })
+                                                                                .then(() => {
+                                                                                    //alert("Played second card")
+                                                                                    //player 1
+                                                                                    onlineGames1[onlineGames1.length - 1].end = date.toUTCString();
+                                                                                    onlineGames1[onlineGames1.length - 1].moves = allOnlineGames[index].player1.moves;
+                                                                                    onlineGames1[onlineGames1.length - 1].hits = allOnlineGames[index].player1.hits;
+                                                                                    onlineGames1[onlineGames1.length - 1].time = allOnlineGames[index].player1.time;
+                                                                                    onlineGames2[onlineGames2.length - 1].end = date.toUTCString();
+                                                                                    onlineGames2[onlineGames2.length - 1].moves = allOnlineGames[index].player2.moves;
+                                                                                    onlineGames2[onlineGames2.length - 1].hits = allOnlineGames[index].player2.hits;
+                                                                                    onlineGames2[onlineGames2.length - 1].time = allOnlineGames[index].player2.time;
+                                                                                    let online_games = onlineGames1;
+                                                                                    update(ref(database, `users/${allOnlineGames[index].player1.uid}`), { online_games })
+                                                                                        .then(() => {
+                                                                                            online_games = onlineGames2;
+                                                                                            update(ref(database, `users/${allOnlineGames[index].player2.uid}`), { online_games })
+                                                                                                .then(() => {
+                                                                                                    //Win Screen finished Database 
+                                                                                                    alert("finished writing database");
+
+                                                                                                })
+                                                                                                .catch((error) => {
+                                                                                                    console.error("error with invite:", error);
+                                                                                                });
+                                                                                        })
+                                                                                        .catch((error) => {
+                                                                                            console.error("error with invite:", error);
+                                                                                        });
+                                                                                })
+                                                                                .catch((error) => {
+                                                                                    console.error("error with invite:", error);
+                                                                                });
+                                                                        })
+                                                                        .catch((error) => {
+                                                                            // The write failed...
+                                                                            alert(error);
+                                                                            //alert(error)
+                                                                        });
+                                                                }
                                                             })
                                                             .catch((error) => {
                                                                 console.error("error with invite:", error);
@@ -274,19 +359,17 @@
                                                         if (snapshot.exists()) {
                                                             allOnlineGames = snapshot.val();
                                                         }
-                                                        let time = timeCounter - lastTime;
-                                                        lastTime = timeCounter;
                                                         gameNotation[gameNotation.length - 1].next = true;
                                                         allOnlineGames[index].total_moves += 1;
-                                                        allOnlineGames[index].total_time += time; 
+                                                        allOnlineGames[index].total_time += timeCounter;
                                                         if (allOnlineGames[index].player1.username === myName) {
                                                             allOnlineGames[index].player1.moves += 1;
-                                                            allOnlineGames[index].player1.time += time;
+                                                            allOnlineGames[index].player1.time += timeCounter;
                                                         } else {
                                                             allOnlineGames[index].player2.moves += 1;
-                                                            allOnlineGames[index].player2.time += time;
+                                                            allOnlineGames[index].player2.time += timeCounter;
                                                         }
-                                                        gameNotation[gameNotation.length-1].time = time;
+                                                        gameNotation[gameNotation.length - 1].time = timeCounter;
                                                         allOnlineGames[index].gameNotation = gameNotation;
                                                         const list_online_games = allOnlineGames;
                                                         update(ref(database, `memory`), { list_online_games })
@@ -409,6 +492,7 @@
                                                 pic.classList.add("hide");
                                                 input.classList.remove("hide");
                                                 turner = false;
+                                                timeCounter = 0;
                                                 //alert("second");
                                             }, 2000);
                                         }
