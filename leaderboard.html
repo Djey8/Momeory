@@ -278,7 +278,7 @@
             for (let i = 0; i < games.length; i++) {
                 const z = games.length - i - 1;
                 const win = games[z].won ? "x" : "";
-                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].time}</td><td>${win}</td></tr>`
+                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].won}</td><td>${win}</td></tr>`
                 table.innerHTML += insertGame;
             }
         }
@@ -287,8 +287,7 @@
             table.innerHTML = "<tr><th>ID</th><th>Spieler</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
             for (let i = 0; i < games.length; i++) {
                 const z = games.length - i - 1;
-                const win = games[z].won ? "x" : "";
-                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].opp}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].time}</td><td>${win}</td></tr>`
+                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].opp}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].time}</td><td>${games[z].won}</td></tr>`
                 table.innerHTML += insertGame;
             }
         }
