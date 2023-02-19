@@ -9,6 +9,70 @@
         href="https://www.amadeus-hospitality.com/wp-content/uploads/2018/05/amadeus-icon-1.png">
     <script src="Skripte/Script1.js" type="text/javascript"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        @media (orientation: landscape) {
+            .grid-container {
+                margin-top: 10px;
+                display: grid;
+                grid-template-columns: auto auto auto auto;
+                justify-content: center;
+                height: 88vh;
+                background-color: transparent;
+                row-gap: 20px;
+                column-gap: 20px;
+                padding: 1%;
+            }
+
+            .grid-item {
+                max-height: 100%;
+                aspect-ratio: 1/1;
+                font-size: 30px;
+                border-radius: 5%;
+                border-color: black;
+                border-width: 4px;
+                background-color: #f4c531;
+            }
+
+            .grid-item-pic {
+                height: 19.5vh;
+                aspect-ratio: 1/1;
+                border-radius: 5%;
+                border-width: 4px;
+                border-color: black;
+            }
+        }
+
+        @media (orientation: portrait) {
+            .grid-container {
+                margin-top: 10px;
+                display: grid;
+                grid-template-columns: repeat(4, 22.5%);
+                justify-content: center;
+                background-color: transparent;
+                row-gap: 20px;
+                column-gap: 20px;
+                padding: 1%;
+            }
+
+            .grid-item {
+                max-width: 100%;
+                aspect-ratio: 1/1;
+                font-size: 30px;
+                border-radius: 5%;
+                border-color: black;
+                border-width: 4px;
+                background-color: #f4c531;
+            }
+
+            .grid-item-pic {
+                max-width: 100%;
+                aspect-ratio: 1/1;
+                border-radius: 5%;
+                border-width: 4px;
+                border-color: black;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -22,12 +86,15 @@
             <h1 id="mitte" class=center>Mehrspieler</h1>
         </div>
     </header>
+    <div class="grid-container">
+
+    </div>
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getDatabase, ref, update, child, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, update, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -59,29 +126,235 @@
         const noUser = document.getElementById("noUser");
         const modusLabel = document.getElementById("modusLabel");
 
+        const gridContainer = document.querySelector(".grid-container");
+
         var allOnlineGames = [];
         var onlineGames = [];
         const gameID = localStorage.getItem("gameID");
         let index = -1;
+        let myName = "";
+        var timeCounter = 0;
+        var lastTime = 0;
+        setInterval(myTimer, 1650);
+        function myTimer() {
+            timeCounter += 1;
+        }
+
+        var gameNotation = [];
+        var secondCard = false;
+        var myTurn = false;
+        var turner = false
         async function loadUserGames(user) {
             try {
-                const [allOnlineSnapshot, onlineSnapshot] = await Promise.all([
+                const [allOnlineSnapshot, onlineSnapshot, myNameSnapshot] = await Promise.all([
                     get(child(dbRef, `memory/list_online_games`)),
-                    get(child(dbRef, `users/${user.uid}/online_games`))
+                    get(child(dbRef, `users/${user.uid}/online_games`)),
+                    get(child(dbRef, `users/${user.uid}/username`))
                 ]);
 
                 allOnlineGames = allOnlineSnapshot.exists() ? allOnlineSnapshot.val() : [];
                 onlineGames = onlineSnapshot.exists() ? onlineSnapshot.val() : [];
+                myName = myNameSnapshot.exists() ? myNameSnapshot.val() : "no user";
+                if (gameID === null) {
+                    gameID = onlineGames[-1].ID;
+                    //alert(gameID);
+                }
                 for (let i = 0; i < allOnlineGames.length; i++) {
                     if (allOnlineGames[i].ID === onlineGames[onlineGames.length - 1].ID) {
                         index = i;
                         console.log(index);
                     }
                 }
+
             } catch (error) {
                 console.error(error);
                 console.error('Failed to load games');
 
+            }
+        }
+
+        function setUpButtonsFlipCard() {
+            const cells = document.querySelectorAll(".grid-item");
+            for (let i = 0; i < cells.length; i++) {
+                const cell = cells[i];
+                cell.addEventListener("click", () => {
+                    if (!turner) {
+                        if (!(allOnlineGames[index].player1.username === myName) && gameNotation.length === 0) {
+                            //alert("not your turn");
+                        } else {
+                            //alert(!(allOnlineGames[index].player1.username === myName))
+                            //alert(!gameNotation[gameNotation.length - 1].next)
+                            if ((!(allOnlineGames[index].player1.username === myName) && !gameNotation[gameNotation.length - 1].next) && (!(allOnlineGames[index].player2.username === myName) && !gameNotation[gameNotation.length - 1].next)) {
+                                //alert("also not my Trun")
+                            } else {
+                                const input = document.getElementById(`pic${i + 1}`);
+                                const pic = document.getElementById(`pic${i + 1}-image`);
+                                input.classList.add("hide");
+                                pic.classList.remove("hide");
+                                if (gameNotation.length === 0) {
+                                    //alert("empty")
+                                    let first_move = {
+                                        next: false,
+                                        player: myName,
+                                        first: true,
+                                        first_card: i,
+                                        second_card: -1,
+                                        hit: false,
+                                        time: 0
+                                    };
+                                    gameNotation.push(first_move);
+                                    get(child(dbRef, `memory/list_online_games`))
+                                        .then((snapshot) => {
+                                            if (snapshot.exists()) {
+                                                allOnlineGames = snapshot.val();
+                                            }
+                                            allOnlineGames[index].gameNotation = gameNotation;
+                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} and ${allOnlineGames[index].player2.username} playing Memory ${index + 1}`;
+                                            const list_online_games = allOnlineGames
+                                            update(ref(database, `memory`), { list_online_games })
+                                                .then(() => {
+                                                    //alert("Played first card")
+                                                })
+                                                .catch((error) => {
+                                                    console.error("error with invite:", error);
+                                                });
+                                        })
+                                        .catch((error) => {
+                                            console.error(error);
+                                        });
+                                } else {
+                                    //alert("full")
+                                    if (((myName === gameNotation[gameNotation.length - 1].player) && gameNotation[gameNotation.length - 1].next) || (!(myName === gameNotation[gameNotation.length - 1].player) && !gameNotation[gameNotation.length - 1].next)) {
+                                        //alert("Not your turn :D");
+                                        input.classList.remove("hide");
+                                        pic.classList.add("hide");
+                                    } else {
+                                        if (gameNotation[gameNotation.length - 1].first) {
+                                            gameNotation[gameNotation.length - 1].first = false;
+                                            gameNotation[gameNotation.length - 1].second_card = i;
+                                            if (allOnlineGames[index].game_map[gameNotation[gameNotation.length - 1].first_card].image === allOnlineGames[index].game_map[gameNotation[gameNotation.length - 1].second_card].image) {
+                                                gameNotation[gameNotation.length - 1].hit = true;
+                                                get(child(dbRef, `memory/list_online_games`))
+                                                    .then((snapshot) => {
+                                                        if (snapshot.exists()) {
+                                                            allOnlineGames = snapshot.val();
+                                                        }
+                                                        let time = timeCounter-lastTime;
+                                                        lastTime = timeCounter;
+                                                        allOnlineGames[index].total_moves += 1;
+                                                        allOnlineGames[index].total_hits += 1;
+                                                        allOnlineGames[index].total_time += time;
+                                                        if (allOnlineGames[index].player1.username === myName) {
+                                                            allOnlineGames[index].player1.hits += 1;
+                                                            allOnlineGames[index].player1.moves += 1;
+                                                            allOnlineGames[index].player1.time += time;
+
+                                                        } else {
+                                                            allOnlineGames[index].player2.hits += 1;
+                                                            allOnlineGames[index].player2.moves += 1;
+                                                            allOnlineGames[index].player2.time += time; 
+                                                        }
+                                                        gameNotation[gameNotation.length-1].time = time;
+                                                        allOnlineGames[index].gameNotation = gameNotation;
+                                                        const list_online_games = allOnlineGames;
+                                                        update(ref(database, `memory`), { list_online_games })
+                                                            .then(() => {
+                                                                //alert("Played second card")
+                                                            })
+                                                            .catch((error) => {
+                                                                console.error("error with invite:", error);
+                                                            });
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error(error);
+                                                    });
+                                            } else {
+                                                get(child(dbRef, `memory/list_online_games`))
+                                                    .then((snapshot) => {
+                                                        if (snapshot.exists()) {
+                                                            allOnlineGames = snapshot.val();
+                                                        }
+                                                        let time = timeCounter - lastTime;
+                                                        lastTime = timeCounter;
+                                                        gameNotation[gameNotation.length - 1].next = true;
+                                                        allOnlineGames[index].total_moves += 1;
+                                                        allOnlineGames[index].total_time += time; 
+                                                        if (allOnlineGames[index].player1.username === myName) {
+                                                            allOnlineGames[index].player1.moves += 1;
+                                                            allOnlineGames[index].player1.time += time;
+                                                        } else {
+                                                            allOnlineGames[index].player2.moves += 1;
+                                                            allOnlineGames[index].player2.time += time;
+                                                        }
+                                                        gameNotation[gameNotation.length-1].time = time;
+                                                        allOnlineGames[index].gameNotation = gameNotation;
+                                                        const list_online_games = allOnlineGames;
+                                                        update(ref(database, `memory`), { list_online_games })
+                                                            .then(() => {
+                                                                turner = true;
+                                                                setTimeout(function () {
+                                                                    const input1 = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}`);
+                                                                    const pic1 = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}-image`);
+                                                                    pic1.classList.add("hide");
+                                                                    input1.classList.remove("hide");
+                                                                    pic.classList.add("hide");
+                                                                    input.classList.remove("hide");
+                                                                    turner = false;
+                                                                }, 2000);
+                                                                //alert("Played second card")
+                                                            })
+                                                            .catch((error) => {
+                                                                console.error("error with invite:", error);
+                                                            });
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error(error);
+                                                    });
+
+                                            }
+
+
+                                        } else {
+                                            let new_move = {
+                                                player: myName,
+                                                next: false,
+                                                first: true,
+                                                first_card: i,
+                                                second_card: -1,
+                                                hit: false,
+                                                time: 0
+                                            };
+                                            gameNotation.push(new_move);
+                                            get(child(dbRef, `memory/list_online_games`))
+                                                .then((snapshot) => {
+                                                    if (snapshot.exists()) {
+                                                        allOnlineGames = snapshot.val();
+                                                    }
+                                                    allOnlineGames[index].gameNotation = gameNotation;
+                                                    const list_online_games = allOnlineGames;
+                                                    update(ref(database, `memory`), { list_online_games })
+                                                        .then(() => {
+                                                            //alert("Played first card")
+                                                        })
+                                                        .catch((error) => {
+                                                            console.error("error with invite:", error);
+                                                        });
+                                                })
+                                                .catch((error) => {
+                                                    console.error(error);
+                                                });
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    } else {
+                        //alert("turning")
+                    }
+
+
+                });
             }
         }
 
@@ -93,17 +366,80 @@
                         //alert(allOnlineGames[index].ID);
                         //alert(onlineGames[onlineGames.length-1].ID)
                         //play Memory so onValue vor gameNotation
-                        const gameNotation = ref(database, `memory/list_online_games/${index}/ID`);
-                        onValue(gameNotation, (snapshot) => {
-                            const data = snapshot.val();
-                            //alert("ready2 changed");
-                            //alert(data);
-                            alert("changed");
+
+
+                        const gameNotationRef = ref(database, `memory/list_online_games/${index}/gameNotation`);
+                        onValue(gameNotationRef, (snapshot) => {
+                            if (snapshot.exists()) {
+                                gameNotation = snapshot.val();
+                                //alert("weiter");
+                                for (let i = 0; i < gameNotation.length; i++) {
+                                    if (gameNotation[i].hit) {
+                                        const input1 = document.getElementById(`pic${gameNotation[i].first_card + 1}`);
+                                        const pic1 = document.getElementById(`pic${gameNotation[i].first_card + 1}-image`);
+                                        const input2 = document.getElementById(`pic${gameNotation[i].second_card + 1}`);
+                                        const pic2 = document.getElementById(`pic${gameNotation[i].second_card + 1}-image`);
+                                        input1.classList.add("hide");
+                                        pic1.classList.remove("hide");
+                                        input2.classList.add("hide");
+                                        pic2.classList.remove("hide");
+                                    }
+                                }
+                                if (!(gameNotation[gameNotation.length - 1].player === myName)) {
+                                    if (gameNotation[gameNotation.length - 1].second_card === -1) {
+                                        const input = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}`);
+                                        const pic = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}-image`);
+                                        input.classList.add("hide");
+                                        pic.classList.remove("hide");
+                                        //alert("first")
+                                    } else {
+                                        const input = document.getElementById(`pic${gameNotation[gameNotation.length - 1].second_card + 1}`);
+                                        const pic = document.getElementById(`pic${gameNotation[gameNotation.length - 1].second_card + 1}-image`);
+                                        input.classList.add("hide");
+                                        pic.classList.remove("hide");
+                                        if (allOnlineGames[index].game_map[gameNotation[gameNotation.length - 1].first_card].image === allOnlineGames[index].game_map[gameNotation[gameNotation.length - 1].second_card].image) {
+                                            //alert("second hit");
+                                        } else {
+                                            turner = true;
+                                            setTimeout(function () {
+                                                const input1 = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}`);
+                                                const pic1 = document.getElementById(`pic${gameNotation[gameNotation.length - 1].first_card + 1}-image`);
+                                                input1.classList.remove("hide");
+                                                pic1.classList.add("hide");
+                                                pic.classList.add("hide");
+                                                input.classList.remove("hide");
+                                                turner = false;
+                                                //alert("second");
+                                            }, 2000);
+                                        }
+
+
+                                    }
+                                }
+
+                            } else {
+                                //alert("no data");
+                            }
+
+
+
                         });
+
+                        gridContainer.innerHTML = ``;
+                        for (var i = 0; i < 16; i++) {
+                            gridContainer.innerHTML += `
+                                <input id="pic${i + 1}" class="grid-item" type="button" value="?">
+                                <img id="pic${i + 1}-image" class="grid-item-pic hide" src="${allOnlineGames[index].game_map[i].image}" hight="auto" alt="?" >
+                            `;
+                        }
+                        setUpButtonsFlipCard()
+
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         // do something when the promise is rejected
+                        //alert(error)
                     });
+
             } else {
 
             }
