@@ -294,12 +294,12 @@
                                                                             } else {
                                                                                 if (allOnlineGames[index].player2.hits > allOnlineGames[index].player1.hits) {
                                                                                     //Player 2 won
-                                                                                    allOnlineGames[index].status = `${allOnlineGames[index].player1.username} won`;
+                                                                                    allOnlineGames[index].status = `${allOnlineGames[index].player2.username} won`;
                                                                                     onlineGames2[onlineGames2.length - 1].won = 1;
                                                                                     onlineGames1[onlineGames1.length - 1].won = -1;
                                                                                 } else {
                                                                                     //no winner
-                                                                                    allOnlineGames[index].status = `draw`;
+                                                                                    allOnlineGames[index].status = `draw ${allOnlineGames[index].player1.username} & ${allOnlineGames[index].player2.username}`;
                                                                                     onlineGames2[onlineGames2.length - 1].won = 0;
                                                                                     onlineGames1[onlineGames1.length - 1].won = 0;
                                                                                 }

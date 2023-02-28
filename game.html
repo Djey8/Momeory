@@ -423,24 +423,59 @@
                                     opp_username: "[Kein Spieler]"
                                 };
 
-                                onlineGames.push(new_game);
+                                get(child(dbRef, `memory/list_hosted_games`)).then((snapshot) => {
+                                    if (snapshot.exists()) {
+                                        console.log(snapshot.val());
+                                        //alert(snapshot.val())
+                                        onlineGames = snapshot.val();
+                                        //noUser.classList.add("hide");
+                                        //alert("games loaded");
+                                        onlineGames.push(new_game);
 
-                                console.log(new_game);
-                                update(ref(database, `memory`), {
-                                    list_hosted_games: onlineGames
-                                })
-                                    .then(() => {
-                                        // Data saved successfully!
-                                        //alert("secessfully saved data")
-                                        localStorage.setItem("gameID", onlineGames.length - 1);
-                                        window.location.href = "lobby.html";
+                                        console.log(new_game);
+                                        update(ref(database, `memory`), {
+                                            list_hosted_games: onlineGames
+                                        })
+                                            .then(() => {
+                                                // Data saved successfully!
+                                                //alert("secessfully saved data")
+                                                localStorage.setItem("gameID", onlineGames.length - 1);
+                                                window.location.href = "lobby.html";
 
-                                    })
-                                    .catch((error) => {
-                                        // The write failed...
-                                        alert(error);
-                                        //alert(error)
-                                    });
+                                            })
+                                            .catch((error) => {
+                                                // The write failed...
+                                                alert(error);
+                                                //alert(error)
+                                            });
+                                    } else {
+                                        //alert("no data");
+                                        console.log("No data available");
+                                        onlineGames.push(new_game);
+
+                                        console.log(new_game);
+                                        update(ref(database, `memory`), {
+                                            list_hosted_games: onlineGames
+                                        })
+                                            .then(() => {
+                                                // Data saved successfully!
+                                                //alert("secessfully saved data")
+                                                localStorage.setItem("gameID", onlineGames.length - 1);
+                                                window.location.href = "lobby.html";
+
+                                            })
+                                            .catch((error) => {
+                                                // The write failed...
+                                                alert(error);
+                                                //alert(error)
+                                            });
+                                    }
+                                }).catch((error) => {
+                                    //alert(error)
+                                    console.error(error);
+                                });
+
+
                             } else {
                                 //alert("no data")
                                 console.log("no user logged in");
@@ -613,7 +648,7 @@
                 allPlayers.innerHTML = `<tr><th colspan="3" style="padding: 10px;">Alle Spieler</th></tr>`
                 allPlayers.innerHTML += "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
                 for (let i = 0; i < all_user.length; i++) {
-                    const insertGame = `<tr><td>${i + 1}</td><td>${all_user[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                    const insertGame = `<tr><td>${i + 1}</td><td>${all_user[i].username}</td><td><button id="${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
                     allPlayers.innerHTML += insertGame;
                 }
                 setUpButtonsAllPlayers();
@@ -652,7 +687,14 @@
 
             let tableBody = "<tr><th>ID</th><th>Spieler</th><th>Action</th></tr>";
             for (let i = 0; i < filteredUsers.length; i++) {
-                const insertPlayer = `<tr><td>${i + 1}</td><td>${filteredUsers[i].username}</td><td><button id="einladen${i + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
+                var index = 0;
+                for (let e = 0; e < all_user.length; e++) {
+                    if (all_user[e].username === filteredUsers[i].username) {
+                        index = e;
+                        break
+                    }
+                }
+                const insertPlayer = `<tr><td>${index + 1}</td><td>${filteredUsers[i].username}</td><td><button id="${index + 1}" style="padding: 5px; background-color: rgb(9, 0, 90);color: white; border-radius: 5px; border-width: 0px;">auswählen</button></td></tr>`
                 tableBody += insertPlayer;
             }
 
@@ -670,7 +712,11 @@
 
                     if (cell.innerHTML.includes("button")) {
                         let z = cell.innerHTML;
-                        username = all_user[parseInt(z.substring(20, 21)) - 1].username;
+                        const firstZ = z.substring(12, z.length);
+                        //alert(firstZ);
+                        const secondZ = firstZ.substring(0, firstZ.indexOf("\""));
+                        //alert(secondZ)
+                        username = all_user[parseInt(secondZ) - 1].username;
                     } else if (isNumeric(cell.innerHTML)) {
                         username = all_user[parseInt(cell.innerHTML) - 1].username;
                     } else {
@@ -730,7 +776,7 @@
 
                     const username = usernameSnapshot.val();
 
-                    
+
                     if (game.username !== username) {
                         game["opp_username"] = username;
                         game.done = true;
