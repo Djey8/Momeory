@@ -269,6 +269,11 @@
                                     //alert(data);
                                     if (data) {
                                         document.getElementById("status1").src = "Bilder/green.png";
+                                        if (data && document.getElementById("status2").src.includes("Bilder/green.png")) {
+                                            //Start Online Game
+                                            //alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
+                                            startCountDown(false);
+                                        }
                                     } else {
                                         document.getElementById("status1").src = "Bilder/red.png";
                                     }
@@ -284,6 +289,11 @@
                                     //alert(data);
                                     if (data) {
                                         document.getElementById("status2").src = "Bilder/green.png";
+                                        if (data && document.getElementById("status1").src.includes("Bilder/green.png")) {
+                                            //Start Online Game
+                                            //alert("beide bereit; Spiel beginnt in 5 Sekunden :D");
+                                            startCountDown(false);
+                                        }
                                     } else {
                                         document.getElementById("status2").src = "Bilder/red.png";
                                     }

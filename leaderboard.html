@@ -251,7 +251,7 @@
                 let winIndex;
 
                 onlineGames.forEach((game, index) => {
-                    if (game.won) {
+                    if (game.won === 1) {
                         const startTime = new Date(game.start);
                         const endTime = new Date(game.end);
                         const gameDuration = (endTime - startTime) / 1000;
@@ -266,7 +266,8 @@
 
                 if (typeof winIndex !== "undefined") {
                     const bestGame = onlineGames[winIndex];
-                    const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.opp}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${bestGame.time}</td><td>x</td></tr>`;
+                    const finalTime = bestGame.time === 0 ? "0:00" : `${Math.floor(bestGame.time / 60)}:${bestGame.time - Math.floor(bestGame.time / 60)}`;
+                    const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.opp}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${finalTime}</td><td>x</td></tr>`;
                     highlightTable.innerHTML += insertBestGame;
                 }
             }
@@ -278,7 +279,7 @@
             for (let i = 0; i < games.length; i++) {
                 const z = games.length - i - 1;
                 const win = games[z].won ? "x" : "";
-                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].won}</td><td>${win}</td></tr>`
+                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${games[z].time}</td><td>${win}</td></tr>`
                 table.innerHTML += insertGame;
             }
         }
@@ -302,11 +303,14 @@
 
         function loadOfflineAverage() {
             averageTable.innerHTML = "<tr><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
+            var sum = 0;
+            for (let i = 0; i < offlineGames.length; i++){
+                sum += parseInt(offlineGames[i].moves);
+            }
+            
+            const averageMoves = sum/offlineGames.length;
 
             const totalWonGames = offlineGames.filter(game => game.won).length;
-            const averageMoves = totalWonGames === 0 ? 0 : offlineGames
-                .reduce((sum, game) => sum + (game.won ? parseFloat(game.moves) : 0), 0) / totalWonGames;
-
             const winRatio = (totalWonGames / offlineGames.length) * 100 || 0;
 
             const averageTime = offlineGames.length === 0 ? 0 : offlineGames
@@ -327,16 +331,20 @@
                 console.error("onlineGames is not an array: ", onlineGames);
                 return;
             }
-            const totalWonGames = onlineGames.filter(game => game.won).length;
-            const averageMoves = totalWonGames === 0 ? 0 : onlineGames
-                .reduce((sum, game) => sum + (game.won ? parseFloat(game.moves) : 0), 0) / totalWonGames;
+            var sum = 0;
+            for (let i = 0; i < onlineGames.length; i++){
+                sum += parseInt(onlineGames[i].moves);
+            }
+            
+            const averageMoves = sum/onlineGames.length;
 
+            const totalWonGames = onlineGames.filter(game => game.won === 1).length;
             const winRatio = (totalWonGames / onlineGames.length) * 100 || 0;
 
             const averageTime = onlineGames.length === 0 ? 0 : onlineGames
                 .reduce((sum, game) => {
-                    const [minutes, seconds] = game.time.split(":").map(time => parseInt(time));
-                    return sum + minutes * 60 + seconds;
+                    const time = game.time;
+                    return sum + time;
                 }, 0) / onlineGames.length;
 
             const finalTime = averageTime === 0 ? "0:00.00" : `${Math.floor(averageTime / 60)}:${(averageTime - Math.floor(averageTime / 60) * 60).toFixed(2)}`;
