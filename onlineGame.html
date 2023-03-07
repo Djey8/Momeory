@@ -74,10 +74,10 @@
                 border-color: black;
             }
 
-            #right{
+            #right {
                 float: right;
             }
-            
+
         }
     </style>
 </head>
@@ -94,27 +94,31 @@
         </div>
     </header>
     <div class="grid-container"></div>
+
+    <div id="allContainer-Online">
+        <h4 id="gameStatus">pkw won</h4>
+        <h4 id="allHits">Treffer: 8</h4>
+        <h4 id="allMoves">Züge: 8</h4>
+        <h4 id="allTime">Zeit: 0:50.08</h4>
+    </div>
+
     <div id="stats-container-Online">
         <div id="player1Container-Online">
             <h4 id="player1">Djey8</h4>
-            <h4 id="player1Hit">Treffer: 2</h4>
+            <h4 id="player1Hits">Treffer: 2</h4>
             <h4 id="player1Moves">Züge: 13</h4>
             <h4 id="player1Time">Zeit: 0:25.04</h4>
         </div>
 
         <div id="player2Container-Online">
             <h4 id="player2">pkw</h4>
-            <h4 id="player2Hit">Treffer: 6</h4>
+            <h4 id="player2Hits">Treffer: 6</h4>
             <h4 id="player2Moves">Züge: 10</h4>
             <h4 id="player2Time">Zeit: 0:25.04</h4>
         </div>
     </div>
 
-    <div id="allContainer-Online">
-        <h4 id="gameStatus">pkw won</h4>
-        <h4 id="allHits">Alle Treffer: 8</h4>
-        <h4 id="allTime">Gesamtzeit: 0:50.08</h4>
-    </div>
+    
     <button id="playAgainbtn">Nochmal Spielen</button>
     <button id="verlassenbtn">Verlassen</button>
     <script type="module">
@@ -236,7 +240,7 @@
                                                 allOnlineGames = snapshot.val();
                                             }
                                             allOnlineGames[index].gameNotation = gameNotation;
-                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} and ${allOnlineGames[index].player2.username} playing Memory ${index + 1}`;
+                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} hat gestartet`;
                                             const list_online_games = allOnlineGames
                                             update(ref(database, `memory`), { list_online_games })
                                                 .then(() => {
@@ -273,11 +277,12 @@
                                                             allOnlineGames[index].player1.hits += 1;
                                                             allOnlineGames[index].player1.moves += 1;
                                                             allOnlineGames[index].player1.time += timeCounter;
-
+                                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} Treffer`;
                                                         } else {
                                                             allOnlineGames[index].player2.hits += 1;
                                                             allOnlineGames[index].player2.moves += 1;
                                                             allOnlineGames[index].player2.time += timeCounter;
+                                                            allOnlineGames[index].status = `${allOnlineGames[index].player2.username} Treffer`;
                                                         }
                                                         gameNotation[gameNotation.length - 1].time = timeCounter;
                                                         allOnlineGames[index].gameNotation = gameNotation;
@@ -287,7 +292,7 @@
                                                                 //alert("Played second card")
                                                                 timeCounter = 0;
                                                                 if (allOnlineGames[index].total_hits === 8) {
-                                                                    alert("End");
+                                                                    //alert("End");
                                                                     const date = new Date();
                                                                     //update player 1
                                                                     //create two online_games objects for each user
@@ -316,13 +321,15 @@
                                                                             //Who won?
                                                                             if (allOnlineGames[index].player1.hits > allOnlineGames[index].player2.hits) {
                                                                                 //Player 1 won
-                                                                                allOnlineGames[index].status = `${allOnlineGames[index].player1.username} won`;
+                                                                                allOnlineGames[index].status = `${allOnlineGames[index].player1.username} hat Gewonnen`;
+                                                                                document.getElementById("gameStatus").innerText = `${allOnlineGames[index].player1.username} hat Gewonnen`;
                                                                                 onlineGames1[onlineGames1.length - 1].won = 1;
                                                                                 onlineGames2[onlineGames2.length - 1].won = -1;
                                                                             } else {
                                                                                 if (allOnlineGames[index].player2.hits > allOnlineGames[index].player1.hits) {
                                                                                     //Player 2 won
-                                                                                    allOnlineGames[index].status = `${allOnlineGames[index].player2.username} won`;
+                                                                                    allOnlineGames[index].status = `${allOnlineGames[index].player2.username} hat Gewonnen`;
+                                                                                    document.getElementById("gameStatus").innerText = `${allOnlineGames[index].player2.username} hat Gewonnen`;
                                                                                     onlineGames2[onlineGames2.length - 1].won = 1;
                                                                                     onlineGames1[onlineGames1.length - 1].won = -1;
                                                                                 } else {
@@ -352,7 +359,7 @@
                                                                                             update(ref(database, `users/${allOnlineGames[index].player2.uid}`), { online_games })
                                                                                                 .then(() => {
                                                                                                     //Win Screen finished Database 
-                                                                                                    alert("finished writing database");
+                                                                                                    //alert("finished writing database");
 
                                                                                                 })
                                                                                                 .catch((error) => {
@@ -393,9 +400,11 @@
                                                         if (allOnlineGames[index].player1.username === myName) {
                                                             allOnlineGames[index].player1.moves += 1;
                                                             allOnlineGames[index].player1.time += timeCounter;
+                                                            allOnlineGames[index].status = `${allOnlineGames[index].player2.username} ist an der Reihe`;
                                                         } else {
                                                             allOnlineGames[index].player2.moves += 1;
                                                             allOnlineGames[index].player2.time += timeCounter;
+                                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} ist an der Reihe`;
                                                         }
                                                         gameNotation[gameNotation.length - 1].time = timeCounter;
                                                         allOnlineGames[index].gameNotation = gameNotation;
@@ -478,11 +487,82 @@
                         //alert(onlineGames[onlineGames.length-1].ID)
                         //play Memory so onValue vor gameNotation
 
+                        document.getElementById("player1").innerText = allOnlineGames[index].player1.username;
+                        document.getElementById("player1Hits").innerText = `Treffer: ${allOnlineGames[index].player1.hits}`;
+                        document.getElementById("player1Moves").innerText = `Züge: ${allOnlineGames[index].player1.moves}`;
+                        var finalTime1 = allOnlineGames[index].player1.time === 0 ? "0:00" : `${Math.floor(allOnlineGames[index].player1.time / 60)}:${allOnlineGames[index].player1.time % 60}`;
+                        const split1 = finalTime1.split(":")
+                        if (split1[1].length === 1) {
+                            finalTime1 = `${split1[0]}:0${split1[1]}`;
+                        }
+                        document.getElementById("player1Time").innerText = `Zeit: ${finalTime1}`;
+                        document.getElementById("player2").innerText = allOnlineGames[index].player2.username;
+                        document.getElementById("player2Hits").innerText = `Treffer: ${allOnlineGames[index].player2.hits}`;
+                        document.getElementById("player2Moves").innerText = `Züge: ${allOnlineGames[index].player2.moves}`;
+                        var finalTime2 = allOnlineGames[index].player2.time === 0 ? "0:00" : `${Math.floor(allOnlineGames[index].player2.time / 60)}:${allOnlineGames[index].player2.time % 60}`;
+                        const split2 = finalTime2.split(":")
+                        if (split2[1].length === 1) {
+                            finalTime2 = `${split2[0]}:0${split2[1]}`;
+                        }
+                        document.getElementById("player2Time").innerText = `Zeit: ${finalTime2}`;
+                        document.getElementById("gameStatus").innerText = allOnlineGames[index].status;
+                        document.getElementById("allHits").innerText = `Treffer: ${allOnlineGames[index].total_hits}`;
+                        document.getElementById("allMoves").innerText = `Züge: ${allOnlineGames[index].total_moves}`;
+                        var finalTime3 = allOnlineGames[index].total_time === 0 ? "0:00" : `${Math.floor(allOnlineGames[index].total_time / 60)}:${allOnlineGames[index].total_time % 60}`;
+                        const split3 = finalTime3.split(":")
+                        if (split3[1].length === 1) {
+                            finalTime3 = `${split3[0]}:0${split3[1]}`;
+                        }
+                        document.getElementById("allTime").innerText = `Zeit: ${finalTime3}`;
+
+                        const gameStatusRef = ref(database, `memory/list_online_games/${index}/status`);
+                        onValue(gameStatusRef, (snapshot) => {
+                            document.getElementById("gameStatus").innerText = snapshot.val();
+                        });
 
                         const gameNotationRef = ref(database, `memory/list_online_games/${index}/gameNotation`);
                         onValue(gameNotationRef, (snapshot) => {
                             if (snapshot.exists()) {
                                 gameNotation = snapshot.val();
+                                get(child(dbRef, `memory/list_online_games/${index}`))
+                                    .then(snapshot => {
+                                        if (snapshot.exists()) {
+                                            allOnlineGames[index] = snapshot.val();
+                                            document.getElementById("player1").innerText = allOnlineGames[index].player1.username;
+                                            document.getElementById("player1Hits").innerText = `Treffer: ${allOnlineGames[index].player1.hits}`;
+                                            document.getElementById("player1Moves").innerText = `Züge: ${allOnlineGames[index].player1.moves}`;
+                                            var finalTime1 = allOnlineGames[index].player1.time === 0 ? "0:00" : `${Math.floor(allOnlineGames[index].player1.time / 60)}:${allOnlineGames[index].player1.time % 60}`;
+                                            const split1 = finalTime1.split(":")
+                                            if (split1[1].length === 1) {
+                                                finalTime1 = `${split1[0]}:0${split1[1]}`;
+                                            }
+                                            document.getElementById("player1Time").innerText = `Zeit: ${finalTime1}`;
+                                            document.getElementById("player2").innerText = allOnlineGames[index].player2.username;
+                                            document.getElementById("player2Hits").innerText = `Treffer: ${allOnlineGames[index].player2.hits}`;
+                                            document.getElementById("player2Moves").innerText = `Züge: ${allOnlineGames[index].player2.moves}`;
+                                            var finalTime2 = allOnlineGames[index].player2.time === 0 ? "0:00" : `${Math.floor(allOnlineGames[index].player2.time / 60)}:${allOnlineGames[index].player2.time % 60}`;
+                                            const split2 = finalTime2.split(":")
+                                            if (split2[1].length === 1) {
+                                                finalTime2 = `${split2[0]}:0${split2[1]}`;
+                                            }
+                                            document.getElementById("player2Time").innerText = `Zeit: ${finalTime2}`;
+                                            document.getElementById("gameStatus").innerText = allOnlineGames[index].status;
+                                            document.getElementById("allHits").innerText = `Treffer: ${allOnlineGames[index].total_hits}`;
+                                            document.getElementById("allMoves").innerText = `Züge: ${allOnlineGames[index].total_moves}`;
+                                            var finalTime3 = allOnlineGames[index].total_time === 0 ? "0:00" : `${Math.floor(allOnlineGames[index].total_time / 60)}:${allOnlineGames[index].total_time % 60}`;
+                                            const split3 = finalTime3.split(":")
+                                            if (split3[1].length === 1) {
+                                                finalTime3 = `${split3[0]}:0${split3[1]}`;
+                                            }
+                                            document.getElementById("allTime").innerText = `Zeit: ${finalTime3}`;
+                                        } else {
+                                            console.error("No data available");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                        document.getElementById("errorMessage").innerText = error;
+                                    });
                                 //alert("weiter");
                                 for (let i = 0; i < gameNotation.length; i++) {
                                     if (gameNotation[i].hit) {
