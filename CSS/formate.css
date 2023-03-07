@@ -1,3 +1,43 @@
+#stats-container-Online {
+  background-color: white;
+  margin-top: 4%;
+  border-radius: 20px;
+  border-color: black;
+  width: 80%;
+  margin-left: 10%;
+  padding: 10px;
+  
+}
+
+#player1Container-Online{
+  background-color: white;
+  float: left;
+  display: inline-block;
+  text-align: center;
+  border-radius: 10px;
+  width: 50%;
+}
+
+#player2Container-Online {
+  border-radius: 10px;
+  background-color: white;
+  display: inline-block;
+  text-align: center;
+  width: 50%;
+}
+
+#allContainer-Online {
+  background-color: white;
+  margin-top: 20px;
+  border-radius: 20px;
+  border-color: black;
+  width: 80%;
+  margin-left: 10%;
+  padding: 15px;
+  text-align: center;
+}
+
+
 #counter {
   background-color:white;
   position: absolute;
@@ -74,6 +114,19 @@
   font-family: "garamond-bold";
   font-size: 20px;
   margin-bottom: 10px;
+}
+
+#playAgainbtn {
+  margin-top: 4%;
+  margin-left: 25%;
+  width: 50%;
+  background-color: rgb(255, 136, 0);
+  border-radius: 15px;
+  color: black;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 10px;
+  border-color: black;
 }
 
 #verlassenbtn{
@@ -532,7 +585,7 @@ h1 {
 }
 
 .endBottom {
-  margin-top: 5%;
+  margin-top: 30px;
 }
 
 
