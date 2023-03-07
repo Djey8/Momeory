@@ -21,6 +21,8 @@
                 row-gap: 20px;
                 column-gap: 20px;
                 padding: 1%;
+
+
             }
 
             .grid-item {
@@ -71,13 +73,18 @@
                 border-width: 4px;
                 border-color: black;
             }
+
+            #right{
+                float: right;
+            }
+            
         }
     </style>
 </head>
 
 <body>
     <header>
-        <div>
+        <div class="hide">
             <a id="l1" style="float: left;" title="Spiel verlassen"> <img class="yin" src="Bilder/yinyang.jpg"></a>
         </div>
         <div><a id="rechts" class="link" href="https://www.bsz-fs.de/" title="Link zur Home-Page"> <img
@@ -86,9 +93,30 @@
             <h1 id="mitte" class=center>Mehrspieler</h1>
         </div>
     </header>
-    <div class="grid-container">
+    <div class="grid-container"></div>
+    <div id="stats-container-Online">
+        <div id="player1Container-Online">
+            <h4 id="player1">Djey8</h4>
+            <h4 id="player1Hit">Treffer: 2</h4>
+            <h4 id="player1Moves">Züge: 13</h4>
+            <h4 id="player1Time">Zeit: 0:25.04</h4>
+        </div>
 
+        <div id="player2Container-Online">
+            <h4 id="player2">pkw</h4>
+            <h4 id="player2Hit">Treffer: 6</h4>
+            <h4 id="player2Moves">Züge: 10</h4>
+            <h4 id="player2Time">Zeit: 0:25.04</h4>
+        </div>
     </div>
+
+    <div id="allContainer-Online">
+        <h4 id="gameStatus">pkw won</h4>
+        <h4 id="allHits">Alle Treffer: 8</h4>
+        <h4 id="allTime">Gesamtzeit: 0:50.08</h4>
+    </div>
+    <button id="playAgainbtn">Nochmal Spielen</button>
+    <button id="verlassenbtn">Verlassen</button>
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -512,7 +540,7 @@
                         gridContainer.innerHTML = ``;
                         for (var i = 0; i < 16; i++) {
                             gridContainer.innerHTML += `
-                                <input id="pic${i + 1}" class="grid-item" type="button" value="?">
+                                <input id="pic${i + 1}" class="grid-item" type="button" style="font-size: 40px;color: black;font-weight: 600;" value="?">
                                 <img id="pic${i + 1}-image" class="grid-item-pic hide" src="${allOnlineGames[index].game_map[i].image}" hight="auto" alt="?" >
                             `;
                         }
