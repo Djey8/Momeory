@@ -218,10 +218,9 @@
 
 
         function loadOfflineHighlights(criteria) {
-            highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+            highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Siege</th></tr>";
             let bestPoints;
             let winIndex;
-
             offlineGames.forEach((game, index) => {
                 if (game.won) {
                     const startTime = new Date(game.start);
@@ -235,17 +234,23 @@
                     }
                 }
             });
+            var wins = 0;
+            for(let i = 0; i<offlineGames.length; i++){
+                if(offlineGames[i].won){
+                    wins += 1;
+                }
+            }
 
             if (typeof winIndex !== "undefined") {
                 const bestGame = offlineGames[winIndex];
-                const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${bestGame.time}</td><td>x</td></tr>`;
+                const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${bestGame.time}</td><td>${wins}</td></tr>`;
                 highlightTable.innerHTML += insertBestGame;
             }
         }
 
 
         function loadOnlineHighlights(criteria) {
-            highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Spieler</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+            highlightTable.innerHTML = "<tr><th id=\"bestGameLabel\" colspan=\"8\">Bestes Spiel</th></tr><tr><th>ID</th><th>Spieler</th><th>Treffer</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Siege</th></tr>";
             if (onlineGames.length > 0) {
                 let bestPoints;
                 let winIndex;
@@ -264,10 +269,15 @@
                     }
                 });
 
+                var wins = 0;
+                for(let i = 0; i<onlineGames.length; i++){
+                    wins += onlineGames[i].won
+                }
+
                 if (typeof winIndex !== "undefined") {
                     const bestGame = onlineGames[winIndex];
                     const finalTime = bestGame.time === 0 ? "0:00" : `${Math.floor(bestGame.time / 60)}:${bestGame.time%60}`;
-                    const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.opp}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${finalTime}</td><td>x</td></tr>`;
+                    const insertBestGame = `<tr><td>${winIndex + 1}</td><td>${bestGame.opp}</td><td>${bestGame.hits}</td><td>${bestGame.moves}</td><td>${bestGame.start}</td><td>${bestGame.end}</td><td>${finalTime}</td><td>${wins}</td></tr>`;
                     highlightTable.innerHTML += insertBestGame;
                 }
             }
@@ -285,11 +295,11 @@
         }
 
         function loadGames2(table, games) {
-            table.innerHTML = "<tr><th>ID</th><th>Spieler</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
+            table.innerHTML = "<tr><th>ID</th><th>Spieler</th><th>Treffer</th><th>Züge</th><th>Beginn</th><th>Ende</th><th>Zeit</th><th>Sieg</th></tr>";
             for (let i = 0; i < games.length; i++) {
                 const z = games.length - i - 1;
                 const finalTime = games[z].time === 0 ? "0:00" : `${Math.floor(games[z].time / 60)}:${games[z].time%60}`;
-                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].opp}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${finalTime}</td><td>${games[z].won}</td></tr>`
+                const insertGame = `<tr><td>${z + 1}</td><td>${games[z].opp}</td><td>${games[z].hits}</td><td>${games[z].moves}</td><td>${games[z].start}</td><td>${games[z].end}</td><td>${finalTime}</td><td>${games[z].won}</td></tr>`
                 table.innerHTML += insertGame;
             }
         }
@@ -327,18 +337,20 @@
 
 
         function loadOnlineAverage() {
-            averageTable.innerHTML = "<tr><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
+            averageTable.innerHTML = "<tr><th>&Oslash; Treffer</th><th>&Oslash; Züge</th><th>&Oslash; Zeit</th><th>G/V</th></tr>";
             if (!Array.isArray(onlineGames)) {
                 console.error("onlineGames is not an array: ", onlineGames);
                 return;
             }
-            var sum = 0;
+            var sum1 = 0;
+            var sum2 = 0;
             for (let i = 0; i < onlineGames.length; i++){
-                sum += parseInt(onlineGames[i].moves);
+                sum1 += parseInt(onlineGames[i].moves);
+                sum2 += parseInt(onlineGames[i].hits);
             }
             
-            const averageMoves = sum/onlineGames.length;
-
+            const averageMoves = sum1/onlineGames.length;
+            const averageHits = sum2/onlineGames.length;
             const totalWonGames = onlineGames.filter(game => game.won === 1).length;
             const winRatio = (totalWonGames / onlineGames.length) * 100 || 0;
 
@@ -350,7 +362,7 @@
 
             const finalTime = averageTime === 0 ? "0:00.00" : `${Math.floor(averageTime / 60)}:${(averageTime %60).toFixed(2)}`;
 
-            averageTable.innerHTML += `<tr><td>${averageMoves.toFixed(2)}</td><td>${finalTime}</td><td>${winRatio.toFixed(2)} %</td></tr>`;
+            averageTable.innerHTML += `<tr><td>${averageHits.toFixed(2)}</td><td>${averageMoves.toFixed(2)}</td><td>${finalTime}</td><td>${winRatio.toFixed(2)} %</td></tr>`;
         }
 
     </script>
