@@ -240,7 +240,7 @@
                                                 allOnlineGames = snapshot.val();
                                             }
                                             allOnlineGames[index].gameNotation = gameNotation;
-                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} hat gestartet`;
+                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} hat das Bild ${i+1} gewählt`;
                                             const list_online_games = allOnlineGames
                                             update(ref(database, `memory`), { list_online_games })
                                                 .then(() => {
@@ -334,7 +334,8 @@
                                                                                     onlineGames1[onlineGames1.length - 1].won = -1;
                                                                                 } else {
                                                                                     //no winner
-                                                                                    allOnlineGames[index].status = `draw ${allOnlineGames[index].player1.username} & ${allOnlineGames[index].player2.username}`;
+                                                                                    allOnlineGames[index].status = `unentschieden ${allOnlineGames[index].player1.username} & ${allOnlineGames[index].player2.username}`;
+                                                                                    document.getElementById("gameStatus").innerText = `unentschieden ${allOnlineGames[index].player1.username} & ${allOnlineGames[index].player2.username}`;
                                                                                     onlineGames2[onlineGames2.length - 1].won = 0;
                                                                                     onlineGames1[onlineGames1.length - 1].won = 0;
                                                                                 }
@@ -451,6 +452,7 @@
                                                         allOnlineGames = snapshot.val();
                                                     }
                                                     allOnlineGames[index].gameNotation = gameNotation;
+                                                    allOnlineGames[index].status = `${myName} hat das Bild ${i+1} gewählt`;
                                                     const list_online_games = allOnlineGames;
                                                     update(ref(database, `memory`), { list_online_games })
                                                         .then(() => {
