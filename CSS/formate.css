@@ -1,6 +1,6 @@
 #stats-container-Online {
   background-color: white;
-  margin-top: 20px;
+  margin-top: 4%;
   border-radius: 20px;
   border-color: black;
   width: 80%;
@@ -117,7 +117,7 @@
 }
 
 #playAgainbtn {
-  margin-top: 25px;
+  margin-top: 4%;
   margin-left: 25%;
   width: 50%;
   background-color: rgb(255, 136, 0);
