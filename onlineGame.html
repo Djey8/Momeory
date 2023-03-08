@@ -198,7 +198,28 @@
             })
                 .then((willDelete) => {
                     if (willDelete) {
-                        window.location.href = "game.html";
+                        get(child(dbRef, `memory/list_online_games`))
+                            .then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    allOnlineGames = snapshot.val();
+                                }
+                                allOnlineGames[index].finished = true;
+                                allOnlineGames[index].status = `${myName} hat das Spiel verlassen`;
+
+                                const list_online_games = allOnlineGames;
+                                update(ref(database, `memory`), { list_online_games })
+                                    .then(() => {
+                                        //alert("Played second card")
+                                        window.location.href = "game.html";
+                                    })
+                                    .catch((error) => {
+                                        console.error("error with invite:", error);
+                                    });
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+
                     } else {
                         //swal("abgebrochen",{icon: "error"});
                     }
@@ -207,7 +228,23 @@
 
         async function playAgain() {
             if (invited) {
-                alert("5 4 3 2 1 ....");
+                get(child(dbRef, `memory/list_online_games`))
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
+                            allOnlineGames = snapshot.val();
+                            const splitName = allOnlineGames[index].status.split(" ");
+                            const name = splitName[0];
+                            if (myName === name) {
+                                alert("5 4 3 2 1 ....");
+                            }
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+
+
             } else {
 
                 var oppName = "";
@@ -608,8 +645,8 @@
                         }
                         document.getElementById("allTime").innerText = `Zeit: ${finalTime3}`;
 
-                        var mePlayer1 = false; 
-                        if(myName === allOnlineGames[index].player1.username){
+                        var mePlayer1 = false;
+                        if (myName === allOnlineGames[index].player1.username) {
                             mePlayer1 = true;
                         }
 
@@ -620,24 +657,27 @@
                             if (tempStatus.includes("nochmal spielen?")) {
                                 const nameSplit = tempStatus.split(" ")
                                 if (nameSplit[0] === myName) {
-                                    if(mePlayer1){
+                                    if (mePlayer1) {
                                         document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player2.username} beitreten?`;
                                         invited = true;
                                     } else {
                                         document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player1.username} beitreten?`;
                                         invited = true;
                                     }
-                                    
+
                                 } else {
-                                    if(mePlayer1){
+                                    if (mePlayer1) {
                                         document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player2.username} eingeladen!`;
                                         invited = true;
                                     } else {
                                         document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player1.username} eingeladen!`;
                                         invited = true;
                                     }
-                                    
+
                                 }
+                            } else {
+                                document.getElementById("playAgainbtn").innerText = `Nochmal Spielen?`
+                                invited = false;
                             }
                         });
 
