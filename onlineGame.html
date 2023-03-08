@@ -97,7 +97,8 @@
 
     <div id="allContainer-Online">
         <h4 id="gameStatus"></h4>
-        <hr style="height: 5px; background-color: black; border-radius: 2px; border-color: black; margin-top: 10px; margin-bottom: 10px;">
+        <hr
+            style="height: 5px; background-color: black; border-radius: 2px; border-color: black; margin-top: 10px; margin-bottom: 10px;">
         <h4 id="allHits"></h4>
         <h4 id="allMoves"></h4>
         <h4 id="allTime"></h4>
@@ -106,7 +107,8 @@
     <div id="stats-container-Online">
         <div id="player1Container-Online">
             <h4 id="player1"></h4>
-            <hr style="height: 5px; background-color: black; border-radius: 2px; border-color: black; margin-top: 10px; margin-bottom: 10px;">
+            <hr
+                style="height: 5px; background-color: black; border-radius: 2px; border-color: black; margin-top: 10px; margin-bottom: 10px;">
             <h4 id="player1Hits"></h4>
             <h4 id="player1Moves"></h4>
             <h4 id="player1Time"></h4>
@@ -114,15 +116,16 @@
 
         <div id="player2Container-Online">
             <h4 id="player2"></h4>
-            <hr style="height: 5px; background-color: black; border-radius: 2px; border-color: black; margin-top: 10px; margin-bottom: 10px;">
+            <hr
+                style="height: 5px; background-color: black; border-radius: 2px; border-color: black; margin-top: 10px; margin-bottom: 10px;">
             <h4 id="player2Hits"></h4>
             <h4 id="player2Moves"></h4>
             <h4 id="player2Time"></h4>
         </div>
     </div>
 
-    
-    <button id="playAgainbtn">Nochmal Spielen</button>
+
+    <button class="hide" id="playAgainbtn">Nochmal Spielen</button>
     <button id="verlassenbtn">Verlassen</button>
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -163,6 +166,7 @@
 
         const gridContainer = document.querySelector(".grid-container");
 
+        var finished = false;
         var allOnlineGames = [];
         var onlineGames = [];
         const gameID = localStorage.getItem("gameID");
@@ -178,6 +182,87 @@
         var secondCard = false;
         var myTurn = false;
         var turner = false
+
+        var invited = false;
+
+        playAgainbtn.addEventListener('click', () => playAgain(), false);
+        verlassenbtn.addEventListener('click', () => verlassen(), false);
+
+        async function verlassen() {
+            swal({
+                title: "Achtung!",
+                text: `Wollen Sie "${allOnlineGames[index].status}" wirklich verlassen?`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        window.location.href = "game.html";
+                    } else {
+                        //swal("abgebrochen",{icon: "error"});
+                    }
+                });
+        }
+
+        async function playAgain() {
+            if (invited) {
+                alert("5 4 3 2 1 ....");
+            } else {
+
+                var oppName = "";
+                var mePlayer1 = false;
+                if (myName === allOnlineGames[index].player1.username) {
+                    mePlayer1 = true;
+                    oppName = allOnlineGames[index].player2.username
+                } else {
+                    oppName = allOnlineGames[index].player1.username
+                }
+                swal({
+                    title: "Achtung!",
+                    text: `Wollen Sie gegen ${oppName} nochnmal spielen?`,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            get(child(dbRef, `memory/list_online_games`))
+                                .then((snapshot) => {
+                                    if (snapshot.exists()) {
+                                        allOnlineGames = snapshot.val();
+                                    }
+                                    if (mePlayer1) {
+                                        allOnlineGames[index].status = `${allOnlineGames[index].player2.username} nochmal spielen?`;
+                                    } else {
+                                        allOnlineGames[index].status = `${allOnlineGames[index].player1.username} nochmal spielen?`;
+                                    }
+
+
+                                    const list_online_games = allOnlineGames;
+                                    update(ref(database, `memory`), { list_online_games })
+                                        .then(() => {
+                                            //alert("Played second card")
+                                            document.getElementById("gameStatus").innerText = allOnlineGames[index].status;
+                                        })
+                                        .catch((error) => {
+                                            console.error("error with invite:", error);
+                                        });
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        } else {
+                            //swal("abgebrochen",{icon: "error"});
+                        }
+
+                    });
+
+            }
+        }
+
+
+
         async function loadUserGames(user) {
             try {
                 const [allOnlineSnapshot, onlineSnapshot, myNameSnapshot] = await Promise.all([
@@ -206,6 +291,8 @@
 
             }
         }
+
+
 
         function setUpButtonsFlipCard() {
             const cells = document.querySelectorAll(".grid-item");
@@ -243,7 +330,7 @@
                                                 allOnlineGames = snapshot.val();
                                             }
                                             allOnlineGames[index].gameNotation = gameNotation;
-                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} hat das Bild ${i+1} gewählt`;
+                                            allOnlineGames[index].status = `${allOnlineGames[index].player1.username} hat das Bild ${i + 1} gewählt`;
                                             const list_online_games = allOnlineGames
                                             update(ref(database, `memory`), { list_online_games })
                                                 .then(() => {
@@ -455,7 +542,7 @@
                                                         allOnlineGames = snapshot.val();
                                                     }
                                                     allOnlineGames[index].gameNotation = gameNotation;
-                                                    allOnlineGames[index].status = `${myName} hat das Bild ${i+1} gewählt`;
+                                                    allOnlineGames[index].status = `${myName} hat das Bild ${i + 1} gewählt`;
                                                     const list_online_games = allOnlineGames;
                                                     update(ref(database, `memory`), { list_online_games })
                                                         .then(() => {
@@ -490,7 +577,8 @@
                         // do something when the promise is fulfilled
                         //alert(allOnlineGames[index].ID);
                         //alert(onlineGames[onlineGames.length-1].ID)
-                        //play Memory so onValue vor gameNotation
+                        //play Memory so onValue vor gameNotation1
+
 
                         document.getElementById("player1").innerText = allOnlineGames[index].player1.username;
                         document.getElementById("player1Hits").innerText = `Treffer: ${allOnlineGames[index].player1.hits}`;
@@ -520,10 +608,42 @@
                         }
                         document.getElementById("allTime").innerText = `Zeit: ${finalTime3}`;
 
+                        var mePlayer1 = false; 
+                        if(myName === allOnlineGames[index].player1.username){
+                            mePlayer1 = true;
+                        }
+
                         const gameStatusRef = ref(database, `memory/list_online_games/${index}/status`);
                         onValue(gameStatusRef, (snapshot) => {
-                            document.getElementById("gameStatus").innerText = snapshot.val();
+                            const tempStatus = snapshot.val();
+                            document.getElementById("gameStatus").innerText = tempStatus;
+                            if (tempStatus.includes("nochmal spielen?")) {
+                                const nameSplit = tempStatus.split(" ")
+                                if (nameSplit[0] === myName) {
+                                    if(mePlayer1){
+                                        document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player2.username} beitreten?`;
+                                        invited = true;
+                                    } else {
+                                        document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player1.username} beitreten?`;
+                                        invited = true;
+                                    }
+                                    
+                                } else {
+                                    if(mePlayer1){
+                                        document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player2.username} eingeladen!`;
+                                        invited = true;
+                                    } else {
+                                        document.getElementById("playAgainbtn").innerText = `${allOnlineGames[index].player1.username} eingeladen!`;
+                                        invited = true;
+                                    }
+                                    
+                                }
+                            }
                         });
+
+                        if (allOnlineGames[index].finished) {
+                            finished = true;
+                        }
 
                         const gameNotationRef = ref(database, `memory/list_online_games/${index}/gameNotation`);
                         onValue(gameNotationRef, (snapshot) => {
@@ -532,6 +652,7 @@
                                 get(child(dbRef, `memory/list_online_games/${index}`))
                                     .then(snapshot => {
                                         if (snapshot.exists()) {
+
                                             allOnlineGames[index] = snapshot.val();
                                             document.getElementById("player1").innerText = allOnlineGames[index].player1.username;
                                             document.getElementById("player1Hits").innerText = `Treffer: ${allOnlineGames[index].player1.hits}`;
@@ -630,7 +751,9 @@
                             `;
                         }
                         setUpButtonsFlipCard()
-
+                        if (finished) {
+                            document.getElementById("playAgainbtn").classList.remove("hide");
+                        }
                     })
                     .catch((error) => {
                         // do something when the promise is rejected
